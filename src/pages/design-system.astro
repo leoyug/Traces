@@ -1,0 +1,60 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/Button.astro";
+import Card from "../components/Card.astro";
+import ContentRow from "../components/ContentRow.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+
+if (import.meta.env.PROD) return Astro.redirect("/");
+const colors = ["canvas", "surface", "surface-2", "ink", "muted", "faint", "line", "accent"];
+const spaces = [1, 2, 3, 4, 5, 6, 8, 12, 16];
+---
+
+<BaseLayout title="设计系统预览（开发环境）｜不息">
+  <header class="page-intro wide-column ds-intro">
+    <p class="eyebrow">Development only</p>
+    <h1>不息设计系统</h1>
+    <p>从项目调研中提取的暖纸色、克制排版与低层级表面。这个页面只在开发环境呈现，用于验证变量和组件复用。</p>
+  </header>
+  <div class="ds-stack wide-column">
+    <section><SectionHeading eyebrow="Foundations" title="颜色" description="语义变量优先于固定色值，页面和组件只引用语义 token。" /><div class="swatch-grid">{colors.map((color) => <div class="swatch"><div style={`background:var(--color-${color})`}></div><code>--color-{color}</code></div>)}</div></section>
+    <section><SectionHeading eyebrow="Typography" title="字体与层级" /><div class="type-specimens"><p class="type-display">把复杂的事，设计得清楚一点。</p><p class="type-serif">衬线标题承担温暖的编辑感。</p><p class="type-body">正文保持 16px 与舒展行高，适合长时间阅读。English and numbers 2026.</p><p class="type-mono">MONO · META · 12PX / 1.2</p><p class="type-script">一点轻微的手写痕迹。</p></div></section>
+    <section><SectionHeading eyebrow="Spacing" title="间距与圆角" /><div class="space-row">{spaces.map((space) => <div><span style={`width:var(--space-${space})`}></span><code>{space}</code></div>)}</div><div class="radius-row"><i></i><i></i><i></i><i></i></div></section>
+    <section><SectionHeading eyebrow="Actions" title="按钮" /><div class="component-row"><Button>主要按钮</Button><Button variant="secondary">次要按钮</Button><Button variant="ghost">文字按钮</Button><Button size="small">小按钮</Button></div></section>
+    <section><SectionHeading eyebrow="Surfaces" title="卡片" /><div class="project-grid"><Card><h3>标准卡片</h3><p>用于需要明确表面层级的内容。</p></Card><Card variant="quiet"><h3>安静卡片</h3><p>保留组件结构，但移除阴影和底色。</p></Card></div></section>
+    <section><SectionHeading eyebrow="Content" title="内容行" /><ContentRow title="把模糊需求变成可维护的界面" summary="行式索引优先于重卡片。" meta="2026.08.06" tags={["设计工程", "方法"]} /></section>
+    <section><SectionHeading eyebrow="Forms" title="表单" /><form class="form-demo"><div class="field"><label for="demo-name">姓名</label><input id="demo-name" class="input" placeholder="怎么称呼你？" /></div><div class="field"><label for="demo-note">留言</label><textarea id="demo-note" class="textarea" rows="4" placeholder="写点什么……"></textarea></div><Button type="submit">发送留言</Button></form></section>
+    <section><SectionHeading eyebrow="Layout" title="布局容器" description="阅读栏 592px，常规宽栏 868px；移动端统一保留 24px gutter。" /><div class="layout-demo"><div>Wide · 868</div><div>Reading · 592</div><div>Inset</div></div></section>
+  </div>
+</BaseLayout>
+
+<style>
+  .ds-intro { padding-bottom: var(--space-12); }
+  .ds-stack { display: grid; gap: var(--space-20); padding-bottom: var(--space-20); }
+  .ds-stack > section { padding-top: var(--space-8); border-top: 1px solid var(--color-line); }
+  .swatch-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: var(--space-4); }
+  .swatch { display: grid; gap: var(--space-2); font-size: var(--text-xs); }
+  .swatch div { aspect-ratio: 1.5; border: 1px solid var(--color-line); border-radius: var(--radius-md); box-shadow: var(--shadow-card); }
+  code { font-family: var(--font-mono); color: var(--color-muted); }
+  .type-specimens { display: grid; gap: var(--space-6); }
+  .type-display { font: 400 clamp(2.4rem,6vw,4.5rem)/1 var(--font-serif); letter-spacing: -.04em; }
+  .type-serif { font: 400 var(--text-3xl)/1.25 var(--font-serif); }
+  .type-body { max-width: 37rem; }
+  .type-mono { font: var(--text-xs)/1.2 var(--font-mono); letter-spacing: .1em; }
+  .type-script { color: var(--color-accent); font: var(--text-2xl)/1.3 var(--font-script); }
+  .space-row { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-5); }
+  .space-row div { display: grid; gap: var(--space-2); }
+  .space-row span { display: block; height: 2.5rem; min-width: 4px; background: var(--color-accent); }
+  .radius-row { display: flex; gap: var(--space-4); margin-top: var(--space-8); }
+  .radius-row i { width: 5rem; height: 3.5rem; background: var(--color-surface-2); border: 1px solid var(--color-line); }
+  .radius-row i:nth-child(1) { border-radius: var(--radius-xs); }.radius-row i:nth-child(2) { border-radius: var(--radius-sm); }.radius-row i:nth-child(3) { border-radius: var(--radius-lg); }.radius-row i:nth-child(4) { border-radius: var(--radius-pill); }
+  .component-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+  .card h3 { margin-bottom: var(--space-2); font: 500 var(--text-xl)/1.25 var(--font-serif); }.card p { color: var(--color-muted); }
+  .form-demo { max-width: 32rem; display: grid; gap: var(--space-5); }
+  .form-demo .button { justify-self: start; }
+  .layout-demo { padding: var(--space-4); border: 1px dashed var(--color-faint); border-radius: var(--radius-md); text-align: center; color: var(--color-muted); }
+  .layout-demo div { margin-inline: auto; padding: var(--space-4); border-radius: var(--radius-sm); background: var(--color-surface-2); }
+  .layout-demo div:nth-child(2) { width: 68%; margin-top: var(--space-3); background: var(--color-surface); box-shadow: var(--shadow-card); }
+  .layout-demo div:nth-child(3) { width: 45%; margin-top: var(--space-3); background: var(--color-accent-soft); }
+  @media(max-width:40rem){.swatch-grid{grid-template-columns:repeat(2,1fr)}.radius-row{display:grid;grid-template-columns:1fr 1fr}.radius-row i{width:100%}}
+</style>

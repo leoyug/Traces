@@ -1,0 +1,22 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import ContentRow from "../components/ContentRow.astro";
+import { projects } from "../data/site";
+---
+
+<BaseLayout title="项目｜不息" description="设计工程、内容系统与交互原型项目档案。">
+  <header class="page-intro wide-column">
+    <p class="eyebrow">Work archive</p>
+    <h1>项目不是结果陈列，而是一段判断过程。</h1>
+    <p>记录约束、尝试、放弃与选择。部分案例经过匿名化处理，但保留真实的问题结构和我的具体贡献。</p>
+  </header>
+  <section class="archive-section wide-column" aria-labelledby="featured-title">
+    <div class="section-topline"><div><p class="eyebrow">Case studies</p><h2 id="featured-title">深度案例</h2></div></div>
+    <div class="project-grid">{projects.slice(0, 2).map((project) => <ProjectCard {...project} />)}</div>
+  </section>
+  <section class="archive-section reading-column" aria-labelledby="archive-title">
+    <div class="section-topline"><div><p class="eyebrow">More work</p><h2 id="archive-title">项目档案</h2></div></div>
+    {projects.map((project) => <ContentRow title={project.title} summary={project.summary} meta={`${project.status} · ${project.year}`} href="#" />)}
+  </section>
+</BaseLayout>

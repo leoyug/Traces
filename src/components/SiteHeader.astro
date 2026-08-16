@@ -1,0 +1,82 @@
+---
+import { navigation } from "../data/site";
+const currentPath = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="/" aria-label="不息，返回首页">
+      <span class="brand__mark" aria-hidden="true">不</span>
+      <span>不息</span>
+    </a>
+    <nav class="site-nav" aria-label="主要导航">
+      {navigation.map((item) => (
+        <a
+          href={item.href}
+          class:list={["site-nav__link", { "is-active": item.href === "/" ? currentPath === "/" : currentPath.startsWith(item.href) }]}
+          aria-current={(item.href === "/" ? currentPath === "/" : currentPath.startsWith(item.href)) ? "page" : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+    <button class="icon-button menu-button" type="button" aria-expanded="false" aria-controls="mobile-nav">
+      <span class="sr-only">打开导航</span>
+      <span aria-hidden="true">菜单</span>
+    </button>
+  </div>
+  <nav id="mobile-nav" class="mobile-nav t-dropdown" data-origin="top-right" aria-label="移动端导航" aria-hidden="true" inert>
+    {navigation.map((item) => (
+      <a
+        href={item.href}
+        class:list={{ "is-active": item.href === "/" ? currentPath === "/" : currentPath.startsWith(item.href) }}
+        aria-current={(item.href === "/" ? currentPath === "/" : currentPath.startsWith(item.href)) ? "page" : undefined}
+      >
+        {item.label}
+      </a>
+    ))}
+  </nav>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>(".site-header");
+  const button = header?.querySelector<HTMLButtonElement>(".menu-button");
+  const nav = header?.querySelector<HTMLElement>(".mobile-nav");
+  let closeTimer: number | undefined;
+
+  const closeMs = Number.parseFloat(
+    getComputedStyle(document.documentElement).getPropertyValue("--dropdown-close-dur"),
+  ) || 150;
+
+  function setMenu(open: boolean) {
+    if (!button || !nav) return;
+    window.clearTimeout(closeTimer);
+    button.setAttribute("aria-expanded", String(open));
+    button.querySelector(".sr-only")!.textContent = open ? "关闭导航" : "打开导航";
+    nav.setAttribute("aria-hidden", String(!open));
+    nav.toggleAttribute("inert", !open);
+
+    if (open) {
+      nav.classList.remove("is-closing");
+      nav.classList.add("is-open");
+      return;
+    }
+
+    nav.classList.remove("is-open");
+    nav.classList.add("is-closing");
+    closeTimer = window.setTimeout(() => nav.classList.remove("is-closing"), closeMs);
+  }
+
+  button?.addEventListener("click", () => setMenu(button.getAttribute("aria-expanded") !== "true"));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && button?.getAttribute("aria-expanded") === "true") {
+      setMenu(false);
+      button.focus();
+    }
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (button?.getAttribute("aria-expanded") === "true" && header && !header.contains(event.target as Node)) {
+      setMenu(false);
+    }
+  });
+</script>

@@ -1,0 +1,10 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+<BaseLayout title="把模糊需求变成可维护的界面｜不息">
+  <article class="article reading-column">
+    <header><p class="eyebrow">设计工程 · 方法 · 8 分钟</p><h1>把模糊需求变成可维护的界面</h1><p>组件不是起点。真正的起点，是团队能否用同一组词描述同一个问题。</p><time>2026 年 8 月 6 日</time></header>
+    <div class="article__body"><h2>先让问题变得可以讨论</h2><p>面对一句“这里需要更灵活”，我不会立刻增加一个配置项。先把“谁在什么情境下，需要改变什么”写成可以被验证的句子。很多看起来是组件能力的问题，其实是信息关系没有被说清楚。</p><blockquote>设计系统首先是一套共同语言，其次才是一套组件。</blockquote><h2>寻找稳定部分</h2><p>页面会变，内容会变，业务名称也会变。值得抽象的通常是更稳定的关系：层级、状态、动作与反馈。把这些关系放进组件接口里，页面就不必重复解释它们。</p><h2>允许合理的不一致</h2><p>一致性不是让所有东西长得一样。真正有用的一致性，是让同一种意图总能得到相近的反馈，同时允许内容在需要时拥有自己的节奏。</p></div>
+  </article>
+</BaseLayout>
+<style>.article{padding-block:clamp(5rem,10vw,8rem)}.article header{display:grid;gap:var(--space-5);padding-bottom:var(--space-12);border-bottom:1px solid var(--color-line)}.article h1{font:400 clamp(2.6rem,7vw,4.5rem)/1.05 var(--font-serif);letter-spacing:-.035em}.article header>p:not(.eyebrow){color:var(--color-muted);font-size:var(--text-lg)}.article time{color:var(--color-muted);font-size:var(--text-sm)}.article__body{padding-top:var(--space-12);font-family:var(--font-serif);font-size:var(--text-lg);line-height:var(--leading-relaxed)}.article__body>*+*{margin-top:var(--space-5)}.article__body h2{margin-top:var(--space-12);font-size:var(--text-2xl)}.article blockquote{margin-inline:0;padding:var(--space-5);border-left:3px solid var(--color-accent);background:var(--color-surface-2);font-style:italic}</style>
