@@ -2,7 +2,12 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import ContentRow from "../components/ContentRow.astro";
-import { projects } from "../data/site";
+import { getCollection } from "astro:content";
+import { projectStatusLabels } from "../lib/content";
+
+const projects = (await getCollection("projects", ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+const featuredProjects = projects.filter(({ data }) => data.featured);
 ---
 
 <BaseLayout title="项目｜不息" description="设计工程、内容系统与交互原型项目档案。">
@@ -13,10 +18,10 @@ import { projects } from "../data/site";
   </header>
   <section class="archive-section wide-column" aria-labelledby="featured-title">
     <div class="section-topline"><div><p class="eyebrow">Case studies</p><h2 id="featured-title">深度案例</h2></div></div>
-    <div class="project-grid">{projects.slice(0, 2).map((project) => <ProjectCard {...project} />)}</div>
+    <div class="project-grid">{featuredProjects.map((project) => <ProjectCard title={project.data.title} summary={project.data.description} year={project.data.year} status={projectStatusLabels[project.data.status]} accent={project.data.accent} href={`/projects/${project.id}`} />)}</div>
   </section>
   <section class="archive-section reading-column" aria-labelledby="archive-title">
     <div class="section-topline"><div><p class="eyebrow">More work</p><h2 id="archive-title">项目档案</h2></div></div>
-    {projects.map((project) => <ContentRow title={project.title} summary={project.summary} meta={`${project.status} · ${project.year}`} href="#" />)}
+    {projects.map((project) => <ContentRow title={project.data.title} summary={project.data.description} meta={`${projectStatusLabels[project.data.status]} · ${project.data.year}`} href={`/projects/${project.id}`} />)}
   </section>
 </BaseLayout>

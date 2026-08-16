@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { photos } from "../data/site";
+import { galleryPlaceholders } from "../data/site";
 ---
 
 <BaseLayout title="相册｜不息" description="一份按时间慢慢生长的个人照片档案。" wide>
@@ -11,7 +11,7 @@ import { photos } from "../data/site";
   </header>
   <section class="archive-section wide-column" aria-label="全部照片">
     <div class="gallery-grid">
-      {photos.map((photo) => (
+      {galleryPlaceholders.map((photo) => (
         <figure class="gallery-item">
           <div class:list={["gallery-art", `tone-${photo.tone}`]} role="img" aria-label={`${photo.title}，拍摄于${photo.place}`} title={photo.title}></div>
           <figcaption><span><strong>{photo.title}</strong><br />{photo.place}</span><time>{photo.date}</time></figcaption>

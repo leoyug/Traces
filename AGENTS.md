@@ -4,7 +4,7 @@
 
 这是“不息”的中文个人网站初版：一份以长期记录为首要目标、兼顾职业展示的个人出版物。首版覆盖首页、项目、文章、相册、关于、文章详情、RSS、404，以及仅供开发环境查看的设计系统预览页。
 
-技术栈为 Astro 6、TypeScript 和静态生成。当前内容使用本地结构化数据，未来扩展真实内容时应迁移到 Astro Content Collections，并保持 `projects`、`articles`、`albums`、`photos`、`resume` 的领域边界。
+技术栈为 Astro 6、TypeScript 和静态生成。内容使用 Astro Content Collections，并保持 `projects`、`articles`、`albums`、`photos`、`resume` 的领域边界。
 
 ## 前端目录结构
 
@@ -18,7 +18,9 @@ src/
 │   ├── SectionHeading.astro
 │   ├── SiteFooter.astro
 │   └── SiteHeader.astro
-├── data/site.ts       # 首版演示内容与导航数据
+├── content/           # 文章、项目、相册、照片与职业履历内容
+├── content.config.ts  # Content Collections 结构校验与引用规则
+├── data/site.ts       # 导航和非领域视觉占位数据
 ├── layouts/           # 页面骨架、元数据和全站结构
 ├── pages/             # 路由页面；只负责内容编排
 └── styles/global.css  # token、基础样式、组件样式和响应式规则

@@ -1,0 +1,23 @@
+{
+  "name": "待替换真实姓名",
+  "publicName": "不息",
+  "title": "设计工程师",
+  "location": "杭州",
+  "email": "hello@incessantleo.com",
+  "summary": "擅长把模糊需求转化为清晰的页面结构与交互方案，并通过设计系统维持复杂页面的一致性。",
+  "experience": [
+    {
+      "period": "2024—现在",
+      "role": "高级设计工程师",
+      "organization": "某互联网产品团队",
+      "summary": "负责工作台体验、跨端组件与设计系统维护。"
+    },
+    {
+      "period": "2022—2024",
+      "role": "产品设计师",
+      "organization": "某协作工具团队",
+      "summary": "负责内容生产、权限与发布流程设计。"
+    }
+  ],
+  "links": []
+}

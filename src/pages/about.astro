@@ -1,33 +1,36 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Button from "../components/Button.astro";
+import { getEntry } from "astro:content";
+
+const resume = await getEntry("resume", "main");
+if (!resume) throw new Error("缺少 main 职业履历内容");
 ---
 
 <BaseLayout title="关于｜不息" description="设计工程师不息的个人介绍、职业经历与联系方式。">
   <header class="page-intro wide-column">
     <p class="eyebrow">About</p>
     <h1>在设计与实现之间，搭一座不太显眼的桥。</h1>
-    <p>我使用昵称“不息”发布日常内容。在职业语境中，我是一名有 4 年经验的设计工程师，现居杭州。</p>
+    <p>我使用昵称“{resume.data.publicName}”发布日常内容。在职业语境中，我是一名有 4 年经验的{resume.data.title}，现居{resume.data.location}。</p>
   </header>
   <div class="about-grid wide-column">
     <aside class="about-note">
       <p>“清楚，比聪明更难。”</p>
       <p>我喜欢那些几乎感觉不到、却能让人自然完成任务的结构和细节。</p>
       <div class="hero__actions">
-        <Button href="mailto:hello@incessantleo.com" size="small">发邮件</Button>
+        <Button href={`mailto:${resume.data.email}`} size="small">发邮件</Button>
         <Button href="#resume" variant="secondary" size="small">查看履历</Button>
       </div>
     </aside>
     <div class="about-copy">
       <section>
         <h2>我在做什么</h2>
-        <p>我擅长把模糊需求转化为清晰的页面结构与交互方案，并通过设计系统维持复杂页面的一致性。工作通常从梳理语言和信息关系开始，最后落在可以被团队真正复用的组件上。</p>
+        <p>{resume.data.summary}工作通常从梳理语言和信息关系开始，最后落在可以被团队真正复用的组件上。</p>
       </section>
       <section id="resume">
         <h2>工作经历</h2>
         <ol class="timeline">
-          <li><time>2024—现在</time><div><strong>高级设计工程师 · 某互联网产品团队</strong><p>负责工作台体验、跨端组件与设计系统维护。</p></div></li>
-          <li><time>2022—2024</time><div><strong>产品设计师 · 某协作工具团队</strong><p>负责内容生产、权限与发布流程设计。</p></div></li>
+          {resume.data.experience.map((item) => <li><time>{item.period}</time><div><strong>{item.role} · {item.organization}</strong><p>{item.summary}</p></div></li>)}
         </ol>
       </section>
       <section>

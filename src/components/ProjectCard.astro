@@ -1,7 +1,7 @@
 ---
 import Card from "./Card.astro";
-interface Props { title: string; summary: string; year: string; status: string; accent: string; }
-const { title, summary, year, status, accent } = Astro.props;
+interface Props { title: string; summary: string; year: string | number; status: string; accent: string; href?: string; }
+const { title, summary, year, status, accent, href = "/projects" } = Astro.props;
 ---
 
 <Card variant="media" class="project-card">
@@ -14,6 +14,6 @@ const { title, summary, year, status, accent } = Astro.props;
     <div class="project-card__meta"><span class="status-dot"></span>{status}<time>{year}</time></div>
     <h3>{title}</h3>
     <p>{summary}</p>
-    <a class="text-link" href="/projects">查看项目 <span aria-hidden="true">↗</span></a>
+    <a class="text-link" href={href}>查看项目 <span aria-hidden="true">↗</span></a>
   </div>
 </Card>

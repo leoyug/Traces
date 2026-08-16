@@ -1,0 +1,27 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { projectStatusLabels } from "../../lib/content";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects", ({ data }) => !data.draft);
+  return projects.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+interface Props { entry: CollectionEntry<"projects">; }
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={`${entry.data.title}｜不息`} description={entry.data.description}>
+  <article class="article project-article reading-column">
+    <header>
+      <p class="eyebrow">{projectStatusLabels[entry.data.status]} · {entry.data.year} · {entry.data.role}</p>
+      <h1>{entry.data.title}</h1>
+      <p>{entry.data.description}</p>
+      {entry.data.privacyNote && <aside class="privacy-note">{entry.data.privacyNote}</aside>}
+    </header>
+    <div class="article__body"><Content /></div>
+  </article>
+</BaseLayout>
