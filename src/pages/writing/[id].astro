@@ -14,10 +14,10 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 ---
 
-<BaseLayout title={`${entry.data.title}｜不息`} description={entry.data.description}>
+<BaseLayout title={`${entry.data.title}｜不息`} description={entry.data.description} socialImage={null}>
   <article class="article reading-column">
     <header>
-      <p class="eyebrow">{entry.data.tags.join(" · ")} · {entry.data.readingMinutes} 分钟</p>
+      <p class="meta-line">{entry.data.tags.join(" · ")} · {entry.data.readingMinutes} 分钟</p>
       <h1>{entry.data.title}</h1>
       <p>{entry.data.description}</p>
       <time datetime={entry.data.publishedAt.toISOString()}>{formatDate(entry.data.publishedAt, "long")}</time>

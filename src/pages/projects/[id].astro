@@ -14,10 +14,10 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 ---
 
-<BaseLayout title={`${entry.data.title}｜不息`} description={entry.data.description}>
+<BaseLayout title={`${entry.data.title}｜不息`} description={entry.data.description} socialImage={null}>
   <article class="article project-article reading-column">
     <header>
-      <p class="eyebrow">{projectStatusLabels[entry.data.status]} · {entry.data.year} · {entry.data.role}</p>
+      <p class="meta-line">{projectStatusLabels[entry.data.status]} · {entry.data.year} · {entry.data.role}</p>
       <h1>{entry.data.title}</h1>
       <p>{entry.data.description}</p>
       {entry.data.privacyNote && <aside class="privacy-note">{entry.data.privacyNote}</aside>}

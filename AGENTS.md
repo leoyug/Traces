@@ -33,11 +33,11 @@ src/
 设计变量集中在 `src/styles/global.css` 的 `@layer tokens` 中，页面不得自行复制固定色值、间距、圆角或阴影。
 
 - 色彩：暖白 canvas、纸张 surface、低对比 line、近黑 ink、暖橙棕 accent。
-- 排版：sans 用于界面与正文，serif 用于标题，mono 用于日期与元信息，script 仅作少量批注。
+- 排版：参考 Ian Neo 的克制层级，以系统 sans 统一界面、标题和正文；仅在少量个人批注中使用 script，mono 只用于真正的代码或等宽数据。
 - 间距：4px 基准，优先使用 `--space-*`。
 - 圆角：从 `--radius-xs` 到 `--radius-pill`，大容器避免滥用圆角。
 - 阴影：`hairline`、`card`、`float` 三级；普通内容列表优先使用分隔和留白。
-- 容器：阅读栏 592px，常规宽栏 868px；移动端默认 24px gutter。
+- 容器：阅读栏 480px，常规宽栏 768px；移动端默认 24px gutter。
 - 响应式：移动优先；640px 调整内容行，768px 切换导航和主要网格。正文不因窄屏整体缩小。
 
 开发环境运行后访问 `/design-system` 可查看颜色、字体、间距、圆角、按钮、卡片、内容行、表单和布局。该路由在生产构建中重定向到首页，不公开预览内容。
