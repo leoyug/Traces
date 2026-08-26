@@ -17,7 +17,7 @@ const spaces = [1, 2, 3, 4, 5, 6, 8, 12, 16];
   </header>
   <div class="ds-stack wide-column">
     <section><SectionHeading title="颜色" description="语义变量优先于固定色值，页面和组件只引用语义 token。" /><div class="swatch-grid">{colors.map((color) => <div class="swatch"><div style={`background:var(--color-${color})`}></div><code>--color-{color}</code></div>)}</div></section>
-    <section><SectionHeading title="字体与层级" /><div class="type-specimens"><p class="type-display">把复杂的事，设计得清楚一点。</p><p class="type-title">页面标题使用 28px、600 字重。</p><p class="type-body">界面正文保持 14px 与 1.55 行高；长文章提升到 16px 与 1.8 行高。English and numbers 2026.</p><p class="type-meta">元信息 · 12PX · REGULAR</p><p class="type-script">只留一点手写痕迹。</p></div></section>
+    <section><SectionHeading title="字体与层级" /><div class="type-specimens"><p class="type-display">把复杂的事，设计得清楚一点。</p><p class="type-title">页面标题使用 28px、600 字重。</p><p class="type-body">界面正文与文章正文统一使用 14px；普通内容采用 1.55 行高，长文章采用 1.8 行高。English and numbers 2026.</p><p class="type-meta">说明标签 · 12PX · REGULAR</p><p class="type-script">只留一点手写痕迹。</p></div></section>
     <section><SectionHeading title="间距与圆角" /><div class="space-row">{spaces.map((space) => <div><span style={`width:var(--space-${space})`}></span><code>{space}</code></div>)}</div><div class="radius-row"><i></i><i></i><i></i><i></i></div></section>
     <section><SectionHeading title="按钮" /><div class="component-row"><Button>主要按钮</Button><Button variant="secondary">次要按钮</Button><Button variant="ghost">文字按钮</Button><Button size="small">小按钮</Button></div></section>
     <section><SectionHeading title="卡片" /><div class="project-grid"><Card><h3>标准卡片</h3><p>用于需要明确表面层级的内容。</p></Card><Card variant="quiet"><h3>安静卡片</h3><p>保留组件结构，但移除阴影和底色。</p></Card></div></section>

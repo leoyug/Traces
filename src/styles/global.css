@@ -27,7 +27,7 @@
     --font-script: "Kaiti SC", "STKaiti", cursive;
     --text-meta: .75rem;
     --text-body: .875rem;
-    --text-title: .9375rem;
+    --text-title: var(--text-body);
     --text-lead: 1rem;
     --text-subhead: 1.125rem;
     --text-page-title: 1.75rem;
@@ -122,7 +122,7 @@
   .project-card__body { display: grid; gap: var(--space-3); padding: var(--space-5); }
   .project-card__body h3 { font: var(--weight-medium) var(--text-title)/var(--leading-copy) var(--font-sans); letter-spacing: 0; }
   .project-card__body p { color: var(--color-muted); }
-  .project-card__meta { display: flex; align-items: center; gap: .45rem; color: var(--color-muted); font: var(--weight-regular) var(--text-meta)/1.5 var(--font-sans); font-variant-numeric: tabular-nums; letter-spacing: 0; }
+  .project-card__meta { display: flex; align-items: center; gap: .45rem; color: var(--color-muted); font: var(--weight-regular) var(--text-body)/var(--leading-copy) var(--font-sans); font-variant-numeric: tabular-nums; letter-spacing: 0; }
   .project-card__meta time { margin-left: auto; }
   .status-dot { width: .45rem; height: .45rem; border-radius: 50%; background: #5b8b61; box-shadow: 0 0 0 3px rgb(91 139 97 / 12%); }
   .input, .textarea { width: 100%; min-height: 2.75rem; padding: .7rem var(--space-4); border: 1px solid var(--color-line); border-radius: var(--radius-sm); outline: 0; background: var(--color-surface); color: var(--color-ink); }
@@ -174,7 +174,7 @@
   .hero h1 { font: var(--weight-semibold) var(--text-lead)/1.4 var(--font-sans); letter-spacing: var(--tracking-title); }
   .hero__identity-copy p { color: var(--color-muted); font-size: var(--text-body); line-height: var(--leading-copy); }
   .hero__copy { display: grid; gap: var(--space-4); }
-  .hero__copy p { color: var(--color-muted); font-size: var(--text-lead); line-height: 1.7; letter-spacing: 0; }
+  .hero__copy p { color: var(--color-muted); font-size: var(--text-body); line-height: var(--leading-copy); letter-spacing: 0; }
   .hero__copy a { color: var(--color-ink); font-weight: var(--weight-medium); text-decoration-color: var(--color-line); text-decoration-thickness: 1px; text-underline-offset: 4px; }
   .hero__copy a:hover { color: var(--color-accent); text-decoration-color: currentColor; }
   .hero__actions { display: flex; gap: var(--space-3); margin-top: var(--space-8); }
@@ -211,13 +211,13 @@
   .about-copy p { color: var(--color-muted); line-height: var(--leading-relaxed); }
   .timeline { display: grid; gap: var(--space-8); }
   .timeline li { display: grid; grid-template-columns: 6rem 1fr; gap: var(--space-4); }
-  .timeline time { color: var(--color-muted); font: var(--weight-regular) var(--text-meta)/1.5 var(--font-sans); font-variant-numeric: tabular-nums; }
+  .timeline time { color: var(--color-muted); font: var(--weight-regular) var(--text-body)/var(--leading-copy) var(--font-sans); font-variant-numeric: tabular-nums; }
   .article { padding-block: clamp(5rem,10vw,8rem); }
   .article header { display: grid; gap: var(--space-5); }
   .article h1 { font: var(--weight-semibold) var(--text-page-title)/var(--leading-title) var(--font-sans); letter-spacing: var(--tracking-title); text-wrap: balance; }
   .article header > p:not(.meta-line) { color: var(--color-muted); font-size: var(--text-body); }
-  .article time { color: var(--color-muted); font-size: var(--text-meta); font-variant-numeric: tabular-nums; }
-  .article__body { padding-top: var(--space-16); font-family: var(--font-sans); font-size: var(--text-lead); line-height: var(--leading-relaxed); letter-spacing: 0; }
+  .article time { color: var(--color-muted); font-size: var(--text-body); font-variant-numeric: tabular-nums; }
+  .article__body { padding-top: var(--space-16); font-family: var(--font-sans); font-size: var(--text-body); line-height: var(--leading-relaxed); letter-spacing: 0; }
   .article__body > * + * { margin-top: var(--space-5); }
   .article__body h2 { margin-top: var(--space-12); font-size: var(--text-subhead); font-weight: var(--weight-medium); line-height: 1.5; letter-spacing: var(--tracking-title); }
   .article__body blockquote { margin-inline: 0; padding: var(--space-5); border-left: 3px solid var(--color-accent); background: var(--color-surface-2); font-style: italic; }
