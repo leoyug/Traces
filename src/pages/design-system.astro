@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Button from "../components/Button.astro";
 import Card from "../components/Card.astro";
 import ContentRow from "../components/ContentRow.astro";
+import ProjectCard from "../components/ProjectCard.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 
 if (import.meta.env.PROD) return Astro.redirect("/");
@@ -21,6 +22,7 @@ const spaces = [1, 2, 3, 4, 5, 6, 8, 12, 16];
     <section><SectionHeading title="间距与圆角" /><div class="space-row">{spaces.map((space) => <div><span style={`width:var(--space-${space})`}></span><code>{space}</code></div>)}</div><div class="radius-row"><i></i><i></i><i></i><i></i></div></section>
     <section><SectionHeading title="按钮" /><div class="component-row"><Button>主要按钮</Button><Button variant="secondary">次要按钮</Button><Button variant="ghost">文字按钮</Button><Button size="small">小按钮</Button></div></section>
     <section><SectionHeading title="卡片" /><div class="project-grid"><Card><h3>标准卡片</h3><p>用于需要明确表面层级的内容。</p></Card><Card variant="quiet"><h3>安静卡片</h3><p>保留组件结构，但移除阴影和底色。</p></Card></div></section>
+    <section><SectionHeading title="项目卡片" /><div class="project-grid"><ProjectCard title="复杂工作台的结构重构" summary="统一任务、资产与协作流，建立可扩展的页面骨架。" year="2026" status="已上线" accent="clay" /></div></section>
     <section><SectionHeading title="内容行" /><ContentRow title="把模糊需求变成可维护的界面" summary="行式索引优先于重卡片。" meta="2026.08.06" tags={["设计工程", "方法"]} /><ContentRow title="紧凑文章行" meta="2026.08.06" density="compact" stackOnMobile={false} /></section>
     <section><SectionHeading title="表单" /><form class="form-demo"><div class="field"><label for="demo-name">姓名</label><input id="demo-name" class="input" placeholder="怎么称呼你？" /></div><div class="field"><label for="demo-note">留言</label><textarea id="demo-note" class="textarea" rows="4" placeholder="写点什么……"></textarea></div><Button type="submit">发送留言</Button></form></section>
     <section><SectionHeading title="布局容器" description="阅读栏 592px，常规宽栏 768px；移动端统一保留 24px gutter。" /><div class="layout-demo"><div>Wide · 768</div><div>Reading · 592</div><div>Inset</div></div></section>

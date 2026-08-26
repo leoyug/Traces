@@ -1,19 +1,23 @@
 ---
-import Card from "./Card.astro";
 interface Props { title: string; summary: string; year: string | number; status: string; accent: string; href?: string; }
 const { title, summary, year, status, accent, href = "/projects" } = Astro.props;
 ---
 
-<Card variant="media" class="project-card">
+<a class="project-card" href={href} aria-label={`查看项目：${title}`}>
   <div class:list={["project-card__visual", `tone-${accent}`]} aria-hidden="true">
-    <span class="project-card__window"><i></i><i></i><i></i></span>
-    <span class="project-card__grid"></span>
-    <span class="project-card__note">结构 → 系统 → 体验</span>
+    <span class="project-card__preview">
+      <span class="project-card__chrome"></span>
+      <span class="project-card__screen">
+        <span class="project-card__document"></span>
+        <span class="project-card__sidebar"></span>
+      </span>
+    </span>
   </div>
   <div class="project-card__body">
-    <div class="project-card__meta"><span class="status-dot"></span>{status}<time>{year}</time></div>
-    <h3>{title}</h3>
+    <div class="project-card__heading">
+      <h3>{title}</h3>
+      <span class="project-card__tags"><span>{status}</span><time datetime={String(year)}>{year}</time></span>
+    </div>
     <p>{summary}</p>
-    <a class="text-link" href={href}>查看项目 <span aria-hidden="true">↗</span></a>
   </div>
-</Card>
+</a>
