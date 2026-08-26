@@ -98,6 +98,8 @@
   .card--quiet { box-shadow: none; background: transparent; }
   .content-row { display: flex; align-items: baseline; gap: var(--space-3); min-height: 3rem; padding-block: var(--space-3); color: var(--color-ink); text-decoration: none; }
   .content-row + .content-row { margin-top: var(--space-5); }
+  .content-row--compact { min-height: 2.75rem; padding-block: var(--space-1); }
+  .content-row--compact + .content-row--compact { margin-top: 0; }
   .content-row__body { min-width: 0; display: grid; gap: var(--space-1); }
   .content-row strong { font-size: var(--text-title); font-weight: var(--weight-medium); line-height: var(--leading-copy); }
   .content-row small, .content-row time { color: var(--color-muted); font-size: var(--text-body); }
@@ -173,13 +175,14 @@
   .hero__identity-copy { min-width: 0; }
   .hero h1 { font: var(--weight-semibold) var(--text-lead)/1.4 var(--font-sans); letter-spacing: var(--tracking-title); }
   .hero__identity-copy p { color: var(--color-muted); font-size: var(--text-body); line-height: var(--leading-copy); }
-  .hero__copy { display: grid; gap: var(--space-4); }
+  .hero__copy { display: grid; gap: var(--space-2); }
   .hero__copy p { color: var(--color-muted); font-size: var(--text-body); line-height: var(--leading-copy); letter-spacing: 0; }
   .hero__copy a { color: var(--color-ink); font-weight: var(--weight-medium); text-decoration-color: var(--color-line); text-decoration-thickness: 1px; text-underline-offset: 4px; }
   .hero__copy a:hover { color: var(--color-accent); text-decoration-color: currentColor; }
   .hero__actions { display: flex; gap: var(--space-3); margin-top: var(--space-8); }
   .home-section + .home-section { margin-top: var(--space-24); }
   .section-topline { display: flex; align-items: end; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-6); }
+  .writing-home .section-topline { margin-bottom: var(--space-2); }
   .section-topline h2 { color: var(--color-faint); font: var(--weight-regular) var(--text-body)/var(--leading-copy) var(--font-sans); letter-spacing: 0; }
   .project-home .project-grid { grid-template-columns: 1fr; gap: var(--space-4); }
   .project-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--space-5); }

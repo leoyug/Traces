@@ -5,11 +5,13 @@ interface Props {
   meta: string;
   href?: string;
   tags?: string[];
+  density?: "default" | "compact";
+  stackOnMobile?: boolean;
 }
-const { title, summary, meta, href = "#", tags = [] } = Astro.props;
+const { title, summary, meta, href = "#", tags = [], density = "default", stackOnMobile = true } = Astro.props;
 ---
 
-<a class="content-row content-row--stack-mobile" href={href}>
+<a class:list={["content-row", { "content-row--compact": density === "compact", "content-row--stack-mobile": stackOnMobile }]} href={href}>
   <span class="content-row__body">
     <strong>{title}</strong>
     {summary && <small>{summary}</small>}
