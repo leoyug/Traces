@@ -25,7 +25,7 @@ const projects = (await getCollection("projects", ({ data }) => !data.draft && d
     <span class="hero__orbit" aria-hidden="true"></span>
   </section>
 
-  <section class="home-section reading-column">
+  <section class="home-section wide-column">
     <div class="section-topline">
       <h2>最近在想</h2>
       <a class="text-link" href="/writing">全部文章</a>
@@ -33,7 +33,7 @@ const projects = (await getCollection("projects", ({ data }) => !data.draft && d
     <div>{articles.map((article) => <ContentRow title={article.data.title} summary={article.data.description} meta={formatDate(article.data.publishedAt)} href={`/writing/${article.id}`} />)}</div>
   </section>
 
-  <section class="home-section reading-column project-home">
+  <section class="home-section wide-column project-home">
     <div class="section-topline">
       <h2>精选项目</h2>
       <a class="text-link" href="/projects">项目档案</a>
@@ -41,7 +41,7 @@ const projects = (await getCollection("projects", ({ data }) => !data.draft && d
     <div class="project-grid">{projects.map((project) => <ProjectCard title={project.data.title} summary={project.data.description} year={project.data.year} status={projectStatusLabels[project.data.status]} accent={project.data.accent} href={`/projects/${project.id}`} />)}</div>
   </section>
 
-  <section class="home-section reading-column photo-home">
+  <section class="home-section wide-column photo-home">
     <div class="section-topline">
       <h2>最近的光</h2>
       <a class="text-link" href="/gallery">进入相册</a>
