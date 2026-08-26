@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Button from "../components/Button.astro";
 import ContentRow from "../components/ContentRow.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { getCollection } from "astro:content";
@@ -15,17 +14,22 @@ const projects = (await getCollection("projects", ({ data }) => !data.draft && d
 ---
 
 <BaseLayout>
-  <section class="hero wide-column">
-    <h1><span>把复杂的事，</span><span>设计得清楚一点。</span></h1>
-    <p class="hero__intro">你好，我是不息，一名设计工程师。我关注页面结构、交互细节和长期可维护的设计系统，也在这里收藏写作、项目与路上看到的光。</p>
-    <div class="hero__actions">
-      <Button href="/projects">查看工作 <span aria-hidden="true">↗</span></Button>
-      <Button href="/about" variant="secondary">认识我</Button>
+  <section class="hero reading-column">
+    <div class="hero__identity">
+      <span class="hero__mark" aria-hidden="true">不</span>
+      <div class="hero__identity-copy">
+        <h1>不息</h1>
+        <p>设计工程师 · 长期记录者</p>
+      </div>
     </div>
-    <span class="hero__orbit" aria-hidden="true"></span>
+    <div class="hero__copy">
+      <p>你好，我是不息，一名设计工程师。我把模糊的需求整理成清晰、可维护的页面与交互。</p>
+      <p>我关注页面结构、设计系统与实现细节。你可以从<a href="/projects">项目</a>开始，看看我做过的工作和背后的判断。</p>
+      <p>我也在这里记录<a href="/writing">写作</a>、收藏<a href="/gallery">路上看到的光</a>，以及那些还没有完全想明白的问题。</p>
+    </div>
   </section>
 
-  <section class="home-section wide-column">
+  <section class="home-section reading-column">
     <div class="section-topline">
       <h2>最近在想</h2>
       <a class="text-link" href="/writing">全部文章</a>
@@ -33,7 +37,7 @@ const projects = (await getCollection("projects", ({ data }) => !data.draft && d
     <div>{articles.map((article) => <ContentRow title={article.data.title} summary={article.data.description} meta={formatDate(article.data.publishedAt)} href={`/writing/${article.id}`} />)}</div>
   </section>
 
-  <section class="home-section wide-column project-home">
+  <section class="home-section reading-column project-home">
     <div class="section-topline">
       <h2>精选项目</h2>
       <a class="text-link" href="/projects">项目档案</a>
@@ -41,7 +45,7 @@ const projects = (await getCollection("projects", ({ data }) => !data.draft && d
     <div class="project-grid">{projects.map((project) => <ProjectCard title={project.data.title} summary={project.data.description} year={project.data.year} status={projectStatusLabels[project.data.status]} accent={project.data.accent} href={`/projects/${project.id}`} />)}</div>
   </section>
 
-  <section class="home-section wide-column photo-home">
+  <section class="home-section reading-column photo-home">
     <div class="section-topline">
       <h2>最近的光</h2>
       <a class="text-link" href="/gallery">进入相册</a>
