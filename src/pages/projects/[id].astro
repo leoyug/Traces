@@ -14,7 +14,7 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 ---
 
-<BaseLayout title={`${entry.data.title}｜不息`} description={entry.data.description} socialImage={null}>
+<BaseLayout title={`${entry.data.title}｜Rush Leo`} description={entry.data.description} socialImage={null}>
   <article class="article project-article reading-column">
     <header>
       <p class="meta-line">{projectStatusLabels[entry.data.status]} · {entry.data.year} · {entry.data.role}</p>

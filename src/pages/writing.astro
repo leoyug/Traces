@@ -8,7 +8,7 @@ const articles = (await getCollection("articles", ({ data }) => !data.draft))
   .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
 ---
 
-<BaseLayout title="文章｜不息" description="关于设计工程、个人档案和日常观察的写作。">
+<BaseLayout title="文章｜Rush Leo" description="关于设计工程、个人档案和日常观察的写作。">
   <header class="page-intro reading-column">
     <h1>写作，是把尚未成形的想法放到桌面上。</h1>
     <p>主要写设计工程、产品判断和长期记录。偶尔也写一段散步、一张照片，或者最近没有想通的问题。</p>
