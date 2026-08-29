@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PhotoGrid from "../../components/photos/PhotoGrid.astro";
+import { getPhotoLibrary, type AlbumWithPhotos } from "../../lib/photos";
+
+export async function getStaticPaths() {
+  const { albums } = await getPhotoLibrary();
+  return albums.map((album) => ({ params: { id: album.entry.id }, props: { album } }));
+}
+
+interface Props { album: AlbumWithPhotos }
+const { album } = Astro.props;
+const places = album.entry.data.places.join("、");
+---
+
+<BaseLayout title={`${album.entry.data.title}｜相册｜Leo`} description={album.entry.data.description} wide robots="noindex,follow" socialImage={album.cover?.sources.jpeg.at(-1)?.src ?? null}>
+  <header class="photo-context-header reading-column">
+    <a class="text-link" href="/photos/">全部照片</a>
+    <h1>{album.entry.data.title}</h1>
+    <p>{album.entry.data.description}</p>
+    {(album.entry.data.dateRange || places) && <span>{[album.entry.data.dateRange, places].filter(Boolean).join(" · ")}</span>}
+  </header>
+  <PhotoGrid photos={album.photos} context={{ type: "album", slug: album.entry.id }} label={`${album.entry.data.title}相册`} demo />
+</BaseLayout>

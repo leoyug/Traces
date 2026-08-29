@@ -8,6 +8,7 @@ interface Props {
   description?: string;
   wide?: boolean;
   socialImage?: string | null;
+  robots?: string;
 }
 
 const {
@@ -15,6 +16,7 @@ const {
   description = "一个关于设计工程、写作与摄影的长期个人档案。",
   wide = false,
   socialImage = "/og-ian-inspired.png",
+  robots,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : null;
@@ -26,6 +28,7 @@ const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : nul
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
+    {robots && <meta name="robots" content={robots} />}
     <meta name="theme-color" content="#faf7f2" />
     <link rel="icon" href="/favicon-leo.png" type="image/png" sizes="240x240" />
     <link rel="apple-touch-icon" href="/favicon-leo.png" />
@@ -46,6 +49,7 @@ const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : nul
     <title>{title}</title>
   </head>
   <body>
+    <!-- THESIS: 以一条安静、精确的个人出版栏承载工作与生活，拒绝作品集常见的大标题和卡片墙。 OWN-WORLD: 暖白画布、520px 窄栏、低对比灰阶与暖棕强调，图片只在内容需要时扩大。 STORY: 访客先认识 Leo，再依次读到文章、项目与照片，并能顺畅进入各自档案。 FIRST VIEWPORT: 64px 导航下方留出 80px，签名与三行介绍从 144px 开始。 FORM: Figma「正式」页的出版物式单栏布局。 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance -->
     <a class="skip-link" href="#main">跳到主要内容</a>
     <SiteHeader />
     <main id="main" class:list={["page-main", { "page-main--wide": wide }]}>

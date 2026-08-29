@@ -1,22 +1,32 @@
 ---
-interface Props { title: string; summary: string; year: string | number; status: string; accent: string; href?: string; }
-const { title, summary, year, status, accent, href = "/projects" } = Astro.props;
+interface Props {
+  title: string;
+  summary: string;
+  year: string | number;
+  status: string;
+  accent: string;
+  href?: string;
+  image?: string;
+}
+const { title, summary, year, status, accent, href = "/projects", image } = Astro.props;
 ---
 
 <a class="project-card" href={href} aria-label={`查看项目：${title}`}>
   <div class:list={["project-card__visual", `tone-${accent}`]} aria-hidden="true">
-    <span class="project-card__preview">
-      <span class="project-card__chrome"></span>
-      <span class="project-card__screen">
-        <span class="project-card__document"></span>
-        <span class="project-card__sidebar"></span>
+    {image ? <img src={image} alt="" loading="lazy" /> : (
+      <span class="project-card__preview">
+        <span class="project-card__chrome"></span>
+        <span class="project-card__screen">
+          <span class="project-card__document"></span>
+          <span class="project-card__sidebar"></span>
+        </span>
       </span>
-    </span>
+    )}
   </div>
   <div class="project-card__body">
     <div class="project-card__heading">
       <h3>{title}</h3>
-      <span class="project-card__tags"><span>{status}</span><time datetime={String(year)}>{year}</time></span>
+      <span class="project-card__meta"><time datetime={String(year)}>{year}</time><span aria-hidden="true">·</span><span>{status}</span></span>
     </div>
     <p>{summary}</p>
   </div>

@@ -5,13 +5,23 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "photos:process": "tsx scripts/photos/process.ts",
+    "photos:audit": "tsx scripts/photos/audit.ts",
+    "check": "astro check && npm run photos:audit",
+    "build": "npm run check && astro build",
     "preview": "astro preview"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "astro": "^6.0.0",
+    "exiftool-vendored": "^37.2.0",
+    "gray-matter": "^4.0.3",
     "gsap": "^3.15.0",
+    "sharp": "^0.35.4",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0"
   }
 }

@@ -1,0 +1,266 @@
+---
+import type { BrowseContext, PhotoListItem } from "../../lib/photo-types";
+import { photoHref } from "../../lib/photos";
+import PhotoLightbox from "./PhotoLightbox.astro";
+import PhotoPicture from "./PhotoPicture.astro";
+
+interface Props {
+  photos: PhotoListItem[];
+  context: BrowseContext;
+  label: string;
+  demo?: boolean;
+}
+
+const { photos, context, label, demo = false } = Astro.props;
+const batchSize = 12;
+const contextValue = context.type === "all" ? undefined : context.slug;
+---
+
+<section class="photo-browser" data-photo-browser data-batch-size={batchSize} data-context={context.type} data-context-value={contextValue} aria-label={label}>
+  {photos.length > 0 ? (
+    <>
+      <div class="photo-grid" data-photo-grid>
+        {photos.map((photo, index) => (
+          <article class="photo-card" data-photo-card data-photo-slug={photo.slug} hidden={index >= batchSize}>
+            <a class="photo-card__link" href={photoHref(photo, context)} data-photo-link>
+              <span class="photo-card__media" style={`--photo-ratio:${photo.aspectRatio};--photo-placeholder:${photo.placeholder}`}>
+                <PhotoPicture
+                  photo={photo}
+                  loading={index < 2 ? "eager" : "lazy"}
+                  fetchpriority={index < 2 ? "high" : "auto"}
+                />
+                <span class="photo-card__overlay" aria-hidden="true">
+                  <strong>{photo.title}</strong>
+                  <small>{[photo.metadata.place, new Date(photo.publishedAt).getFullYear()].filter(Boolean).join(" · ")}</small>
+                </span>
+              </span>
+              <span class="sr-only">查看照片：{photo.title}</span>
+            </a>
+          </article>
+        ))}
+      </div>
+      <div class="photo-browser__actions" hidden={photos.length <= batchSize} data-load-more-wrap>
+        <button class="button button--secondary" type="button" data-load-more>加载更多照片</button>
+        <p data-load-status aria-live="polite"></p>
+      </div>
+      {demo && <p class="gallery-demo-note">当前三张照片为设计验证内容；正式发布前请替换为经过隐私确认的摄影记录。</p>}
+      <PhotoLightbox photos={photos} context={context} />
+    </>
+  ) : (
+    <div class="photo-empty">
+      <p>照片还在整理中。</p>
+      <span>只有完成隐私检查与发布资产处理的照片才会出现在这里。</span>
+    </div>
+  )}
+</section>
+
+<script>
+  type LightboxPhoto = {
+    slug: string;
+    title: string;
+    description: string;
+    alt: string;
+    width: number;
+    height: number;
+    sources: { webp: Array<{ src: string; width: number }>; jpeg: Array<{ src: string; width: number }> };
+    capturedAt?: string;
+    albums: Array<{ slug: string; title: string }>;
+    tags: string[];
+    metadata: Record<string, string | number | undefined>;
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-photo-browser]").forEach((browser) => {
+    if (browser.dataset.ready === "true") return;
+    browser.dataset.ready = "true";
+    const dataElement = browser.querySelector<HTMLScriptElement>("[data-photo-browser-data]");
+    if (!dataElement?.textContent) return;
+    const { photos } = JSON.parse(dataElement.textContent) as { photos: LightboxPhoto[] };
+    const cards = [...browser.querySelectorAll<HTMLElement>("[data-photo-card]")];
+    const dialog = browser.querySelector<HTMLDialogElement>("[data-photo-lightbox]");
+    const image = browser.querySelector<HTMLImageElement>("[data-lightbox-image]");
+    const title = browser.querySelector<HTMLElement>("[data-lightbox-title]");
+    const description = browser.querySelector<HTMLElement>("[data-lightbox-description]");
+    const facts = browser.querySelector<HTMLDListElement>("[data-lightbox-facts]");
+    const position = browser.querySelector<HTMLElement>("[data-lightbox-position]");
+    const previous = browser.querySelector<HTMLButtonElement>("[data-lightbox-previous]");
+    const next = browser.querySelector<HTMLButtonElement>("[data-lightbox-next]");
+    const close = browser.querySelector<HTMLButtonElement>("[data-lightbox-close]");
+    const stage = browser.querySelector<HTMLElement>("[data-lightbox-stage]");
+    const loadMore = browser.querySelector<HTMLButtonElement>("[data-load-more]");
+    const loadWrap = browser.querySelector<HTMLElement>("[data-load-more-wrap]");
+    const loadStatus = browser.querySelector<HTMLElement>("[data-load-status]");
+    const grid = browser.querySelector<HTMLElement>("[data-photo-grid]");
+    const batchSize = Number(browser.dataset.batchSize) || 12;
+    let currentIndex = -1;
+    let opener: HTMLElement | null = null;
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    const currentBatchFromUrl = () => {
+      const value = Number(new URL(location.href).searchParams.get("batch"));
+      return Number.isInteger(value) && value > 0 ? value : 1;
+    };
+
+    function showBatch(batch: number) {
+      const visible = Math.min(cards.length, batch * batchSize);
+      cards.forEach((card, index) => { card.hidden = index >= visible; });
+      if (loadWrap) loadWrap.hidden = visible >= cards.length;
+      if (loadMore) loadMore.textContent = `再看 ${Math.min(batchSize, cards.length - visible)} 张`;
+      if (loadStatus) loadStatus.textContent = `已显示 ${visible} / ${cards.length} 张`;
+      requestAnimationFrame(updateSpans);
+    }
+
+    function updateSpans() {
+      if (!grid?.classList.contains("is-enhanced")) return;
+      const style = getComputedStyle(grid);
+      const row = Number.parseFloat(style.gridAutoRows) || 8;
+      const gap = Number.parseFloat(style.rowGap) || 12;
+      cards.forEach((card) => {
+        if (card.hidden) return;
+        const media = card.querySelector<HTMLElement>(".photo-card__media");
+        if (!media) return;
+        card.style.gridRowEnd = `span ${Math.ceil((media.getBoundingClientRect().height + gap) / (row + gap))}`;
+      });
+    }
+
+    function appendFact(label: string, values: Array<string | HTMLElement>) {
+      if (!facts || values.length === 0) return;
+      const dt = document.createElement("dt");
+      const dd = document.createElement("dd");
+      dt.textContent = label;
+      values.forEach((value, index) => {
+        if (index > 0) dd.append("、");
+        dd.append(value);
+      });
+      facts.append(dt, dd);
+    }
+
+    function link(label: string, href: string) {
+      const anchor = document.createElement("a");
+      anchor.textContent = label;
+      anchor.href = href;
+      return anchor;
+    }
+
+    function renderPhoto(index: number, updateUrl = false) {
+      const photo = photos[index];
+      if (!photo || !image || !title || !description || !facts || !position) return;
+      currentIndex = index;
+      const source = photo.sources.webp.at(-1) ?? photo.sources.jpeg.at(-1);
+      if (!source) return;
+      image.src = source.src;
+      image.srcset = photo.sources.webp.map((variant) => `${variant.src} ${variant.width}w`).join(", ");
+      image.sizes = "(max-width: 768px) 100vw, calc(100vw - 360px)";
+      image.width = photo.width;
+      image.height = photo.height;
+      image.alt = photo.alt;
+      title.textContent = photo.title;
+      description.textContent = photo.description;
+      facts.replaceChildren();
+      if (photo.capturedAt) appendFact("拍摄", [new Intl.DateTimeFormat("zh-CN", { dateStyle: "long" }).format(new Date(photo.capturedAt))]);
+      appendFact("器材", [photo.metadata.camera, photo.metadata.lens].filter(Boolean).map(String));
+      appendFact("参数", [photo.metadata.focalLength, photo.metadata.aperture, photo.metadata.shutterSpeed, photo.metadata.iso ? `ISO ${photo.metadata.iso}` : undefined].filter(Boolean).map(String));
+      if (photo.metadata.place) appendFact("地点", [String(photo.metadata.place)]);
+      appendFact("相册", photo.albums.map((album) => link(album.title, `/albums/${album.slug}/`)));
+      appendFact("标签", photo.tags.map((tag) => link(tag, `/photos/tags/${encodeURIComponent(tag)}/`)));
+      position.textContent = `${index + 1} / ${photos.length}`;
+      if (previous) previous.disabled = index === 0;
+      if (next) next.disabled = index === photos.length - 1;
+      if (updateUrl) {
+        const url = new URL(`/photos/${photo.slug}/`, location.origin);
+        url.searchParams.set("context", browser.dataset.context || "all");
+        if (browser.dataset.contextValue) url.searchParams.set("value", browser.dataset.contextValue);
+        const batch = Math.max(1, Math.ceil((index + 1) / batchSize));
+        if (batch > 1) url.searchParams.set("batch", String(batch));
+        history.replaceState({ ...history.state, photoOverlay: true, photoSlug: photo.slug }, "", url);
+      }
+      [photos[index - 1], photos[index + 1]].forEach((adjacent) => {
+        const adjacentSource = adjacent?.sources.webp.at(-1) ?? adjacent?.sources.jpeg.at(-1);
+        if (adjacentSource) new Image().src = adjacentSource.src;
+      });
+    }
+
+    function openPhoto(index: number, shouldPush = true) {
+      if (!dialog || index < 0) return;
+      opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      renderPhoto(index);
+      if (!dialog.open) dialog.showModal();
+      document.documentElement.classList.add("has-photo-lightbox");
+      close?.focus();
+      if (shouldPush) {
+        const cardLink = cards[index]?.querySelector<HTMLAnchorElement>("[data-photo-link]");
+        if (cardLink) history.pushState({ photoOverlay: true, photoSlug: photos[index].slug }, "", cardLink.href);
+      }
+    }
+
+    function hidePhoto(restoreFocus = true) {
+      if (!dialog?.open) return;
+      dialog.close();
+      document.documentElement.classList.remove("has-photo-lightbox");
+      if (restoreFocus) opener?.focus();
+      currentIndex = -1;
+    }
+
+    function requestClose() {
+      if (history.state?.photoOverlay) history.back();
+      else hidePhoto();
+    }
+
+    browser.addEventListener("click", (event) => {
+      const anchor = (event.target as Element).closest<HTMLAnchorElement>("[data-photo-link]");
+      if (!anchor || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const card = anchor.closest<HTMLElement>("[data-photo-card]");
+      const index = cards.indexOf(card!);
+      if (index < 0) return;
+      event.preventDefault();
+      openPhoto(index);
+    });
+
+    loadMore?.addEventListener("click", () => {
+      const batch = currentBatchFromUrl() + 1;
+      const url = new URL(location.href);
+      url.searchParams.set("batch", String(batch));
+      history.replaceState({ ...history.state, photoBatch: batch }, "", url);
+      showBatch(batch);
+    });
+    close?.addEventListener("click", requestClose);
+    previous?.addEventListener("click", () => renderPhoto(currentIndex - 1, true));
+    next?.addEventListener("click", () => renderPhoto(currentIndex + 1, true));
+    dialog?.addEventListener("cancel", (event) => { event.preventDefault(); requestClose(); });
+    dialog?.addEventListener("click", (event) => { if (event.target === dialog) requestClose(); });
+    stage?.addEventListener("touchstart", (event) => {
+      const touch = event.changedTouches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }, { passive: true });
+    stage?.addEventListener("touchend", (event) => {
+      const touch = event.changedTouches[0];
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+      if (Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+      if (dx > 0 && currentIndex > 0) renderPhoto(currentIndex - 1, true);
+      if (dx < 0 && currentIndex < photos.length - 1) renderPhoto(currentIndex + 1, true);
+    }, { passive: true });
+
+    document.addEventListener("keydown", (event) => {
+      if (!dialog?.open) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        requestClose();
+        return;
+      }
+      if (event.key === "ArrowLeft" && currentIndex > 0) renderPhoto(currentIndex - 1, true);
+      if (event.key === "ArrowRight" && currentIndex < photos.length - 1) renderPhoto(currentIndex + 1, true);
+    });
+    addEventListener("popstate", () => {
+      const match = location.pathname.match(/^\/photos\/([^/]+)\/?$/);
+      const index = match ? photos.findIndex((photo) => photo.slug === decodeURIComponent(match[1])) : -1;
+      if (index >= 0) openPhoto(index, false);
+      else hidePhoto();
+      showBatch(currentBatchFromUrl());
+    });
+    new ResizeObserver(updateSpans).observe(browser);
+    grid?.classList.add("is-enhanced");
+    showBatch(currentBatchFromUrl());
+  });
+</script>

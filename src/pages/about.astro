@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Button from "../components/Button.astro";
 import { getEntry } from "astro:content";
 
 const resume = await getEntry("resume", "main");
@@ -8,34 +7,18 @@ if (!resume) throw new Error("缺少 main 职业履历内容");
 ---
 
 <BaseLayout title="关于｜Rush Leo" description="设计工程师不息的个人介绍、职业经历与联系方式。">
-  <header class="page-intro wide-column">
-    <h1>在设计与实现之间，搭一座不太显眼的桥。</h1>
-    <p>我使用昵称“{resume.data.publicName}”发布日常内容。在职业语境中，我是一名有 4 年经验的{resume.data.title}，现居{resume.data.location}。</p>
-  </header>
-  <div class="about-grid wide-column">
-    <aside class="about-note">
-      <p>“清楚，比聪明更难。”</p>
-      <p>我喜欢那些几乎感觉不到、却能让人自然完成任务的结构和细节。</p>
-      <div class="hero__actions">
-        <Button href={`mailto:${resume.data.email}`} size="small">发邮件</Button>
-        <Button href="#resume" variant="secondary" size="small">查看履历</Button>
-      </div>
-    </aside>
-    <div class="about-copy">
-      <section>
-        <h2>我在做什么</h2>
-        <p>{resume.data.summary}工作通常从梳理语言和信息关系开始，最后落在可以被团队真正复用的组件上。</p>
-      </section>
-      <section id="resume">
-        <h2>工作经历</h2>
-        <ol class="timeline">
-          {resume.data.experience.map((item) => <li><time>{item.period}</time><div><strong>{item.role} · {item.organization}</strong><p>{item.summary}</p></div></li>)}
-        </ol>
-      </section>
-      <section>
-        <h2>这个网站</h2>
-        <p>它首先是一份长期个人记录，其次才是一份求职作品集。文章、项目和照片都使用稳定地址，内容保存在本地文件中，尽量不依赖某个平台继续存在。</p>
-      </section>
+  <header class="about-intro reading-column">
+    <div>
+      <h1>关于我</h1>
+      <p>Hi，我是 Leo，一名{resume.data.title}。我喜欢把模糊的需求整理成清晰的页面与交互。</p>
+      <p>我写作是为了让自己记得当下的感受以及帮助自己学习。有些可能只是琐事，也有值得记录的生活。工作之外，我也持续记录照片和那些还没有完全想明白的问题。</p>
     </div>
+    <figure class="about-portrait"><img src="/assets/figma/about-portrait.jpg" alt="Leo 在户外举手打招呼" /><figcaption class="sr-only">Leo 的照片</figcaption></figure>
+  </header>
+  <div class="about-sections reading-column">
+    <section><h2>联系到我</h2><nav class="contact-links" aria-label="联系方式"><a href={`mailto:${resume.data.email}`}>Email</a><a href="/rss.xml">RSS</a></nav></section>
+    <section><h2>最近在干</h2><ul class="plain-list"><li>在读一本书</li><li>在看一部电影</li><li>持续记录与写作</li><li>保持运动</li></ul></section>
+    <section><h2>生活</h2><p>和喜欢的人一起去到别的地方，体验各种事物，拍美好的景物，吃好吃的美食。</p></section>
+    <section id="resume"><h2>工作经历</h2><ol class="timeline">{resume.data.experience.map((item) => <li><time>{item.period}</time><div><strong>{item.role} · {item.organization}</strong><p>{item.summary}</p></div></li>)}</ol></section>
   </div>
 </BaseLayout>

@@ -2,19 +2,22 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContentRow from "../components/ContentRow.astro";
 import { getCollection } from "astro:content";
-import { formatDate } from "../lib/content";
 
 const articles = (await getCollection("articles", ({ data }) => !data.draft))
   .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+const years = [...new Set(articles.map(({ data }) => data.publishedAt.getFullYear()))];
+const monthDay = (date: Date) => new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit" }).format(date).replace("/", "-");
 ---
 
 <BaseLayout title="文章｜Rush Leo" description="关于设计工程、个人档案和日常观察的写作。">
   <header class="page-intro reading-column">
-    <h1>写作，是把尚未成形的想法放到桌面上。</h1>
-    <p>主要写设计工程、产品判断和长期记录。偶尔也写一段散步、一张照片，或者最近没有想通的问题。</p>
+    <h1>文章</h1>
+    <p>我写作是为了让自己记得当下的感受以及帮助自己学习。有些可能只是琐事，也有值得记录的生活。</p>
   </header>
-  <section class="archive-section reading-column" aria-labelledby="writing-2026">
-    <div class="section-topline"><h2 id="writing-2026">2026</h2><a class="text-link" href="/rss.xml">RSS</a></div>
-    {articles.map((article) => <ContentRow title={article.data.title} summary={article.data.description} meta={formatDate(article.data.publishedAt)} href={`/writing/${article.id}`} tags={article.data.tags} />)}
-  </section>
+  {years.map((year) => (
+    <section class="archive-section reading-column" aria-labelledby={`year-${year}`}>
+      <div class="section-topline"><h2 id={`year-${year}`}>{year}</h2></div>
+      {articles.filter(({ data }) => data.publishedAt.getFullYear() === year).map((article) => <ContentRow title={article.data.title} meta={monthDay(article.data.publishedAt)} href={`/writing/${article.id}`} density="compact" stackOnMobile={false} />)}
+    </section>
+  ))}
 </BaseLayout>

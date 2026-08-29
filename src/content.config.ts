@@ -41,25 +41,22 @@ const photos = defineCollection({
   schema: z.object({
     ...publicationFields,
     alt: z.string().default(""),
-    assets: z.array(z.object({
-      src: z.string().startsWith("/"),
-      width: z.number().int().positive(),
-      height: z.number().int().positive(),
-      format: z.enum(["avif", "webp", "jpg", "jpeg", "png"]),
-    })).default([]),
+    sourceFile: z.string().min(1).optional(),
     albums: z.array(reference("albums")).default([]),
     tags: z.array(z.string().min(1)).default([]),
     publicMetadata: z.object({
       capturedAt: z.coerce.date().optional(),
       camera: z.string().optional(),
       lens: z.string().optional(),
-      exposure: z.string().optional(),
+      focalLength: z.string().optional(),
+      aperture: z.string().optional(),
+      shutterSpeed: z.string().optional(),
+      iso: z.number().int().positive().optional(),
       place: z.string().optional(),
     }).default({}),
   }).superRefine((photo, context) => {
     if (photo.draft) return;
     if (!photo.alt) context.addIssue({ code: "custom", path: ["alt"], message: "正式发布的照片必须填写替代文本" });
-    if (photo.assets.length === 0) context.addIssue({ code: "custom", path: ["assets"], message: "正式发布的照片必须至少拥有一个发布资产" });
   }),
 });
 

@@ -1,0 +1,27 @@
+---
+import { formatDate } from "../../lib/content";
+import type { PhotoListItem } from "../../lib/photo-types";
+
+interface Props {
+  photo: PhotoListItem;
+  heading?: "h1" | "h2";
+}
+
+const { photo, heading: Heading = "h2" } = Astro.props;
+const exposure = [photo.metadata.focalLength, photo.metadata.aperture, photo.metadata.shutterSpeed, photo.metadata.iso ? `ISO ${photo.metadata.iso}` : undefined].filter(Boolean);
+---
+
+<div class="photo-meta">
+  <header class="photo-meta__header">
+    <Heading>{photo.title}</Heading>
+    <p>{photo.description}</p>
+  </header>
+  <dl class="photo-meta__facts">
+    {photo.capturedAt && <><dt>拍摄</dt><dd>{formatDate(new Date(photo.capturedAt), "long")}</dd></>}
+    {(photo.metadata.camera || photo.metadata.lens) && <><dt>器材</dt><dd>{[photo.metadata.camera, photo.metadata.lens].filter(Boolean).join(" · ")}</dd></>}
+    {exposure.length > 0 && <><dt>参数</dt><dd>{exposure.join(" · ")}</dd></>}
+    {photo.metadata.place && <><dt>地点</dt><dd>{photo.metadata.place}</dd></>}
+    {photo.albums.length > 0 && <><dt>相册</dt><dd>{photo.albums.map((album, index) => <>{index > 0 && "、"}<a href={`/albums/${album.slug}/`}>{album.title}</a></>)}</dd></>}
+    {photo.tags.length > 0 && <><dt>标签</dt><dd>{photo.tags.map((tag, index) => <>{index > 0 && "、"}<a href={`/photos/tags/${encodeURIComponent(tag)}/`}>{tag}</a></>)}</dd></>}
+  </dl>
+</div>

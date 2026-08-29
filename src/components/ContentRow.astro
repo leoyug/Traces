@@ -7,11 +7,13 @@ interface Props {
   tags?: string[];
   density?: "default" | "compact";
   stackOnMobile?: boolean;
+  thumbnail?: string;
 }
-const { title, summary, meta, href = "#", tags = [], density = "default", stackOnMobile = true } = Astro.props;
+const { title, summary, meta, href = "#", tags = [], density = "default", stackOnMobile = true, thumbnail } = Astro.props;
 ---
 
 <a class:list={["content-row", { "content-row--compact": density === "compact", "content-row--stack-mobile": stackOnMobile }]} href={href}>
+  {thumbnail && <img class="content-row__thumb" src={thumbnail} alt="" loading="lazy" />}
   <span class="content-row__body">
     <strong>{title}</strong>
     {summary && <small>{summary}</small>}

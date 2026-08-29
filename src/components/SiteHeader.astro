@@ -1,6 +1,11 @@
 ---
 import { navigation } from "../data/site";
 const currentPath = Astro.url.pathname;
+const isCurrent = (href: string) => {
+  if (href === "/") return currentPath === "/";
+  if (href === "/photos") return currentPath.startsWith("/photos") || currentPath.startsWith("/albums") || currentPath.startsWith("/gallery");
+  return currentPath.startsWith(href);
+};
 ---
 
 <header class="site-header">
@@ -9,8 +14,8 @@ const currentPath = Astro.url.pathname;
       {navigation.map((item) => (
         <a
           href={item.href}
-          class:list={["site-nav__link", { "is-active": item.href === "/" ? currentPath === "/" : currentPath.startsWith(item.href) }]}
-          aria-current={(item.href === "/" ? currentPath === "/" : currentPath.startsWith(item.href)) ? "page" : undefined}
+          class:list={["site-nav__link", { "is-active": isCurrent(item.href) }]}
+          aria-current={isCurrent(item.href) ? "page" : undefined}
         >
           {item.label}
         </a>
@@ -25,8 +30,8 @@ const currentPath = Astro.url.pathname;
     {navigation.map((item) => (
       <a
         href={item.href}
-        class:list={{ "is-active": item.href === "/" ? currentPath === "/" : currentPath.startsWith(item.href) }}
-        aria-current={(item.href === "/" ? currentPath === "/" : currentPath.startsWith(item.href)) ? "page" : undefined}
+        class:list={{ "is-active": isCurrent(item.href) }}
+        aria-current={isCurrent(item.href) ? "page" : undefined}
       >
         {item.label}
       </a>

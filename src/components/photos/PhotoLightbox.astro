@@ -1,0 +1,45 @@
+---
+import type { BrowseContext, PhotoListItem } from "../../lib/photo-types";
+
+interface Props {
+  photos: PhotoListItem[];
+  context: BrowseContext;
+}
+
+const { photos, context } = Astro.props;
+const serialized = JSON.stringify({ photos, context }).replaceAll("<", "\\u003c");
+const initialPhoto = photos[0];
+const initialSource = initialPhoto?.sources.webp.at(-1) ?? initialPhoto?.sources.jpeg.at(-1);
+---
+
+<dialog class="photo-lightbox" aria-labelledby="photo-lightbox-title" data-photo-lightbox>
+  <div class="photo-lightbox__shell">
+    <div class="photo-lightbox__stage" data-lightbox-stage>
+      <img
+        data-lightbox-image
+        src={initialSource?.src}
+        alt={initialPhoto?.alt ?? ""}
+        width={initialPhoto?.width ?? 1}
+        height={initialPhoto?.height ?? 1}
+      />
+      <button class="photo-lightbox__close" type="button" data-lightbox-close aria-label="关闭照片查看器">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+      </button>
+      <button class="photo-lightbox__previous" type="button" data-lightbox-previous aria-label="上一张照片">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+      </button>
+      <button class="photo-lightbox__next" type="button" data-lightbox-next aria-label="下一张照片">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+      </button>
+      <p class="photo-lightbox__position" aria-live="polite" data-lightbox-position></p>
+    </div>
+    <aside class="photo-lightbox__meta">
+      <div class="photo-lightbox__meta-scroll">
+        <h2 id="photo-lightbox-title" data-lightbox-title></h2>
+        <p data-lightbox-description></p>
+        <dl data-lightbox-facts></dl>
+      </div>
+    </aside>
+  </div>
+</dialog>
+<script is:inline type="application/json" data-photo-browser-data set:html={serialized}></script>

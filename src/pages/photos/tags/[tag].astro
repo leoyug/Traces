@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import PhotoGrid from "../../../components/photos/PhotoGrid.astro";
+import { getPhotoLibrary } from "../../../lib/photos";
+import type { PhotoListItem } from "../../../lib/photo-types";
+
+export async function getStaticPaths() {
+  const { photos } = await getPhotoLibrary();
+  const tags = [...new Set(photos.flatMap((photo) => photo.tags))];
+  return tags.map((tag) => ({ params: { tag }, props: { tag, photos: photos.filter((photo) => photo.tags.includes(tag)) } }));
+}
+
+interface Props { tag: string; photos: PhotoListItem[] }
+const { tag, photos } = Astro.props;
+---
+
+<BaseLayout title={`${tag}｜照片标签｜Leo`} description={`标记为“${tag}”的照片。`} wide robots="noindex,follow">
+  <header class="photo-context-header reading-column">
+    <a class="text-link" href="/photos/">全部照片</a>
+    <h1>{tag}</h1>
+    <p>{photos.length} 张照片</p>
+  </header>
+  <PhotoGrid photos={photos} context={{ type: "tag", slug: tag }} label={`${tag}标签下的照片`} demo />
+</BaseLayout>

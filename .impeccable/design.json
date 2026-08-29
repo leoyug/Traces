@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-29T18:13:01Z",
+  "title": "Design System: 不息摄影体验",
+  "extensions": {
+    "colorMeta": {
+      "warm-canvas": {
+        "role": "neutral",
+        "displayName": "暖白画布",
+        "canonical": "#fbfbfa",
+        "tonalRamp": ["oklch(15% 0.004 75)", "oklch(27% 0.004 75)", "oklch(39% 0.004 75)", "oklch(51% 0.004 75)", "oklch(63% 0.004 75)", "oklch(75% 0.004 75)", "oklch(87% 0.004 75)", "oklch(95% 0.004 75)"]
+      },
+      "paper-surface": {
+        "role": "neutral",
+        "displayName": "纸张表面",
+        "canonical": "#fff",
+        "tonalRamp": ["oklch(15% 0 0)", "oklch(27% 0 0)", "oklch(39% 0 0)", "oklch(51% 0 0)", "oklch(63% 0 0)", "oklch(75% 0 0)", "oklch(87% 0 0)", "oklch(95% 0 0)"]
+      },
+      "quiet-surface": {
+        "role": "neutral",
+        "displayName": "静谧次级表面",
+        "canonical": "#f4f2f0",
+        "tonalRamp": ["oklch(15% 0.008 65)", "oklch(27% 0.008 65)", "oklch(39% 0.008 65)", "oklch(51% 0.008 65)", "oklch(63% 0.008 65)", "oklch(75% 0.008 65)", "oklch(87% 0.008 65)", "oklch(95% 0.008 65)"]
+      },
+      "near-black-ink": {
+        "role": "neutral",
+        "displayName": "近黑墨色",
+        "canonical": "#191511",
+        "tonalRamp": ["oklch(15% 0.015 60)", "oklch(27% 0.015 60)", "oklch(39% 0.015 60)", "oklch(51% 0.015 60)", "oklch(63% 0.015 60)", "oklch(75% 0.015 60)", "oklch(87% 0.015 60)", "oklch(95% 0.015 60)"]
+      },
+      "muted-ink": {
+        "role": "neutral",
+        "displayName": "柔和墨色",
+        "canonical": "#716a65",
+        "tonalRamp": ["oklch(15% 0.015 55)", "oklch(27% 0.015 55)", "oklch(39% 0.015 55)", "oklch(51% 0.015 55)", "oklch(63% 0.015 55)", "oklch(75% 0.015 55)", "oklch(87% 0.015 55)", "oklch(95% 0.015 55)"]
+      },
+      "faint-ink": {
+        "role": "neutral",
+        "displayName": "浅淡墨色",
+        "canonical": "#77706a",
+        "tonalRamp": ["oklch(15% 0.014 55)", "oklch(27% 0.014 55)", "oklch(39% 0.014 55)", "oklch(51% 0.014 55)", "oklch(63% 0.014 55)", "oklch(75% 0.014 55)", "oklch(87% 0.014 55)", "oklch(95% 0.014 55)"]
+      },
+      "quiet-line": {
+        "role": "neutral",
+        "displayName": "低对比边线",
+        "canonical": "#e8e4e1",
+        "tonalRamp": ["oklch(15% 0.009 65)", "oklch(27% 0.009 65)", "oklch(39% 0.009 65)", "oklch(51% 0.009 65)", "oklch(63% 0.009 65)", "oklch(75% 0.009 65)", "oklch(87% 0.009 65)", "oklch(95% 0.009 65)"]
+      },
+      "warm-accent": {
+        "role": "primary",
+        "displayName": "暖橙棕强调色",
+        "canonical": "#a45a37",
+        "tonalRamp": ["oklch(15% 0.11 45)", "oklch(27% 0.11 45)", "oklch(39% 0.11 45)", "oklch(51% 0.11 45)", "oklch(63% 0.11 45)", "oklch(75% 0.11 45)", "oklch(87% 0.08 45)", "oklch(95% 0.04 45)"]
+      },
+      "warm-accent-soft": {
+        "role": "primary",
+        "displayName": "暖橙棕柔光",
+        "canonical": "#f3e7e0",
+        "tonalRamp": ["oklch(15% 0.025 45)", "oklch(27% 0.025 45)", "oklch(39% 0.025 45)", "oklch(51% 0.025 45)", "oklch(63% 0.025 45)", "oklch(75% 0.025 45)", "oklch(87% 0.025 45)", "oklch(95% 0.025 45)"]
+      },
+      "on-dark": {
+        "role": "neutral",
+        "displayName": "深色表面文字",
+        "canonical": "#fbfbfa",
+        "tonalRamp": ["oklch(15% 0.004 75)", "oklch(27% 0.004 75)", "oklch(39% 0.004 75)", "oklch(51% 0.004 75)", "oklch(63% 0.004 75)", "oklch(75% 0.004 75)", "oklch(87% 0.004 75)", "oklch(95% 0.004 75)"]
+      },
+      "image-stage": {
+        "role": "neutral",
+        "displayName": "深夜影像舞台",
+        "canonical": "#0d0c0b",
+        "tonalRamp": ["oklch(15% 0.008 65)", "oklch(27% 0.008 65)", "oklch(39% 0.008 65)", "oklch(51% 0.008 65)", "oklch(63% 0.008 65)", "oklch(75% 0.008 65)", "oklch(87% 0.008 65)", "oklch(95% 0.008 65)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "展示标题", "purpose": "全站高层级表达；摄影表面谨慎使用。" },
+      "page-title": { "displayName": "摄影页标题", "purpose": "索引、相册、标签、详情和灯箱标题。" },
+      "body": { "displayName": "正文", "purpose": "照片说明、相册说明与公开元数据。" },
+      "metadata": { "displayName": "元数据", "purpose": "数量、序号、日期和低层级出版信息。" }
+    },
+    "shadows": [
+      { "name": "hairline", "value": "0 0 0 1px rgb(30 24 18 / 6%)", "purpose": "全站低层级轮廓；摄影区只在结构确需时使用。" },
+      { "name": "card", "value": "0 1px 2px rgb(38 30 18 / 6%), 0 4px 14px rgb(38 30 18 / 8%)", "purpose": "公共按钮等已有表面；不得用于照片格子。" },
+      { "name": "float", "value": "0 10px 24px rgb(38 30 18 / 14%)", "purpose": "真正的浮层；照片灯箱优先使用原生 backdrop。" }
+    ],
+    "motion": [
+      { "name": "micro", "value": "80ms", "purpose": "即时微反馈。" },
+      { "name": "quick", "value": "150ms", "purpose": "按钮和常规状态切换。" },
+      { "name": "fast", "value": "250ms", "purpose": "照片覆盖层等可见状态过渡。" },
+      { "name": "photo-image", "value": "500ms", "purpose": "照片格子轻微缩放，保持沉静。" },
+      { "name": "smooth-out", "value": "cubic-bezier(.22, 1, .36, 1)", "purpose": "摄影与全站状态过渡的统一收尾。" }
+    ],
+    "breakpoints": [
+      { "name": "grid-three-columns", "value": "40rem" },
+      { "name": "lightbox-stack", "value": "47.999rem" },
+      { "name": "grid-four-columns", "value": "64rem" }
+    ]
+  },
+  "components": [
+    {
+      "name": "加载更多照片",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "摄影归档的显式分批加载控件；保持全站次级按钮语汇。",
+      "html": "<button class=\"ds-photo-load-more\" type=\"button\">再看 12 张</button>",
+      "css": ".ds-photo-load-more { min-height: 2.75rem; display: inline-flex; align-items: center; justify-content: center; padding: 0 var(--space-4); border: 1px solid var(--color-line); border-radius: var(--radius-pill); background: var(--color-surface); color: var(--color-ink); font: 500 var(--text-body)/1 var(--font-sans); cursor: pointer; transition: transform var(--duration-quick) var(--ease-smooth-out), background var(--duration-quick) var(--ease-smooth-out); } .ds-photo-load-more:hover { background: var(--color-surface-2); } .ds-photo-load-more:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; } .ds-photo-load-more:active { transform: scale(.97); }"
+    },
+    {
+      "name": "相册行",
+      "kind": "custom",
+      "description": "无卡片底板的相册索引行，以小封面和低对比分隔保持出版感。",
+      "html": "<a class=\"ds-album-row\" href=\"#album\"><img src=\"/media/photos/park-walk/480.webp\" alt=\"树影下的步道\"><span class=\"ds-album-copy\"><strong>路边与远处</strong><small>一些慢慢经过的地方</small></span><span class=\"ds-album-count\">3 张</span></a>",
+      "css": ".ds-album-row { min-height: 5.5rem; display: grid; grid-template-columns: 4.5rem minmax(0,1fr) auto; align-items: center; gap: var(--space-4); border-top: 1px solid var(--color-line); color: var(--color-ink); text-decoration: none; font: 400 var(--text-body)/var(--leading-copy) var(--font-sans); } .ds-album-row img { width: 4.5rem; height: 3.25rem; object-fit: cover; border-radius: var(--radius-xs); } .ds-album-copy { min-width: 0; display: grid; gap: var(--space-1); } .ds-album-copy strong { font-weight: 500; } .ds-album-copy small, .ds-album-count { color: var(--color-faint); } .ds-album-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-album-count { font-size: var(--text-meta); font-variant-numeric: tabular-nums; } .ds-album-row:hover strong { color: var(--color-accent); } .ds-album-row:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }"
+    },
+    {
+      "name": "照片格子",
+      "kind": "card",
+      "refersTo": "photo-tile",
+      "description": "保留发布资产真实比例的摄影入口；图片是表面，不加卡片阴影。",
+      "html": "<a class=\"ds-photo-tile\" href=\"#photo\"><span class=\"ds-photo-media\"><img src=\"/media/photos/cranes-at-dusk/900.webp\" alt=\"暮色中的塔吊\"><span class=\"ds-photo-overlay\"><strong>暮色中的塔吊</strong><small>上海 · 2026</small></span></span></a>",
+      "css": ".ds-photo-tile, .ds-photo-media { display: block; } .ds-photo-tile { width: min(100%, 22rem); color: white; text-decoration: none; } .ds-photo-media { position: relative; aspect-ratio: 3/2; overflow: hidden; border-radius: var(--radius-sm); background: var(--color-surface-2); } .ds-photo-media img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--duration-very-slow) var(--ease-smooth-out); } .ds-photo-overlay { position: absolute; inset: auto 0 0; display: grid; gap: var(--space-1); padding: var(--space-8) var(--space-4) var(--space-4); background: linear-gradient(to top, rgb(18 15 12 / 72%), transparent); opacity: 0; transition: opacity var(--duration-fast) var(--ease-smooth-out); } .ds-photo-overlay strong { font: 500 var(--text-body)/1.45 var(--font-sans); } .ds-photo-overlay small { color: rgb(255 255 255 / 74%); font: 400 var(--text-meta)/1.45 var(--font-sans); } .ds-photo-tile:hover img, .ds-photo-tile:focus-visible img { transform: scale(1.025); } .ds-photo-tile:hover .ds-photo-overlay, .ds-photo-tile:focus-visible .ds-photo-overlay { opacity: 1; } .ds-photo-tile:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }"
+    },
+    {
+      "name": "灯箱控制",
+      "kind": "button",
+      "refersTo": "lightbox-control",
+      "description": "深色影像舞台上的 44px 圆形导航控制。",
+      "html": "<button class=\"ds-lightbox-control\" type=\"button\" aria-label=\"下一张照片\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m9 6 6 6-6 6\" /></svg></button>",
+      "css": ".ds-lightbox-control { width: 2.75rem; height: 2.75rem; display: grid; place-items: center; border: 0; border-radius: var(--radius-pill); background: rgb(251 251 250 / 10%); color: white; cursor: pointer; } .ds-lightbox-control svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; } .ds-lightbox-control:hover { background: rgb(251 251 250 / 18%); } .ds-lightbox-control:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; } .ds-lightbox-control:active { transform: scale(.97); } .ds-lightbox-control:disabled { opacity: .28; cursor: default; }"
+    },
+    {
+      "name": "灯箱元数据面板",
+      "kind": "custom",
+      "refersTo": "lightbox-metadata",
+      "description": "桌面位于影像右侧、移动端落在影像下方的暖白出版信息面板。",
+      "html": "<aside class=\"ds-photo-meta\"><h2>暮色中的塔吊</h2><p>城市在天色完全暗下去以前，留下了一小段安静的轮廓。</p><dl><dt>拍摄</dt><dd>2026年8月</dd><dt>器材</dt><dd>公开设备信息</dd><dt>地点</dt><dd>上海</dd></dl></aside>",
+      "css": ".ds-photo-meta { width: min(100%,22rem); padding: var(--space-12) var(--space-8); background: var(--color-canvas); color: var(--color-ink); font: 400 var(--text-body)/var(--leading-copy) var(--font-sans); } .ds-photo-meta h2 { margin: 0; font-size: var(--text-page-title); font-weight: 500; line-height: var(--leading-title); letter-spacing: var(--tracking-title); } .ds-photo-meta h2 + p { margin: var(--space-3) 0 0; color: var(--color-muted); line-height: var(--leading-relaxed); } .ds-photo-meta dl { display: grid; grid-template-columns: 3.25rem minmax(0,1fr); gap: var(--space-3) var(--space-4); margin: var(--space-12) 0 0; } .ds-photo-meta dt { color: var(--color-faint); } .ds-photo-meta dd { margin: 0; overflow-wrap: anywhere; }"
+    },
+    {
+      "name": "静态详情导航",
+      "kind": "nav",
+      "description": "无 JavaScript 详情页的相邻照片路径，保留 44px 最小交互高度。",
+      "html": "<nav class=\"ds-photo-nav\" aria-label=\"相邻照片\"><a href=\"#previous\">← 上一张</a><a href=\"#next\">下一张 →</a></nav>",
+      "css": ".ds-photo-nav { display: flex; justify-content: space-between; gap: var(--space-6); margin-top: var(--space-8); font: 400 var(--text-body)/var(--leading-copy) var(--font-sans); } .ds-photo-nav a { min-height: 2.75rem; display: inline-flex; align-items: center; color: var(--color-muted); text-underline-offset: 3px; } .ds-photo-nav a:hover { color: var(--color-ink); } .ds-photo-nav a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "一页安静的摄影出版物",
+    "overview": "摄影体验是“不息”既有个人出版视觉系统的一部分，而不是新的独立品牌。`PERSONAL_SITES_DESIGN_SYSTEM.md` 仍是全站权威设计依据；本文件只固化 `src/pages/photos`、`src/pages/albums`、`src/components/photos` 与 `src/styles/global.css` 中摄影相关规则的已实现状态。它延续暖白纸张、近黑文字、低对比线条和暖橙棕强调色，让照片成为第一视觉层级，界面只提供必要的语境、导航与出版信息。\n\n这一表面采用 Experience 模式：首屏价值来自摄影本身，而不是英雄文案、装饰性卡片或应用式工具栏。列表在无 JavaScript 时保持原始比例的常规网格；JavaScript 只增强为 masonry、分批显示和灯箱。每张照片始终有可访问的静态详情地址，浏览语境与批次由 URL 保留。",
+    "keyCharacteristics": [
+      "暖白、低对比、克制的个人出版气质。",
+      "原始比例摄影网格，增强后才形成 masonry 节奏。",
+      "深色影像舞台与暖白元数据面板并置。",
+      "移动端让元数据落在照片下方，不覆盖影像。",
+      "44px 控件、可见焦点、键盘路径和静态链接共同构成内容完整性。",
+      "发布资产优先：不公开原件、精确位置或敏感 EXIF，摄影路由保持 `noindex,follow`。"
+    ],
+    "rules": [
+      { "name": "The Borrowed Color Rule", "body": "摄影页面的主要色彩来自照片，不从界面额外制造高饱和装饰。", "section": "colors" },
+      { "name": "The Stage Boundary Rule", "body": "深夜影像舞台只用于灯箱照片区域；元数据继续使用暖白出版表面，不把全站改造成深色主题。", "section": "colors" },
+      { "name": "The Quiet Hierarchy Rule", "body": "不通过整体放大摄影界面制造重要性；照片负责吸引注意，文字只靠中等字重、墨色层级和间距建立秩序。", "section": "typography" },
+      { "name": "The Honest Grid Rule", "body": "无 JavaScript 时使用正常行流、真实宽高比网格；脚本加载成功后才增加 8px 隐形行轨并计算跨行数形成 masonry。增强失败不能破坏浏览、链接或阅读顺序。", "section": "layout" },
+      { "name": "The Flat Photograph Rule", "body": "照片默认不加卡片阴影、白边或装饰框；深度只出现在操作层级与沉浸式观看状态。", "section": "elevation" },
+      { "name": "The Native Ratio Rule", "body": "不用统一卡片高度裁切摄影网格；每张照片的外轮廓忠实于发布资产的真实比例。", "section": "shapes" }
+    ],
+    "dos": [
+      "Do 让摄影从第一视口开始成为主角，界面只保留标题、来源语境、元数据与浏览控制。",
+      "Do 保持无 JavaScript 网格、静态详情 anchor、浏览器历史和 URL 驱动语境全部可用。",
+      "Do 使用真实宽高比、响应式发布衍生图、准确 alt 和稳定尺寸，避免布局跳动与不必要下载。",
+      "Do 保证所有控制至少 44×44px、可见 `:focus-visible`、Esc/方向键路径、焦点恢复和 reduced-motion 支持。",
+      "Do 把移动端元数据堆叠在照片下方，并保留自然文档流。",
+      "Do 只发布限制尺寸、清理敏感 EXIF 且逐张确认的资产；摄影页面保持 `noindex,follow`，同时把“不上传原件”作为真正的隐私边界。"
+    ],
+    "donts": [
+      "Don't 用 JavaScript 作为看到照片、打开详情或返回浏览语境的前提。",
+      "Don't 把所有照片裁成统一卡片比例，或用阴影、厚边框和装饰 UI 抢夺照片的注意力。",
+      "Don't 在移动端把标题、参数或操作面板覆盖在照片主体上。",
+      "Don't 公开原件、精确坐标、设备序列号、未清理 EXIF 或第三方隐私信息。",
+      "Don't 把 `noindex` 当作隐私措施；任何已经上传到公开站点的资产都应视为可被访问。",
+      "Don't 将灯箱的深色舞台推广成摄影页面或全站的默认深色表面。"
+    ]
+  }
+}

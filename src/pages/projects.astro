@@ -8,19 +8,23 @@ import { projectStatusLabels } from "../lib/content";
 const projects = (await getCollection("projects", ({ data }) => !data.draft))
   .sort((a, b) => a.data.order - b.data.order);
 const featuredProjects = projects.filter(({ data }) => data.featured);
+const projectImages: Record<string, string> = {
+  "workspace-structure-redesign": "/assets/figma/project-workspace.jpg",
+  "content-publishing-system": "/assets/figma/project-publishing.jpg",
+};
 ---
 
 <BaseLayout title="项目｜Rush Leo" description="设计工程、内容系统与交互原型项目档案。">
-  <header class="page-intro wide-column">
-    <h1>项目不是结果陈列，而是一段判断过程。</h1>
-    <p>记录约束、尝试、放弃与选择。部分案例经过匿名化处理，但保留真实的问题结构和我的具体贡献。</p>
+  <header class="page-intro reading-column">
+    <h1>项目</h1>
+    <p>作为设计师，我热爱制作有意义的交互，并把有趣的创意变为现实。以下是我从事设计工作以来的项目，我思考最多的往往是使用时的体验。</p>
   </header>
-  <section class="archive-section wide-column" aria-labelledby="featured-title">
-    <div class="section-topline"><h2 id="featured-title">深度案例</h2></div>
-    <div class="project-grid">{featuredProjects.map((project) => <ProjectCard title={project.data.title} summary={project.data.description} year={project.data.year} status={projectStatusLabels[project.data.status]} accent={project.data.accent} href={`/projects/${project.id}`} />)}</div>
+  <section class="archive-section featured-projects reading-column" aria-labelledby="featured-title">
+    <div class="section-topline"><h2 id="featured-title">精选项目</h2></div>
+    <div class="project-grid">{featuredProjects.map((project) => <ProjectCard title={project.data.title} summary={project.data.description} year={project.data.year} status={projectStatusLabels[project.data.status]} accent={project.data.accent} image={projectImages[project.id]} href={`/projects/${project.id}`} />)}</div>
   </section>
   <section class="archive-section reading-column" aria-labelledby="archive-title">
-    <div class="section-topline"><h2 id="archive-title">项目档案</h2></div>
-    {projects.map((project) => <ContentRow title={project.data.title} summary={project.data.description} meta={`${projectStatusLabels[project.data.status]} · ${project.data.year}`} href={`/projects/${project.id}`} />)}
+    <div class="section-topline"><h2 id="archive-title">全部项目</h2></div>
+    {projects.map((project) => <ContentRow title={project.data.title} summary={project.data.description} meta={String(project.data.year)} thumbnail={projectImages[project.id]} href={`/projects/${project.id}`} />)}
   </section>
 </BaseLayout>

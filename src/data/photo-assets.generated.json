@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "generatedAt": "2026-08-29T18:08:36.949Z",
+  "photos": [
+    {
+      "slug": "cranes-at-dusk",
+      "sourceDigest": "7bfadebf475b305f9574903117fcf7cae992f99e6f1369734ee18902cdde3466",
+      "width": 900,
+      "height": 600,
+      "aspectRatio": 1.5,
+      "placeholder": "rgb(40, 40, 40)",
+      "variants": [
+        {
+          "src": "/media/photos/cranes-at-dusk/480.webp",
+          "width": 480,
+          "height": 320,
+          "bytes": 12226,
+          "format": "webp"
+        },
+        {
+          "src": "/media/photos/cranes-at-dusk/480.jpg",
+          "width": 480,
+          "height": 320,
+          "bytes": 17826,
+          "format": "jpeg"
+        },
+        {
+          "src": "/media/photos/cranes-at-dusk/900.webp",
+          "width": 900,
+          "height": 600,
+          "bytes": 32150,
+          "format": "webp"
+        },
+        {
+          "src": "/media/photos/cranes-at-dusk/900.jpg",
+          "width": 900,
+          "height": 600,
+          "bytes": 49998,
+          "format": "jpeg"
+        }
+      ],
+      "publicExif": {},
+      "processedAt": "2026-08-29T17:58:15.925Z"
+    },
+    {
+      "slug": "park-walk",
+      "sourceDigest": "68f18fec1ee4e1bed653e9ece60588c1574afb4685c49d794669935bc9613236",
+      "width": 900,
+      "height": 600,
+      "aspectRatio": 1.5,
+      "placeholder": "rgb(56, 72, 56)",
+      "variants": [
+        {
+          "src": "/media/photos/park-walk/480.webp",
+          "width": 480,
+          "height": 320,
+          "bytes": 28590,
+          "format": "webp"
+        },
+        {
+          "src": "/media/photos/park-walk/480.jpg",
+          "width": 480,
+          "height": 320,
+          "bytes": 34937,
+          "format": "jpeg"
+        },
+        {
+          "src": "/media/photos/park-walk/900.webp",
+          "width": 900,
+          "height": 600,
+          "bytes": 61520,
+          "format": "webp"
+        },
+        {
+          "src": "/media/photos/park-walk/900.jpg",
+          "width": 900,
+          "height": 600,
+          "bytes": 91021,
+          "format": "jpeg"
+        }
+      ],
+      "publicExif": {},
+      "processedAt": "2026-08-29T17:58:15.715Z"
+    },
+    {
+      "slug": "public-phone",
+      "sourceDigest": "38085618d0d5e138ff7607c2cfafaf66bccf20427b78231a8e768eb04e2ab649",
+      "width": 600,
+      "height": 900,
+      "aspectRatio": 0.6666666666666666,
+      "placeholder": "rgb(216, 216, 216)",
+      "variants": [
+        {
+          "src": "/media/photos/public-phone/480.webp",
+          "width": 480,
+          "height": 720,
+          "bytes": 26508,
+          "format": "webp"
+        },
+        {
+          "src": "/media/photos/public-phone/480.jpg",
+          "width": 480,
+          "height": 720,
+          "bytes": 48537,
+          "format": "jpeg"
+        },
+        {
+          "src": "/media/photos/public-phone/600.webp",
+          "width": 600,
+          "height": 900,
+          "bytes": 35688,
+          "format": "webp"
+        },
+        {
+          "src": "/media/photos/public-phone/600.jpg",
+          "width": 600,
+          "height": 900,
+          "bytes": 68556,
+          "format": "jpeg"
+        }
+      ],
+      "publicExif": {},
+      "processedAt": "2026-08-29T17:58:15.835Z"
+    }
+  ]
+}
