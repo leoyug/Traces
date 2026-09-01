@@ -86,6 +86,21 @@ const resume = defineCollection({
       organization: z.string().min(1),
       summary: z.string().min(1),
     })).min(1),
+    projects: z.array(z.object({
+      name: z.string().min(1),
+      summary: z.string().min(1),
+      tags: z.array(z.string().min(1)).min(1),
+    })).default([]),
+    skills: z.array(z.object({
+      label: z.string().min(1),
+      items: z.array(z.string().min(1)).min(1),
+    })).default([]),
+    education: z.object({
+      school: z.string().min(1),
+      degree: z.string().min(1),
+      period: z.string().min(1),
+      place: z.string().min(1),
+    }).optional(),
     links: z.array(z.object({
       label: z.string().min(1),
       href: z.url(),

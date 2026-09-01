@@ -1,0 +1,130 @@
+---
+interface TocHeading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: TocHeading[];
+  ariaLabel: string;
+  className?: string;
+}
+
+const { headings, ariaLabel, className = "" } = Astro.props;
+const items = headings.filter(({ depth }) => depth === 2);
+---
+
+{items.length >= 2 && (
+  <aside class:list={["detail-toc", className]} data-detail-toc>
+    <nav aria-label={ariaLabel}>
+      <ol class="detail-toc__list">
+        {items.map((item, index) => (
+          <li>
+            <a
+              class:list={["detail-toc__link", { "is-active": index === 0 }]}
+              href={`#${item.slug}`}
+              aria-label={item.text}
+              aria-current={index === 0 ? "location" : undefined}
+              data-detail-toc-link
+              data-heading-id={item.slug}
+              title={item.text}
+            >
+              <span class="detail-toc__label">{item.text}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  </aside>
+)}
+
+<script>
+  const tocElements = document.querySelectorAll<HTMLElement>("[data-detail-toc]");
+
+  tocElements.forEach((toc) => {
+    if (toc.dataset.initialized === "true") return;
+    toc.dataset.initialized = "true";
+
+    const links = Array.from(
+      toc.querySelectorAll<HTMLAnchorElement>("[data-detail-toc-link]"),
+    );
+    const entries = links
+      .map((link) => {
+        const id = link.dataset.headingId;
+        const heading = id ? document.getElementById(id) : null;
+        return heading ? { link, heading } : null;
+      })
+      .filter((entry): entry is { link: HTMLAnchorElement; heading: HTMLElement } => entry !== null);
+
+    if (entries.length === 0) return;
+
+    let activeIndex = -1;
+    let lockedIndex: number | null = null;
+    let frame = 0;
+
+    const setActive = (nextIndex: number) => {
+      if (nextIndex === activeIndex) return;
+      activeIndex = nextIndex;
+
+      entries.forEach(({ link }, index) => {
+        const active = index === nextIndex;
+        link.classList.toggle("is-active", active);
+        if (active) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      });
+    };
+
+    const update = () => {
+      frame = 0;
+
+      if (lockedIndex !== null) {
+        setActive(lockedIndex);
+        return;
+      }
+
+      const readingLine = Math.min(window.innerHeight * 0.28, 192);
+      let nextIndex = 0;
+
+      entries.forEach(({ heading }, index) => {
+        if (heading.getBoundingClientRect().top <= readingLine) nextIndex = index;
+      });
+
+      const atPageEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      if (atPageEnd) nextIndex = entries.length - 1;
+      setActive(nextIndex);
+    };
+
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    const releaseLock = () => {
+      if (lockedIndex === null) return;
+      lockedIndex = null;
+      requestUpdate();
+    };
+
+    entries.forEach(({ link }, index) => {
+      link.addEventListener("click", () => {
+        lockedIndex = index;
+        setActive(index);
+      });
+    });
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate, { passive: true });
+    window.addEventListener("wheel", releaseLock, { passive: true });
+    window.addEventListener("touchstart", releaseLock, { passive: true });
+    window.addEventListener("pointerdown", (event) => {
+      if (!toc.contains(event.target as Node)) releaseLock();
+    }, { passive: true });
+    window.addEventListener("keydown", (event) => {
+      if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) {
+        releaseLock();
+      }
+    });
+    update();
+  });
+</script>

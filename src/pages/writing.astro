@@ -1,23 +1,15 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContentRow from "../components/ContentRow.astro";
-import { getCollection } from "astro:content";
 
-const articles = (await getCollection("articles", ({ data }) => !data.draft))
-  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
-const years = [...new Set(articles.map(({ data }) => data.publishedAt.getFullYear()))];
-const monthDay = (date: Date) => new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit" }).format(date).replace("/", "-");
+const groups = [
+  { year: "2026", items: [["云南游记", "08-29", "/writing/a-living-archive"], ["把模糊需求变成可维护的界面", "08-06", "/writing/clarity-before-components"], ["我如何整理一座不断生长的个人档案", "07-18", "/writing/a-living-archive"], ["个人网站搭建", "07-07", "/writing/a-living-archive"], ["婚礼", "05-02", "/writing/a-living-archive"], ["Agent 工作流", "04-20", "/writing/clarity-before-components"]] },
+  { year: "2025", items: [["2025 年终总结", "12-26", "/writing/a-living-archive"], ["Git 学习", "08-13", "/writing/clarity-before-components"], ["如何成为现在", "03-24", "/writing/a-living-archive"]] },
+  { year: "2024", items: [["随便文章", "09-04", "/writing/a-living-archive"], ["如何建立自己的博客", "05-21", "/writing/a-living-archive"], ["该如何学习编程", "02-11", "/writing/clarity-before-components"]] },
+];
 ---
 
-<BaseLayout title="文章｜Rush Leo" description="关于设计工程、个人档案和日常观察的写作。">
-  <header class="page-intro reading-column">
-    <h1>文章</h1>
-    <p>我写作是为了让自己记得当下的感受以及帮助自己学习。有些可能只是琐事，也有值得记录的生活。</p>
-  </header>
-  {years.map((year) => (
-    <section class="archive-section reading-column" aria-labelledby={`year-${year}`}>
-      <div class="section-topline"><h2 id={`year-${year}`}>{year}</h2></div>
-      {articles.filter(({ data }) => data.publishedAt.getFullYear() === year).map((article) => <ContentRow title={article.data.title} meta={monthDay(article.data.publishedAt)} href={`/writing/${article.id}`} density="compact" stackOnMobile={false} />)}
-    </section>
-  ))}
+<BaseLayout title="写作｜Leo" description="生活、设计与学习记录。">
+  <header class="page-intro reading-column"><h1>写作</h1><p>我写作是为了让自己记得当下的感受以及帮助自己学习。有些可能只是琐事，也有值得记录的生活。</p></header>
+  {groups.map((group) => <section class="archive-section writing-year reading-column" aria-labelledby={`year-${group.year}`}><div class="section-topline"><h2 id={`year-${group.year}`}>{group.year}</h2></div><div>{group.items.map(([title, meta, href]) => <ContentRow title={title} meta={meta} href={href} density="compact" stackOnMobile={false} />)}</div></section>)}
 </BaseLayout>

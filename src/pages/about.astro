@@ -1,24 +1,24 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
-
 const resume = await getEntry("resume", "main");
 if (!resume) throw new Error("缺少 main 职业履历内容");
+const github = resume.data.links.find((link) => link.label === "GitHub")?.href ?? "https://github.com/leoyug";
 ---
 
-<BaseLayout title="关于｜Rush Leo" description="设计工程师不息的个人介绍、职业经历与联系方式。">
+<BaseLayout title="关于｜Leo" description="产品设计师 Leo 的个人介绍。">
   <header class="about-intro reading-column">
-    <div>
+    <div class="about-intro__copy">
       <h1>关于我</h1>
-      <p>Hi，我是 Leo，一名{resume.data.title}。我喜欢把模糊的需求整理成清晰的页面与交互。</p>
-      <p>我写作是为了让自己记得当下的感受以及帮助自己学习。有些可能只是琐事，也有值得记录的生活。工作之外，我也持续记录照片和那些还没有完全想明白的问题。</p>
+      <p>Hi，我是廖如晟 / Leo，一名产品设计师。我喜欢体验各种有趣的应用或者产品，也爱探索各种有趣的设计。</p>
+      <p>我从事设计工作是出于自己的兴趣。在经历了快 3 年的研究所工作后，我发现还是设计工作比较能让我投入。之前在一家 VR 看房行业的设计岗位工作，做过 App 产品设计、B 端后台设计、Web 端页面设计；使用过 Sketch、Figma、Adobe 套件等相关工具；也热衷于探索将 AI 融入工作流，尝试使用 Agent 开发个人产品。</p>
+      <p>工作之外，我喜欢摄影、搭建博客以及到处寻找好吃的食物。</p>
     </div>
-    <figure class="about-portrait"><img src="/assets/figma/about-portrait.jpg" alt="Leo 在户外举手打招呼" /><figcaption class="sr-only">Leo 的照片</figcaption></figure>
+    <figure class="about-portrait"><img src="/assets/figma-v03/about/image-8.png" alt="Leo 的像素风肖像" /></figure>
   </header>
   <div class="about-sections reading-column">
-    <section><h2>联系到我</h2><nav class="contact-links" aria-label="联系方式"><a href={`mailto:${resume.data.email}`}>Email</a><a href="/rss.xml">RSS</a></nav></section>
-    <section><h2>最近在干</h2><ul class="plain-list"><li>在读一本书</li><li>在看一部电影</li><li>持续记录与写作</li><li>保持运动</li></ul></section>
+    <section><h2>联系到我</h2><nav class="contact-links" aria-label="联系方式"><a href={github} rel="me">GitHub</a><a href={`mailto:${resume.data.email}`}>Email</a><span>微信</span><a href="/rss.xml">RSS</a></nav></section>
+    <section><h2>最近在干</h2><ul class="plain-list"><li>正在研究将 AI 融入到日常设计工作中</li><li>走到哪，拍到哪</li><li>在看《真探》</li><li>通关《杀戮尖塔 2》</li><li>减到 65kg</li><li>在大桐日本</li></ul></section>
     <section><h2>生活</h2><p>和喜欢的人一起去到别的地方，体验各种事物，拍美好的景物，吃好吃的美食。</p></section>
-    <section id="resume"><h2>工作经历</h2><ol class="timeline">{resume.data.experience.map((item) => <li><time>{item.period}</time><div><strong>{item.role} · {item.organization}</strong><p>{item.summary}</p></div></li>)}</ol></section>
   </div>
 </BaseLayout>

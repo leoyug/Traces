@@ -19,5 +19,6 @@ const { title, summary, meta, href = "#", tags = [], density = "default", stackO
     {summary && <small>{summary}</small>}
     {tags.length > 0 && <span class="tag-list">{tags.map((tag) => <span class="tag">{tag}</span>)}</span>}
   </span>
+  {!summary && <span class="content-row__leader" aria-hidden="true"></span>}
   <time>{meta}</time>
 </a>

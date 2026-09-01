@@ -2,26 +2,32 @@
 import type { CollectionEntry } from "astro:content";
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import DetailToc from "../../components/DetailToc.astro";
 import { formatDate } from "../../lib/content";
 
 export async function getStaticPaths() {
   const articles = await getCollection("articles", ({ data }) => !data.draft);
   return articles.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
 }
-
 interface Props { entry: CollectionEntry<"articles">; }
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 ---
 
-<BaseLayout title={`${entry.data.title}｜Rush Leo`} description={entry.data.description} socialImage={null}>
-  <article class="article reading-column">
-    <header>
-      <p class="meta-line">{entry.data.tags.join(" · ")} · {entry.data.readingMinutes} 分钟</p>
+<BaseLayout title={`${entry.data.title}｜Leo`} description={entry.data.description} socialImage="/assets/figma-v03/article-detail/cover.png">
+  <DetailToc headings={headings} ariaLabel="文章目录" />
+  <article class="v03-detail reading-column">
+    <img class="v03-detail__cover v03-detail__cover--square" src="/assets/figma-v03/article-detail/cover.png" alt="" />
+    <header id="overview">
       <h1>{entry.data.title}</h1>
-      <p>{entry.data.description}</p>
-      <time datetime={entry.data.publishedAt.toISOString()}>{formatDate(entry.data.publishedAt, "long")}</time>
+      <dl class="detail-facts">
+        <div><dt>日期</dt><dd>{formatDate(entry.data.publishedAt, "long")}</dd></div>
+        <div><dt>阅读</dt><dd>{entry.data.readingMinutes} 分钟</dd></div>
+        <div><dt>分类</dt><dd>{entry.data.tags[0]}</dd></div>
+        <div><dt>字数</dt><dd>1,532</dd></div>
+      </dl>
     </header>
-    <div class="article__body"><Content /></div>
+    <div class="article__body" id="content"><Content /></div>
+    <span id="ending" class="detail-anchor" aria-hidden="true"></span>
   </article>
 </BaseLayout>

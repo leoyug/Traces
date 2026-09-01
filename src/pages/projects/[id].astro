@@ -1,27 +1,32 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { getCollection, render } from "astro:content";
+import DetailToc from "../../components/DetailToc.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { projectStatusLabels } from "../../lib/content";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects", ({ data }) => !data.draft);
   return projects.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
 }
-
 interface Props { entry: CollectionEntry<"projects">; }
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 ---
 
-<BaseLayout title={`${entry.data.title}｜Rush Leo`} description={entry.data.description} socialImage={null}>
-  <article class="article project-article reading-column">
-    <header>
-      <p class="meta-line">{projectStatusLabels[entry.data.status]} · {entry.data.year} · {entry.data.role}</p>
+<BaseLayout title={`${entry.data.title}｜Leo`} description={entry.data.description} socialImage="/assets/figma-v03/project-detail/cover.png">
+  <DetailToc headings={headings} ariaLabel="项目目录" />
+  <article class="v03-detail reading-column">
+    <img class="v03-detail__cover" src="/assets/figma-v03/project-detail/cover.png" alt="" />
+    <header id="overview">
       <h1>{entry.data.title}</h1>
-      <p>{entry.data.description}</p>
-      {entry.data.privacyNote && <aside class="privacy-note">{entry.data.privacyNote}</aside>}
+      <dl class="detail-facts">
+        <div><dt>年份</dt><dd>{entry.data.year}</dd></div>
+        <div><dt>角色</dt><dd>{entry.data.role}</dd></div>
+        <div><dt>状态</dt><dd>已上线</dd></div>
+        <div><dt>范围</dt><dd>产品设计</dd></div>
+      </dl>
     </header>
-    <div class="article__body"><Content /></div>
+    <div class="article__body" id="content"><Content /></div>
+    <span id="reflection" class="detail-anchor" aria-hidden="true"></span>
   </article>
 </BaseLayout>

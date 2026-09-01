@@ -1,23 +1,54 @@
 {
-  "name": "待替换真实姓名",
-  "publicName": "不息",
-  "title": "设计工程师",
+  "name": "廖如晟",
+  "publicName": "Leo",
+  "title": "产品设计师",
   "location": "杭州",
-  "email": "hello@incessantleo.com",
-  "summary": "擅长把模糊需求转化为清晰的页面结构与交互方案，并通过设计系统维持复杂页面的一致性。",
+  "email": "leo615@163.com",
+  "summary": "我喜欢体验有趣的应用与产品，也持续探索设计、博客与 AI 工作流。过去做过 App、B 端后台和 Web 页面设计，并尝试用 Agent 开发个人产品。",
   "experience": [
     {
-      "period": "2024—现在",
-      "role": "高级设计工程师",
-      "organization": "某互联网产品团队",
-      "summary": "负责工作台体验、跨端组件与设计系统维护。"
+      "period": "2020—2025",
+      "role": "UI 设计师",
+      "organization": "上海亦我信息技术有限公司",
+      "summary": "负责 App、B 端后台与 Web 页面设计，并参与设计框架与系统的建立。"
     },
     {
-      "period": "2022—2024",
-      "role": "产品设计师",
-      "organization": "某协作工具团队",
-      "summary": "负责内容生产、权限与发布流程设计。"
+      "period": "2016—2019",
+      "role": "研究员",
+      "organization": "上海微波设备研究所",
+      "summary": "完成研究与工程相关工作，并在之后转向自己更愿意长期投入的设计实践。"
     }
   ],
-  "links": []
+  "projects": [
+    {
+      "name": "宅畅想 App",
+      "summary": "家装行业的可视化效果图谈单软件；从 0 到 1 参与设计，主导部分模块并建立设计系统。",
+      "tags": ["多端适配", "设计系统"]
+    },
+    {
+      "name": "亦我家装后台",
+      "summary": "家装设计公司内部使用的后台管理系统，独立完成大部分模块页面并定义设计框架。",
+      "tags": ["B 端设计", "设计系统"]
+    },
+    {
+      "name": "宅畅想官网",
+      "summary": "宅畅想产品官方网站，负责页面风格定义与部分模块设计。",
+      "tags": ["Web 端设计", "风格定义"]
+    }
+  ],
+  "skills": [
+    { "label": "常用", "items": ["Sketch", "Figma", "Adobe 套件", "Git", "Codex"] },
+    { "label": "用过", "items": ["Blender", "剪映", "Claude", "Hermes", "Midjourney"] },
+    { "label": "了解", "items": ["Paper", "Pencil", "Motion"] }
+  ],
+  "education": {
+    "school": "电子科技大学",
+    "degree": "本科 · 学士学位",
+    "period": "2012—2016",
+    "place": "成都"
+  },
+  "links": [
+    { "label": "网站", "href": "https://incessantleo.com" },
+    { "label": "GitHub", "href": "https://github.com/leoyug" }
+  ]
 }

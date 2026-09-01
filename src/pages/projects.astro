@@ -1,30 +1,33 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import ContentRow from "../components/ContentRow.astro";
-import { getCollection } from "astro:content";
-import { projectStatusLabels } from "../lib/content";
 
-const projects = (await getCollection("projects", ({ data }) => !data.draft))
-  .sort((a, b) => a.data.order - b.data.order);
-const featuredProjects = projects.filter(({ data }) => data.featured);
-const projectImages: Record<string, string> = {
-  "workspace-structure-redesign": "/assets/figma/project-workspace.jpg",
-  "content-publishing-system": "/assets/figma/project-publishing.jpg",
-};
+const projects = [
+  { title: "灵感集", summary: "更好地展示你的收藏夹", year: "2026", href: "/projects/photo-archive-experiment" },
+  { title: "途途 IP", summary: "围绕 IP 形象 TUTU 设计的一系列周边", year: "2026", href: "/projects/photo-archive-experiment" },
+  { title: "「宅畅想」官网", summary: "宅畅想的官方网站，帮助更好的转化用户", year: "2025", href: "/projects/workspace-structure-redesign" },
+  { title: "亦我家装后台", summary: "亦我家装 B 端后台，帮助用户更好地使用产品", year: "2024–2025", href: "/projects/content-publishing-system" },
+  { title: "宅畅想", summary: "B 端家装产品，助力家装企业提效", year: "2020–2025", href: "/projects/workspace-structure-redesign" },
+  { title: "游享 App", summary: "旅游分享类 App", year: "2019–2020", href: "/projects/photo-archive-experiment" },
+];
 ---
 
-<BaseLayout title="项目｜Rush Leo" description="设计工程、内容系统与交互原型项目档案。">
+<BaseLayout title="项目｜Leo" description="产品设计项目档案。">
   <header class="page-intro reading-column">
     <h1>项目</h1>
-    <p>作为设计师，我热爱制作有意义的交互，并把有趣的创意变为现实。以下是我从事设计工作以来的项目，我思考最多的往往是使用时的体验。</p>
+    <p>作为设计师，我热爱制作有意义的交互，并将有趣的创意变为现实。以下是我从事设计工作以来的项目，我思考最多的往往是使用时的体验。</p>
   </header>
   <section class="archive-section featured-projects reading-column" aria-labelledby="featured-title">
     <div class="section-topline"><h2 id="featured-title">精选项目</h2></div>
-    <div class="project-grid">{featuredProjects.map((project) => <ProjectCard title={project.data.title} summary={project.data.description} year={project.data.year} status={projectStatusLabels[project.data.status]} accent={project.data.accent} image={projectImages[project.id]} href={`/projects/${project.id}`} />)}</div>
+    <div class="project-grid">
+      <ProjectCard title="宅畅想 App" summary="家装公司全链路解决方案" year="2026" status="已上线" accent="clay" image="/assets/figma-v03/home/image-01.png" href="/projects/workspace-structure-redesign" />
+      <ProjectCard title="亦我家装后台" summary="帮助企业更高效地管理资产与人员吧" year="2026" status="已上线" accent="sage" image="/assets/figma-v03/home/image-10.png" href="/projects/content-publishing-system" />
+    </div>
   </section>
   <section class="archive-section reading-column" aria-labelledby="archive-title">
     <div class="section-topline"><h2 id="archive-title">全部项目</h2></div>
-    {projects.map((project) => <ContentRow title={project.data.title} summary={project.data.description} meta={String(project.data.year)} thumbnail={projectImages[project.id]} href={`/projects/${project.id}`} />)}
+    <div class="project-archive-list">
+      {projects.map((project) => <a class="project-archive-row" href={project.href}><span><strong>{project.title}</strong><small>{project.summary}</small></span><time>{project.year}</time></a>)}
+    </div>
   </section>
 </BaseLayout>

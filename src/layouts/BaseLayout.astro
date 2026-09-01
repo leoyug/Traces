@@ -26,10 +26,10 @@ const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : nul
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={description} />
     {robots && <meta name="robots" content={robots} />}
-    <meta name="theme-color" content="#faf7f2" />
+    <meta name="theme-color" content="#191918" />
     <link rel="icon" href="/favicon-leo.png" type="image/png" sizes="240x240" />
     <link rel="apple-touch-icon" href="/favicon-leo.png" />
     <link rel="canonical" href={canonical} />
@@ -49,7 +49,7 @@ const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : nul
     <title>{title}</title>
   </head>
   <body>
-    <!-- THESIS: 以一条安静、精确的个人出版栏承载工作与生活，拒绝作品集常见的大标题和卡片墙。 OWN-WORLD: 暖白画布、520px 窄栏、低对比灰阶与暖棕强调，图片只在内容需要时扩大。 STORY: 访客先认识 Leo，再依次读到文章、项目与照片，并能顺畅进入各自档案。 FIRST VIEWPORT: 64px 导航下方留出 80px，签名与三行介绍从 144px 开始。 FORM: Figma「正式」页的出版物式单栏布局。 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance -->
+    <!-- THESIS: 深夜背景中的一条安静出版栏，把工作、写作与摄影放在同一条长期记录里。 OWN-WORLD: 近黑画布、640px 窄栏、手写标记、灰阶文字与原比例摄影。 STORY: 访客先认识 Leo，再依次进入文章、项目与照片，固定在屏幕底部的胶囊导航持续提供方向。 FIRST VIEWPORT: 签名与三行介绍从 64px 开始，正文在首屏直接给出项目、写作和摄影入口。 FORM: Figma V0.3 的深色个人出版物。 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance -->
     <a class="skip-link" href="#main">跳到主要内容</a>
     <SiteHeader />
     <main id="main" class:list={["page-main", { "page-main--wide": wide }]}>

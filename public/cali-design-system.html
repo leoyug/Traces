@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <title>Cali.so / AMA 设计系统提取</title>
+  <script>
+    try {
+      const savedTheme = localStorage.getItem('cali-ds-theme');
+      document.documentElement.dataset.theme = savedTheme === 'light' || savedTheme === 'dark'
+        ? savedTheme
+        : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    } catch (_) {
+      document.documentElement.dataset.theme = 'light';
+    }
+  </script>
+  <style>
+    :root {
+      --background: #fdfdfc;
+      --background: lab(98.8464% -0.0331 0.379);
+      --foreground: #1c1b1a;
+      --foreground: lab(10.6818% 0.5292 1.6301);
+      --copy: #4c4947;
+      --copy: lab(29.2465% 0.4182 1.6597);
+      --muted-foreground: #777370;
+      --muted-foreground: lab(48.9698% 0.2748 1.4969);
+      --border: #e6e4e1;
+      --border: lab(89.5742% -0.0373 0.9518);
+      --paper: #f9f8f5;
+      --paper: lab(97.7052% -0.1289 1.5182);
+      --surface-1: #f6f5f3;
+      --surface-1: lab(96.2994% -0.0591 0.6825);
+      --surface-2: #faf9f8;
+      --surface-2: lab(97.4581% -0.0526 0.6066);
+      --signal: #f99c00;
+      --border-hairline: .5px;
+      --radius: 10px;
+      --font-sans: Geist, "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+      --font-mono: "Geist Mono", "SFMono-Regular", Consolas, monospace;
+      --ease-swift: cubic-bezier(.2, .8, .2, 1);
+      --shadow-1: 0 0 0 1px rgb(0 0 0 / 5%);
+      --shadow-3: 0 0 0 1px rgb(0 0 0 / 5%), 0 1px 1px -.5px rgb(0 0 0 / 5%), 0 3px 3px -1.5px rgb(0 0 0 / 5%);
+      --shadow-dock: 0 0 0 1px rgb(0 0 0 / 8%), 0 4px 12px -4px rgb(0 0 0 / 18%);
+      --container: 600px;
+      --gutter: 24px;
+      --space: 4px;
+    }
+
+    html[data-theme="dark"] {
+      --background: #0b0a09;
+      --background: lab(3.70862% .237852 1.28007);
+      --foreground: #efede7;
+      --foreground: lab(93.0737% -.0831783 2.28829);
+      --copy: #bebbb5;
+      --copy: lab(74.5174% .0874102 3.05892);
+      --muted-foreground: #8d8780;
+      --muted-foreground: lab(54.7968% .363529 3.81957);
+      --border: #2b2824;
+      --border: lab(15.3424% .582039 3.43849);
+      --paper: #f9f8f5;
+      --surface-1: #14120f;
+      --surface-1: lab(5.73215% .340819 1.85995);
+      --surface-2: #191714;
+      --surface-2: lab(7.79906% .448689 2.46284);
+      --surface-3: #161411;
+      --surface-3: lab(6.21011% .390157 2.10783);
+      --surface-4: #201e1a;
+      --surface-4: lab(11.2799% .518993 3.05771);
+      --surface-5: #25221e;
+      --surface-5: lab(13.6012% .549704 3.24747);
+      --surface-6: #2a2723;
+      --surface-6: lab(15.9225% .58049 3.43726);
+      --surface-7: #2f2c28;
+      --surface-7: lab(18.2428% .574783 3.43284);
+      --surface-8: #34312c;
+      --surface-8: lab(20.5642% .605762 3.62282);
+      --shadow-1: inset 0 0 0 1px #ffffff05;
+      --shadow-3: inset 0 1px 0 #ffffff05, inset 0 0 0 1px #ffffff05, 0 0 0 1px #0000001f, 0 1px 1px -.5px #0000002e, 0 3px 3px -1.5px #0000002e;
+      --shadow-dock: 0 0 0 1px var(--border), 0 8px 30px rgb(0 0 0 / 12%);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-width: 320px;
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+      font: 400 14px/1.7 var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; text-decoration-thickness: var(--border-hairline); text-underline-offset: 3px; }
+    :focus-visible { outline: 1px solid var(--foreground); outline-offset: 3px; }
+    ::selection { background: var(--foreground); color: var(--background); }
+    * { scrollbar-color: var(--muted-foreground) var(--background); }
+
+    .construction {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      pointer-events: none;
+    }
+    .construction::before,
+    .construction::after {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: var(--border-hairline);
+      background: var(--border);
+      content: "";
+      opacity: .45;
+    }
+    .construction::before { left: max(0px, calc(50% - 300px)); }
+    .construction::after { right: max(0px, calc(50% - 300px)); }
+
+    .skip-link {
+      position: fixed;
+      z-index: 20;
+      top: 12px;
+      left: 12px;
+      padding: 8px 12px;
+      background: var(--foreground);
+      color: var(--background);
+      border-radius: 999px;
+      transform: translateY(-160%);
+    }
+    .skip-link:focus { transform: none; }
+
+    .shell { width: min(100%, var(--container)); margin-inline: auto; padding-inline: var(--gutter); }
+    .hero { position: relative; padding-top: 88px; }
+    .hero::before {
+      position: absolute;
+      inset: 48px -16px -32px;
+      z-index: -1;
+      background: radial-gradient(ellipse at center, var(--surface-2), var(--surface-1) 48%, transparent 78%);
+      content: "";
+    }
+    .conversation-lines {
+      position: absolute;
+      z-index: -1;
+      top: 18px;
+      left: 0;
+      width: 100%;
+      height: 210px;
+      color: var(--foreground);
+      opacity: .045;
+    }
+    .conversation-lines path { fill: none; stroke: currentColor; stroke-width: .8; vector-effect: non-scaling-stroke; }
+    .pixel-cluster { position: absolute; top: 82px; right: 25px; display: grid; grid-template-columns: repeat(2, 3px); gap: 1px; }
+    .pixel-cluster i { width: 3px; height: 3px; background: var(--muted-foreground); }
+    .pixel-cluster i:nth-child(2) { background: var(--signal); }
+    .pixel-cluster i:nth-child(3) { opacity: .35; }
+
+    h1, h2, h3, p { margin: 0; }
+    .eyebrow, .section-tag, .measure, code, .spec-table, .step-index {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+    h1.eyebrow { color: var(--muted-foreground); font-size: 12px; font-weight: 400; line-height: 18px; }
+    .intro { max-width: 34rem; margin-top: 16px; color: var(--copy); font-size: 14px; line-height: 1.7; text-wrap: pretty; }
+    .intro p + p { margin-top: 12px; }
+    .intro strong { color: var(--foreground); font-weight: 500; }
+
+    main { padding-bottom: 176px; }
+    .section { margin-top: 72px; scroll-margin-top: 28px; }
+    .section-tag {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted-foreground);
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 18px;
+    }
+    .section-tag b {
+      min-width: 24px;
+      height: 18px;
+      display: inline-grid;
+      place-items: center;
+      border: var(--border-hairline) solid var(--border);
+      color: var(--muted-foreground);
+      font-size: 10px;
+      font-weight: 400;
+    }
+    .section-description { max-width: 67ch; margin-top: 20px; color: var(--copy); }
+    .section-description p + p { margin-top: 12px; }
+
+    .palette { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 24px; border-top: var(--border-hairline) solid var(--border); border-left: var(--border-hairline) solid var(--border); }
+    .swatch { min-width: 0; border-right: var(--border-hairline) solid var(--border); border-bottom: var(--border-hairline) solid var(--border); }
+    .swatch-color { height: 92px; background: var(--swatch); }
+    .swatch-meta { padding: 10px; }
+    .swatch-meta strong, .swatch-meta code { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .swatch-meta strong { font-weight: 500; }
+    .swatch-meta code { margin-top: 2px; color: var(--muted-foreground); font-size: 11px; }
+
+    .dark-system {
+      margin-top: 32px;
+      padding: 24px;
+      background: lab(3.70862% .237852 1.28007);
+      color: lab(93.0737% -.0831783 2.28829);
+      box-shadow: inset 0 0 0 var(--border-hairline) lab(15.3424% .582039 3.43849);
+    }
+    .dark-system-header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+    .dark-system-header h3 { font: 500 14px/20px var(--font-sans); }
+    .dark-system-header code { color: lab(54.7968% .363529 3.81957); font-size: 11px; }
+    .dark-system > p { max-width: 65ch; margin-top: 8px; color: lab(74.5174% .0874102 3.05892); font-size: 12px; line-height: 1.65; }
+    .dark-system .palette { border-color: lab(15.3424% .582039 3.43849); }
+    .dark-system .swatch { border-color: lab(15.3424% .582039 3.43849); }
+    .dark-system .swatch-meta code { color: lab(54.7968% .363529 3.81957); }
+    .surface-ladder { display: grid; grid-template-columns: repeat(8, 1fr); margin-top: 20px; }
+    .surface-step { min-width: 0; height: 72px; display: flex; align-items: flex-end; padding: 7px; background: var(--surface); color: lab(74.5174% .0874102 3.05892); font: 400 10px/14px var(--font-mono); }
+    .dark-shadow-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 20px; }
+    .dark-shadow {
+      height: 72px;
+      display: grid;
+      place-items: center;
+      background: lab(11.2799% .518993 3.05771);
+      color: lab(74.5174% .0874102 3.05892);
+      font: 400 10px/14px var(--font-mono);
+      box-shadow: var(--dark-shadow);
+    }
+
+    .type-list { margin-top: 24px; border-top: var(--border-hairline) solid var(--border); }
+    .type-row { display: grid; grid-template-columns: 118px 1fr; gap: 24px; align-items: baseline; padding-block: 16px; border-bottom: var(--border-hairline) solid var(--border); }
+    .measure { color: var(--muted-foreground); font-size: 11px; line-height: 16px; }
+    .sample-eyebrow { color: var(--muted-foreground); font: 400 12px/18px var(--font-mono); }
+    .sample-body { color: var(--copy); font-size: 14px; line-height: 1.7; }
+    .sample-label { font-size: 14px; font-weight: 500; line-height: 20px; }
+    .sample-mono { color: var(--copy); font: 400 12px/18px var(--font-mono); }
+
+    .space-scale { display: grid; gap: 10px; margin-top: 24px; }
+    .space-item { display: grid; grid-template-columns: 44px 1fr 44px; gap: 12px; align-items: center; }
+    .space-item code, .space-item output { color: var(--muted-foreground); font: 400 11px/16px var(--font-mono); }
+    .space-item output { text-align: right; }
+    .space-bar { width: min(calc(var(--n) * var(--space)), 100%); height: 6px; background: var(--foreground); }
+
+    .spec-table { width: 100%; margin-top: 24px; border-collapse: collapse; font-size: 12px; line-height: 18px; }
+    .spec-table th, .spec-table td { padding: 9px 12px; border: var(--border-hairline) solid var(--border); text-align: left; }
+    .spec-table th { width: 28%; color: var(--muted-foreground); font-weight: 400; }
+    .spec-table td { color: var(--foreground); font-weight: 500; }
+
+    .components { display: grid; gap: 32px; margin-top: 24px; }
+    .component-name { margin-bottom: 12px; color: var(--muted-foreground); font: 400 11px/16px var(--font-mono); }
+    .button-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .button {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding-inline: 18px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--foreground);
+      color: var(--background);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 21px;
+      cursor: pointer;
+      transition: transform .15s var(--ease-swift), opacity .15s var(--ease-swift);
+    }
+    .button:hover { transform: translateY(-1px); }
+    .button:active { transform: scale(.98); }
+    .button.secondary { background: var(--surface-1); color: var(--foreground); box-shadow: var(--shadow-1); }
+    .button:disabled { cursor: not-allowed; opacity: .38; transform: none; }
+
+    .list-demo { border-top: var(--border-hairline) solid var(--border); }
+    .list-row { display: grid; gap: 3px; padding-block: 12px; border-bottom: var(--border-hairline) solid var(--border); }
+    .list-row strong { font-weight: 500; line-height: 20px; }
+    .list-row span { color: var(--muted-foreground); font-size: 12px; line-height: 18px; }
+
+    .steps { display: grid; gap: 12px; }
+    .step { display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; }
+    .step-index { height: 18px; display: grid; place-items: center; border: var(--border-hairline) solid var(--border); color: var(--muted-foreground); font-size: 10px; line-height: 18px; }
+
+    .quote-list { border-top: var(--border-hairline) solid var(--border); }
+    figure { margin: 0; padding-block: 18px; border-bottom: var(--border-hairline) solid var(--border); }
+    blockquote { margin: 0; color: var(--copy); }
+    figcaption { margin-top: 8px; color: var(--muted-foreground); font-size: 12px; }
+
+    .radius-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .radius-sample { height: 90px; display: grid; place-items: center; background: var(--surface-1); box-shadow: var(--shadow-1); border-radius: var(--r); color: var(--muted-foreground); font: 400 11px/16px var(--font-mono); }
+    .shadow-stack { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .shadow-sample { height: 100px; display: grid; place-items: center; background: var(--background); color: var(--muted-foreground); font: 400 11px/16px var(--font-mono); box-shadow: var(--s); }
+
+    .layout-plate { margin-top: 24px; padding: 32px 24px; border: var(--border-hairline) solid var(--border); background: var(--surface-2); }
+    .layout-container { max-width: 552px; margin-inline: auto; padding: 32px 24px; border: var(--border-hairline) dashed var(--muted-foreground); background: var(--background); text-align: center; }
+    .layout-container strong { font: 500 20px/28px var(--font-mono); }
+    .layout-container span { display: block; margin-top: 4px; color: var(--muted-foreground); font: 400 11px/16px var(--font-mono); }
+
+    .principles { display: grid; grid-template-columns: 1fr 1fr; margin-top: 24px; border-top: var(--border-hairline) solid var(--border); border-left: var(--border-hairline) solid var(--border); }
+    .principle { padding: 20px; border-right: var(--border-hairline) solid var(--border); border-bottom: var(--border-hairline) solid var(--border); }
+    .principle h3 { font-size: 14px; font-weight: 500; }
+    .principle p { margin-top: 8px; color: var(--muted-foreground); font-size: 12px; line-height: 1.6; }
+
+    footer { padding-bottom: 124px; color: var(--muted-foreground); font-size: 12px; }
+    .footer-line { padding-top: 28px; border-top: var(--border-hairline) solid var(--border); }
+
+    .dock {
+      position: fixed;
+      z-index: 10;
+      bottom: 22px;
+      left: 50%;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 6px;
+      border-radius: 22px;
+      background: color-mix(in oklab, var(--background) 88%, transparent);
+      box-shadow: var(--shadow-dock);
+      backdrop-filter: blur(14px) saturate(1.15);
+      transform: translateX(-50%);
+    }
+    .dock a, .dock button {
+      width: 36px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 16px;
+      background: transparent;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .dock a:hover, .dock button:hover { background: var(--surface-1); color: var(--foreground); }
+    .dock a[aria-current="true"]::after { position: absolute; bottom: 3px; width: 3px; height: 3px; border-radius: 50%; background: currentColor; content: ""; }
+    .dock svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+
+    @media (max-width: 640px) {
+      .construction::before { left: 8px; }
+      .construction::after { right: 8px; }
+      .hero { padding-top: 56px; }
+      .section { margin-top: 64px; }
+      .palette { grid-template-columns: repeat(2, 1fr); }
+      .dark-system { margin-inline: -8px; padding: 20px 16px; }
+      .dark-system-header { align-items: flex-start; flex-direction: column; gap: 2px; }
+      .surface-ladder { grid-template-columns: repeat(4, 1fr); }
+      .dark-shadow-row { grid-template-columns: 1fr 1fr; }
+      .type-row { grid-template-columns: 1fr; gap: 6px; }
+      .radius-grid { grid-template-columns: 1fr 1fr; }
+      .shadow-stack, .principles { grid-template-columns: 1fr; }
+      .layout-plate { padding: 20px 12px; }
+      .pixel-cluster { right: 24px; top: 52px; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      @keyframes enter { from { opacity: .001; transform: translateY(8px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+      .hero > :not(svg) { animation: enter .45s var(--ease-swift) both; }
+      .hero .intro { animation-delay: 70ms; }
+    }
+  </style>
+</head>
+<body>
+  <div class="construction" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <header class="hero shell">
+    <svg class="conversation-lines" viewBox="0 0 600 240" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 102C100 24 200 180 300 102S500 180 600 102"></path>
+      <path d="M0 138C100 216 200 60 300 138S500 60 600 138"></path>
+    </svg>
+    <span class="pixel-cluster" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <h1 class="eyebrow">// Cali.so / AMA 设计系统</h1>
+    <div class="intro">
+      <p><strong>一套介于个人出版物与工程图纸之间的网页语言。</strong></p>
+      <p>提取自 Cali Castle 的一对一咨询页面。它不依赖大标题或重卡片，而是用窄栏排版、发丝线、编号、规格表与细微像素标记建立精密感。</p>
+      <p>以下数值来自页面源码与浏览器计算样式；示例文案为本页说明，不复制原站业务内容。</p>
+    </div>
+  </header>
+
+  <main id="main" class="shell">
+    <section class="section" id="foundation">
+      <h2 class="section-tag"><b>01</b>双主题色彩</h2>
+      <p class="section-description">浅色与暗色不是简单反相。两套主题分别定义画布、文字、边线、表面与阴影；共同保留暖色偏移和极低对比的工程纸张质感。</p>
+      <div class="palette">
+        <div class="swatch"><div class="swatch-color" style="--swatch:lab(98.8464% -.0331 .379)"></div><div class="swatch-meta"><strong>Light BG</strong><code>Lab 98.85</code></div></div>
+        <div class="swatch"><div class="swatch-color" style="--swatch:lab(97.7052% -.1289 1.5182)"></div><div class="swatch-meta"><strong>Paper</strong><code>Lab 97.71</code></div></div>
+        <div class="swatch"><div class="swatch-color" style="--swatch:lab(10.6818% .5292 1.6301)"></div><div class="swatch-meta"><strong>Light Ink</strong><code>Lab 10.68</code></div></div>
+        <div class="swatch"><div class="swatch-color" style="--swatch:lab(29.2465% .4182 1.6597)"></div><div class="swatch-meta"><strong>Light Copy</strong><code>Lab 29.25</code></div></div>
+        <div class="swatch"><div class="swatch-color" style="--swatch:lab(48.9698% .2748 1.4969)"></div><div class="swatch-meta"><strong>Light Muted</strong><code>Lab 48.97</code></div></div>
+        <div class="swatch"><div class="swatch-color" style="--swatch:lab(89.5742% -.0373 .9518)"></div><div class="swatch-meta"><strong>Light Border</strong><code>Lab 89.57</code></div></div>
+        <div class="swatch"><div class="swatch-color" style="--swatch:lab(96.2994% -.0591 .6825)"></div><div class="swatch-meta"><strong>Light Surface</strong><code>Lab 96.30</code></div></div>
+        <div class="swatch"><div class="swatch-color" style="--swatch:var(--signal)"></div><div class="swatch-meta"><strong>Signal</strong><code>#F99C00</code></div></div>
+      </div>
+
+      <div class="dark-system">
+        <div class="dark-system-header"><h3>Dark mode / 暗黑模式</h3><code>实测自原站计算样式</code></div>
+        <p>暖黑画布配合偏米白正文；边线从浅色主题的高明度灰，切换成独立的低明度暖灰。CTA 使用亮墨色反压画布色。</p>
+        <div class="palette">
+          <div class="swatch"><div class="swatch-color" style="--swatch:lab(3.70862% .237852 1.28007)"></div><div class="swatch-meta"><strong>Dark BG</strong><code>Lab 3.71</code></div></div>
+          <div class="swatch"><div class="swatch-color" style="--swatch:lab(93.0737% -.0832 2.2883)"></div><div class="swatch-meta"><strong>Dark Ink</strong><code>Lab 93.07</code></div></div>
+          <div class="swatch"><div class="swatch-color" style="--swatch:lab(74.5174% .0874 3.0589)"></div><div class="swatch-meta"><strong>Dark Copy</strong><code>Lab 74.52</code></div></div>
+          <div class="swatch"><div class="swatch-color" style="--swatch:lab(54.7968% .3635 3.8196)"></div><div class="swatch-meta"><strong>Dark Muted</strong><code>Lab 54.80</code></div></div>
+          <div class="swatch"><div class="swatch-color" style="--swatch:lab(15.3424% .5820 3.4385)"></div><div class="swatch-meta"><strong>Dark Border</strong><code>Lab 15.34</code></div></div>
+          <div class="swatch"><div class="swatch-color" style="--swatch:lab(5.73215% .3408 1.86)"></div><div class="swatch-meta"><strong>Surface 1</strong><code>Lab 5.73</code></div></div>
+          <div class="swatch"><div class="swatch-color" style="--swatch:lab(13.6012% .5497 3.2475)"></div><div class="swatch-meta"><strong>Surface 5</strong><code>Lab 13.60</code></div></div>
+          <div class="swatch"><div class="swatch-color" style="--swatch:lab(20.5642% .6058 3.6228)"></div><div class="swatch-meta"><strong>Surface 8</strong><code>Lab 20.56</code></div></div>
+        </div>
+        <div class="surface-ladder" aria-label="暗色表面一到八级">
+          <div class="surface-step" style="--surface:lab(5.73215% .3408 1.86)">S1</div>
+          <div class="surface-step" style="--surface:lab(7.79906% .4487 2.4628)">S2</div>
+          <div class="surface-step" style="--surface:lab(6.21011% .3902 2.1078)">S3</div>
+          <div class="surface-step" style="--surface:lab(11.2799% .5190 3.0577)">S4</div>
+          <div class="surface-step" style="--surface:lab(13.6012% .5497 3.2475)">S5</div>
+          <div class="surface-step" style="--surface:lab(15.9225% .5805 3.4373)">S6</div>
+          <div class="surface-step" style="--surface:lab(18.2428% .5748 3.4328)">S7</div>
+          <div class="surface-step" style="--surface:lab(20.5642% .6058 3.6228)">S8</div>
+        </div>
+        <div class="dark-shadow-row" aria-label="暗色阴影层级">
+          <div class="dark-shadow" style="--dark-shadow:inset 0 0 0 1px #ffffff05">Shadow 1</div>
+          <div class="dark-shadow" style="--dark-shadow:inset 0 1px 0 #ffffff05,inset 0 0 0 1px #ffffff05,0 0 0 1px #0000001f,0 3px 3px -1.5px #0000002e">Shadow 3</div>
+          <div class="dark-shadow" style="--dark-shadow:inset 0 1px 0 #ffffff0a,inset 0 0 0 1px #ffffff0f,0 0 0 1px #0000002e,0 12px 12px -6px #0000002e,0 24px 24px -12px #0000002e">Shadow 6</div>
+          <div class="dark-shadow" style="--dark-shadow:inset 0 1px 0 #ffffff0f,inset 0 0 0 1px #ffffff0f,0 0 0 1px #00000038,0 24px 24px -12px #0000002e,0 48px 48px -24px #0000002e,0 96px 96px -48px #0000002e">Shadow 8</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="type">
+      <h2 class="section-tag"><b>02</b>字体与层级</h2>
+      <p class="section-description">Geist 负责正文，Geist Mono 负责标签、编号和测量值。页面刻意保持 12–14px 的高密度尺度，重要性来自位置、颜色和留白。</p>
+      <div class="type-list">
+        <div class="type-row"><span class="measure">12 / 18 · 400</span><p class="sample-eyebrow">// 页面眉题 / SECTION LABEL</p></div>
+        <div class="type-row"><span class="measure">14 / 23.8 · 400</span><p class="sample-body">正文以约 1.7 倍行高保持长段中文的呼吸感，推荐每段控制在 65–75 个字符宽以内。</p></div>
+        <div class="type-row"><span class="measure">14 / 20 · 500</span><p class="sample-label">列表标题与主要控件</p></div>
+        <div class="type-row"><span class="measure">12 / 18 · Mono</span><p class="sample-mono">UTC+8 · 22.4820° N · 113.9247° E</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="spacing">
+      <h2 class="section-tag"><b>03</b>间距系统</h2>
+      <p class="section-description">4px 为基础单位。组件内部常用 8、12、16、24px；页面段落与模块用 64、72、96px 建立安静的纵向节奏。</p>
+      <div class="space-scale">
+        <div class="space-item"><code>01</code><i class="space-bar" style="--n:1"></i><output>4</output></div>
+        <div class="space-item"><code>02</code><i class="space-bar" style="--n:2"></i><output>8</output></div>
+        <div class="space-item"><code>03</code><i class="space-bar" style="--n:3"></i><output>12</output></div>
+        <div class="space-item"><code>04</code><i class="space-bar" style="--n:4"></i><output>16</output></div>
+        <div class="space-item"><code>06</code><i class="space-bar" style="--n:6"></i><output>24</output></div>
+        <div class="space-item"><code>12</code><i class="space-bar" style="--n:12"></i><output>48</output></div>
+        <div class="space-item"><code>18</code><i class="space-bar" style="--n:18"></i><output>72</output></div>
+        <div class="space-item"><code>24</code><i class="space-bar" style="--n:24"></i><output>96</output></div>
+      </div>
+    </section>
+
+    <section class="section" id="spec">
+      <h2 class="section-tag"><b>04</b>规格表</h2>
+      <p class="section-description">用于价格、时长、状态等确定信息。标签列弱化，值列加强；单元格只使用 0.5px 发丝线。</p>
+      <table class="spec-table">
+        <tbody>
+          <tr><th scope="row">容器</th><td>600px / 内容 552px</td></tr>
+          <tr><th scope="row">正文</th><td>14px / 23.8px</td></tr>
+          <tr><th scope="row">标签</th><td>12px / 18px / Mono</td></tr>
+          <tr><th scope="row">边线</th><td>0.5px</td></tr>
+          <tr><th scope="row">基础圆角</th><td>10px</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="components">
+      <h2 class="section-tag"><b>05</b>核心组件</h2>
+      <div class="components">
+        <div>
+          <p class="component-name">BUTTON / CTA</p>
+          <div class="button-row"><button class="button">主要操作</button><button class="button secondary">次要操作</button><button class="button" disabled>不可用</button></div>
+        </div>
+        <div>
+          <p class="component-name">HAIRLINE LIST</p>
+          <div class="list-demo">
+            <div class="list-row"><strong>产品判断与产品设计</strong><span>做什么、怎么做，以及界面应该是什么感觉。</span></div>
+            <div class="list-row"><strong>AI 工作流与 Coding Agents</strong><span>Prompt、Memory 与真正能交付的工作流。</span></div>
+            <div class="list-row"><strong>独立开发、创业与 GTM</strong><span>策略、MVP、验证、定价，以及下一步怎么走。</span></div>
+          </div>
+        </div>
+        <div>
+          <p class="component-name">NUMBERED STEPS</p>
+          <div class="steps">
+            <div class="step"><span class="step-index">01</span><p>先给出一句清晰、可执行的说明。</p></div>
+            <div class="step"><span class="step-index">02</span><p>把相关链接与背景材料放在同一上下文。</p></div>
+            <div class="step"><span class="step-index">03</span><p>完成后说明下一步与可恢复路径。</p></div>
+          </div>
+        </div>
+        <div>
+          <p class="component-name">TESTIMONIAL / QUOTE</p>
+          <div class="quote-list">
+            <figure><blockquote>“界面像一张正在工作的纸：安静，但每一条线都有用途。”</blockquote><figcaption>— 设计系统观察</figcaption></figure>
+            <figure><blockquote>“编号、规格与坐标让个人内容带上了工程记录的可信感。”</blockquote><figcaption>— 模式归纳</figcaption></figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="shape">
+      <h2 class="section-tag"><b>06</b>形状与深度</h2>
+      <p class="section-description">内容区保持平直。圆角集中在按钮、浮动导航和少量工具表面；阴影由极浅轮廓逐级叠加，而不是单个浓重投影。</p>
+      <div class="components">
+        <div>
+          <p class="component-name">RADIUS</p>
+          <div class="radius-grid"><div class="radius-sample" style="--r:2px">2px</div><div class="radius-sample" style="--r:8px">8px</div><div class="radius-sample" style="--r:10px">10px</div><div class="radius-sample" style="--r:999px">Pill</div></div>
+        </div>
+        <div>
+          <p class="component-name">ELEVATION</p>
+          <div class="shadow-stack"><div class="shadow-sample" style="--s:none">Flat</div><div class="shadow-sample" style="--s:var(--shadow-1)">Level 1</div><div class="shadow-sample" style="--s:var(--shadow-3)">Level 3</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="layout">
+      <h2 class="section-tag"><b>07</b>布局</h2>
+      <p class="section-description">外层最大宽度 600px，左右各 24px 内边距，实际正文宽 552px。桌面与移动端共用同一窄栏模型，主要变化只发生在展示网格。</p>
+      <div class="layout-plate"><div class="layout-container"><strong>600 → 552</strong><span>container → readable content</span></div></div>
+    </section>
+
+    <section class="section" id="principles">
+      <h2 class="section-tag"><b>08</b>设计原则</h2>
+      <div class="principles">
+        <article class="principle"><h3>信息像规格，不像广告</h3><p>优先使用定义列表、步骤、坐标和编号，让内容可扫描、可核对。</p></article>
+        <article class="principle"><h3>密度高，但不拥挤</h3><p>字号克制，段落行高放松；大模块靠 64–96px 留白分隔。</p></article>
+        <article class="principle"><h3>装饰服从结构</h3><p>波形、像素点、标尺线只强化“工程纸张”世界，不承担信息。</p></article>
+        <article class="principle"><h3>组件以线而非卡片分组</h3><p>列表使用 0.5px 分隔，减少圆角容器与层层嵌套。</p></article>
+        <article class="principle"><h3>主题切换保持材质</h3><p>深色模式不是颜色反相，仍保留暖黑纸面和多级表面。</p></article>
+        <article class="principle"><h3>Dock 是唯一浮层焦点</h3><p>底部导航承担全局移动，其他内容保持静态文档流。</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell"><p class="footer-line">采样自 <a href="https://cali.so/ama">cali.so/ama</a> · 2026-08-30 · 本页为设计系统研究与重构示例。</p></footer>
+
+  <nav class="dock" aria-label="设计系统章节">
+    <a href="#foundation" aria-label="基础色"><svg viewBox="0 0 20 20"><path d="M4 5.5h12M4 10h8M4 14.5h5"></path></svg></a>
+    <a href="#type" aria-label="字体"><svg viewBox="0 0 20 20"><path d="M4 5h12M10 5v11M6.5 16h7"></path></svg></a>
+    <a href="#components" aria-current="true" aria-label="组件"><svg viewBox="0 0 20 20"><rect x="3" y="3" width="6" height="6"></rect><rect x="11" y="3" width="6" height="6"></rect><rect x="3" y="11" width="6" height="6"></rect><rect x="11" y="11" width="6" height="6"></rect></svg></a>
+    <a href="#layout" aria-label="布局"><svg viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12"></rect><path d="M7 4v12M7 8h10"></path></svg></a>
+    <button id="theme-toggle" type="button" aria-label="切换深浅主题"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6"></circle><path d="M10 4a6 6 0 0 0 0 12z"></path></svg></button>
+  </nav>
+
+  <script>
+    const root = document.documentElement;
+    const toggle = document.querySelector('#theme-toggle');
+    toggle.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('cali-ds-theme', root.dataset.theme);
+    });
+  </script>
+</body>
+</html>

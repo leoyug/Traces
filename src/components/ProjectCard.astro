@@ -11,7 +11,7 @@ interface Props {
 const { title, summary, year, status, accent, href = "/projects", image } = Astro.props;
 ---
 
-<a class="project-card" href={href} aria-label={`查看项目：${title}`}>
+<a class="project-card" href={href} aria-label={`查看项目：${title}，${year}，${status}`}>
   <div class:list={["project-card__visual", `tone-${accent}`]} aria-hidden="true">
     {image ? <img src={image} alt="" loading="lazy" /> : (
       <span class="project-card__preview">
@@ -24,10 +24,7 @@ const { title, summary, year, status, accent, href = "/projects", image } = Astr
     )}
   </div>
   <div class="project-card__body">
-    <div class="project-card__heading">
-      <h3>{title}</h3>
-      <span class="project-card__meta"><time datetime={String(year)}>{year}</time><span aria-hidden="true">·</span><span>{status}</span></span>
-    </div>
+    <div class="project-card__heading"><h3>{title}</h3></div>
     <p>{summary}</p>
   </div>
 </a>

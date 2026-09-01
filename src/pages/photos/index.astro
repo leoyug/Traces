@@ -1,39 +1,15 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PhotoGrid from "../../components/photos/PhotoGrid.astro";
-import PhotoPicture from "../../components/photos/PhotoPicture.astro";
-import { getPhotoLibrary } from "../../lib/photos";
-
-const { photos, albums } = await getPhotoLibrary();
+const photos = Array.from({ length: 20 }, (_, index) => ({
+  src: `/assets/figma-v03/photos/photo-${String(index + 1).padStart(2, "0")}.jpg`,
+  alt: `Leo 的摄影记录 ${index + 1}`,
+  href: index === 0 ? "/photos/public-phone/" : index === 1 ? "/photos/park-walk/" : index === 2 ? "/photos/cranes-at-dusk/" : "/photos/",
+}));
 ---
 
-<BaseLayout title="相册｜Leo" description="一份按时间慢慢生长、谨慎公开的个人照片档案。" wide robots="noindex,follow">
-  <header class="photo-index-header reading-column">
-    <h1>路过一些地方，也被一些光路过。</h1>
-    <p>这里不是完整的摄影作品集，只收藏认真挑选、确认可以公开的片段。照片不包含精确位置，也不提供原件下载。</p>
-  </header>
-
-  {albums.length > 0 && (
-    <section class="photo-albums reading-column" aria-labelledby="albums-title">
-      <div class="section-topline">
-        <h2 id="albums-title">相册</h2>
-        <span>{albums.length} 本</span>
-      </div>
-      <div class="photo-album-list">
-        {albums.map(({ entry, cover, photos: albumPhotos }) => (
-          <a class="photo-album-row" href={`/albums/${entry.id}/`}>
-            {cover && <span class="photo-album-row__cover"><PhotoPicture photo={cover} sizes="72px" /></span>}
-            <span class="photo-album-row__copy"><strong>{entry.data.title}</strong><small>{entry.data.description}</small></span>
-            <span class="photo-album-row__count">{albumPhotos.length} 张</span>
-          </a>
-        ))}
-      </div>
-    </section>
-  )}
-
-  <div class="photo-archive-header wide-column">
-    <h2>全部照片</h2>
-    <span>{photos.length} 张</span>
-  </div>
-  <PhotoGrid photos={photos} context={{ type: "all" }} label="全部照片" demo />
+<BaseLayout title="摄影｜Leo" description="沿途看见的光。" robots="noindex,follow">
+  <header class="photo-index-header reading-column"><h1>摄影</h1></header>
+  <section class="v03-photo-grid reading-column" aria-label="摄影作品">
+    {photos.map((photo, index) => <a href={photo.href}><img src={photo.src} alt={photo.alt} loading={index < 6 ? "eager" : "lazy"} /></a>)}
+  </section>
 </BaseLayout>

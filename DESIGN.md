@@ -1,18 +1,18 @@
 ---
-name: "不息摄影体验"
-description: "暖白个人出版物中的隐私优先摄影档案；照片领先，界面退后。"
+name: "不息 V0.3"
+description: "深夜画布中的一条安静个人出版栏，把工作、写作与摄影收进同一套长期记录。"
 colors:
-  warm-canvas: "#fbfbfa"
-  paper-surface: "#fff"
-  quiet-surface: "#f4f2f0"
-  near-black-ink: "#191511"
-  muted-ink: "#716a65"
-  faint-ink: "#77706a"
-  quiet-line: "#e8e4e1"
-  warm-accent: "#a45a37"
-  warm-accent-soft: "#f3e7e0"
-  on-dark: "#fbfbfa"
-  image-stage: "#0d0c0b"
+  deep-canvas: "#191918"
+  pill-surface: "#13120f"
+  raised-surface: "#232323"
+  primary-ink: "#fafafa"
+  copy-ink: "#d0cecb"
+  muted-ink: "#808080"
+  faint-ink: "#808080"
+  border: "#232323"
+  quiet-line: "#343331"
+  warm-accent: "#d58a65"
+  warm-accent-soft: "#38281f"
 typography:
   display:
     fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans SC, PingFang SC, Microsoft YaHei, sans-serif"
@@ -30,6 +30,12 @@ typography:
     fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans SC, PingFang SC, Microsoft YaHei, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 400
+    lineHeight: "1.5rem"
+    letterSpacing: "0"
+  lead:
+    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans SC, PingFang SC, Microsoft YaHei, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 400
     lineHeight: 1.45
     letterSpacing: "0"
   metadata:
@@ -39,6 +45,7 @@ typography:
     lineHeight: 1.45
     letterSpacing: "0"
 rounded:
+  xxs: "2px"
   xs: "0.25rem"
   sm: "0.5rem"
   md: "0.75rem"
@@ -59,175 +66,212 @@ spacing:
   24: "6rem"
   32: "8rem"
 components:
-  button-secondary:
-    backgroundColor: "{colors.paper-surface}"
-    textColor: "{colors.near-black-ink}"
+  button-primary:
+    backgroundColor: "{colors.primary-ink}"
+    textColor: "{colors.deep-canvas}"
     typography: "{typography.body}"
     rounded: "{rounded.pill}"
     padding: "0 1rem"
     height: "2.75rem"
-  photo-tile:
-    backgroundColor: "{colors.quiet-surface}"
-    textColor: "{colors.on-dark}"
-    rounded: "{rounded.sm}"
-    padding: "0"
-    width: "100%"
-  lightbox-control:
-    backgroundColor: "rgb(251 251 250 / 10%)"
-    textColor: "white"
-    rounded: "{rounded.pill}"
-    height: "2.75rem"
-    width: "2.75rem"
-  lightbox-metadata:
-    backgroundColor: "{colors.warm-canvas}"
-    textColor: "{colors.near-black-ink}"
+  button-secondary:
+    backgroundColor: "{colors.pill-surface}"
+    textColor: "{colors.primary-ink}"
     typography: "{typography.body}"
-    padding: "3rem 2rem"
-    width: "22rem"
+    rounded: "{rounded.pill}"
+    padding: "0 1rem"
+    height: "2.75rem"
+  floating-navigation:
+    backgroundColor: "{colors.pill-surface}"
+    textColor: "{colors.muted-ink}"
+    rounded: "{rounded.pill}"
+    padding: "1rem 1.5rem"
+    width: "17.5rem"
+    height: "3.5rem"
+  project-card-visual:
+    backgroundColor: "rgb(255 255 255 / 10%)"
+    textColor: "{colors.primary-ink}"
+    rounded: "{rounded.sm}"
+    padding: "0.6875rem"
+    height: "12.0625rem"
+  input:
+    backgroundColor: "{colors.pill-surface}"
+    textColor: "{colors.primary-ink}"
+    typography: "{typography.body}"
+    rounded: "{rounded.sm}"
+    padding: "0.7rem 1rem"
+    height: "2.75rem"
 ---
 
-# Design System: 不息摄影体验
+# Design System: 不息 V0.3
 
 ## Overview
 
-**Creative North Star: "一页安静的摄影出版物"**
+**Creative North Star: "深夜中的一条安静出版栏"**
 
-摄影体验是“不息”既有个人出版视觉系统的一部分，而不是新的独立品牌。`PERSONAL_SITES_DESIGN_SYSTEM.md` 仍是全站权威设计依据；本文件只固化 `src/pages/photos`、`src/pages/albums`、`src/components/photos` 与 `src/styles/global.css` 中摄影相关规则的已实现状态。它延续暖白纸张、近黑文字、低对比线条和暖橙棕强调色，让照片成为第一视觉层级，界面只提供必要的语境、导航与出版信息。
+V0.3 是一份在深夜画布上自然展开的中文个人出版物。它把工作、写作、摄影与个人履历放在同一条克制的阅读轴线上：内容先出现，界面退后，手写 Leo 标记留下作者温度。它不是暖白纸张的延续，而是以深色、低噪声、真实内容为基准的全站视觉世界。
 
-这一表面采用 Experience 模式：首屏价值来自摄影本身，而不是英雄文案、装饰性卡片或应用式工具栏。列表在无 JavaScript 时保持原始比例的常规网格；JavaScript 只增强为 masonry、分批显示和灯箱。每张照片始终有可访问的静态详情地址，浏览语境与批次由 URL 保留。
+系统的密度接近一份长期维护的私人刊物：正文安静、字号偏小、层级靠色阶和留白建立。全站只有一个 280×56px 图标胶囊导航，固定在屏幕底部持续提供方向；页面顶部不再重复文字导航。项目用真实内容图像形成有限的视觉停顿，摄影保持发布资产原始比例。
 
 **Key Characteristics:**
 
-- 暖白、低对比、克制的个人出版气质。
-- 原始比例摄影网格，增强后才形成 masonry 节奏。
-- 深色影像舞台与暖白元数据面板并置。
-- 移动端让元数据落在照片下方，不覆盖影像。
-- 44px 控件、可见焦点、键盘路径和静态链接共同构成内容完整性。
-- 发布资产优先：不公开原件、精确位置或敏感 EXIF，摄影路由保持 `noindex,follow`。
+- 深黑灰画布与更深的胶囊表面，辅以暖橙棕的稀少状态色。
+- 以 40rem（640px）阅读栏为主轴，页面沿自然文档流纵向展开。
+- 唯一的 280×56px 图标胶囊固定在屏幕底部，并为内容预留净空；所有链接保持 44×44px 目标。
+- 14px 中文正文与克制的中等字重标题，不靠巨型字制造层级。
+- 手写 Leo 标记与 Figma 原作导航图标是身份资产，不用通用图标替代。
+- 项目卡展示真实内容图像，摄影始终尊重原始比例。
+- 移动端回到单列，44px 交互目标、可见焦点与 reduced-motion 始终保留。
 
 ## Colors
 
-色彩延续全站的暖纸中性色；摄影自身提供主要色彩，界面强调色保持稀少。
+色彩是一组温暖、低饱和的深色中性层级；白色文字略带柔和感，暖橙棕只负责状态和细小强调。
 
 ### Primary
 
-- **暖橙棕强调色：**仅用于当前状态、焦点轮廓、链接悬停和少量互动反馈，不与照片竞争。
+- **余温橙棕：**用于焦点轮廓、少量状态、元数据强调与选择反馈；稀少才让它有效。
+- **深琥珀余光：**用于文字选择、局部柔和强调和低强度暖色底，不承担大面积品牌铺色。
 
 ### Neutral
 
-- **暖白画布：**摄影索引、详情与灯箱元数据的基础页面背景。
-- **纸张表面：**次级按钮等需要轻微表面区分的控件背景。
-- **静谧次级表面：**图片占位与低层级区域，在图片到达前维持稳定布局。
-- **近黑墨色：**正文、标题与灯箱外框的核心文字色，避免纯黑造成的生硬感。
-- **柔和与浅淡墨色：**说明、数量、日期和技术元数据；信息仍可读，但不会压过照片。
-- **低对比边线：**相册行分隔与次级控件边框；只在结构确实需要时出现。
-- **深夜影像舞台：**灯箱中隔离照片的近黑背景，只属于沉浸式观看状态。
+- **深夜画布：**全站页面与浏览器主题色，是 V0.3 的默认世界。
+- **墨黑胶囊：**固定底部导航、按钮、输入等需要独立操作表面的区域。
+- **抬升炭灰：**局部结构、预览内部和需要轻微层级差的次级表面。
+- **柔白墨色：**主要标题、正文和高优先级图形。
+- **关键次级文字：**导航、辅助说明、履历描述和其他仍需稳定阅读的次级信息使用 `muted-ink`。
+- **可舍弃元数据：**日期、计数和最低优先级出版信息使用 `faint-ink`；它不能承载理解页面所必需的内容。
+- **静默边线：**输入、卡片和分隔所需的最低对比结构线。
 
-**The Borrowed Color Rule.** 摄影页面的主要色彩来自照片，不从界面额外制造高饱和装饰。
+**The Deep Canvas Rule.** 深夜画布是全站默认，不把旧暖白世界重新引入页面区块或摄影元数据面板。
 
-**The Stage Boundary Rule.** 深夜影像舞台只用于灯箱照片区域；元数据继续使用暖白出版表面，不把全站改造成深色主题。
+**The Rare Warmth Rule.** 暖橙棕只出现在状态、焦点与极少量元数据中，不用于大面积装饰或正文层级。
+
+**The Figma Neutral Rule.** V0.3 严格使用设计稿的三层文字色：主文字 #fafafa、正文 #d0cecb、说明与元数据 #808080。页面不自行引入新的灰阶。
 
 ## Typography
 
-**Display Font:** 系统无衬线字体栈
-**Body Font:** 系统无衬线字体栈
-**Label/Mono Font:** 元数据继续使用系统无衬线；数字采用 tabular numerals，而非为技术感引入等宽字体
+**Display Font:** Geist Mono（拉丁、数字）+ PingFang SC（中文）
+**Body Font:** Geist Mono（拉丁、数字）+ PingFang SC（中文）
+**Label/Mono Font:** 日期、数字和英文统一使用 Geist Mono
 
-**Character:** 单一、可靠的系统 sans 让中文标题、说明和设备参数保持稳定。层级主要来自字重、色彩、行高与留白，不靠夸张字号。
+**Character:** 中文使用系统中文无衬线，日期、数字和英文使用 Geist Mono，形成设计稿中克制且清晰的字形对比。手写 Kaiti 字形只属于 Leo 标记和少量作者批注，不能扩展为界面字体。
 
 ### Hierarchy
 
-- **Display**（中等字重）：保留给全站更高层级表达；摄影表面不主动使用夸张展示标题。
-- **Page Title**（中等字重）：照片索引、相册、标签、详情与灯箱标题；最长约 24 个汉字宽并允许平衡换行。
-- **Body**（常规字重）：照片说明、相册说明和常规元数据值，长说明采用宽松行高。
-- **Metadata**（常规字重）：数量、位置、相邻序号与验证提示；数字使用等宽数字形态保证跳转时稳定。
+- **Display**（中等字重，紧凑行高）：只用于少数最高层级表达，不作为每页必备英雄标题。
+- **Page Title**（中等字重）：索引页和详情页标题；克制、可平衡换行。
+- **Lead**（常规字重）：首页介绍与较重要的引导正文。
+- **Body**（常规字重）：全站默认 14px 中文正文、列表和组件标题；基础行盒为 24px。
+- **Metadata**（常规字重）：日期、年份、状态和说明；数字使用 tabular numerals 保持稳定。
 
-**The Quiet Hierarchy Rule.** 不通过整体放大摄影界面制造重要性；照片负责吸引注意，文字只靠中等字重、墨色层级和间距建立秩序。
+**The Quiet Type Rule.** 重要性来自位置、字重、墨色和留白，不通过突然放大的字号、全大写或高对比装饰建立。
+
+**The Mixed Script Rule.** 中文界面共享系统中文 sans，拉丁、数字统一回退到自托管 Geist Mono；script 只保留给作者标记。
 
 ## Layout
 
-摄影索引的文字介绍与相册列表留在窄阅读栏，全部照片网格扩展到 75rem 宽栏，移动端始终保留 1.5rem gutter。照片网格移动优先：默认两列，40rem 起三列，64rem 起四列，列间距为 0.75rem。每张图片使用内容记录中的真实宽高比和占位色，避免加载时跳动。
+40rem（640px）阅读栏是首页、项目、写作、关于、页尾和文档式摄影入口的主轴；75rem 宽栏只供需要完整媒体空间的摄影浏览与详情使用。两类容器都使用 1.5rem（24px）移动端 gutter，并在视口内水平居中。
 
-**The Honest Grid Rule.** 无 JavaScript 时使用正常行流、真实宽高比网格；脚本加载成功后才增加 8px 隐形行轨并计算跨行数形成 masonry。增强失败不能破坏浏览、链接或阅读顺序。
+页面顶部不提供文字导航。唯一的 280×56px 图标胶囊以 40 层级固定在视口底部并水平居中，距视口底部恒定 120px。它在 DOM 中位于 skip link 之后、主内容之前，随后才是页脚，但固定定位使其不占据文档流。
 
-每批显示 12 张，显式“加载更多”按钮写回 `batch` 查询参数。照片链接包含 `context`、`value` 与需要时的 `batch`，详情页据此返回全部照片、相册或标签上下文。直接访问静态详情页与在灯箱中浏览属于同一地址模型。
+正文仍依次自然向下展开，首段通常在顶部留 4rem，主要章节之间使用 4–5rem 的呼吸距离。块末端滚动留白覆盖“56px dock + 120px 底部间隔 + 32px 呼吸距离”，页脚标记距页面底部保持 48px。
 
-桌面灯箱占满 100dvh，使用“弹性影像区 + 22rem 元数据侧栏”的双栏结构。47.999rem 以下改为上下堆叠：影像舞台约占 62dvh，暖白元数据面板在下方独立滚动，绝不覆盖照片。静态详情页桌面为“影像 + 20rem 信息栏”，移动端回到单一文档流。
+首页按照 Figma V0.3 依次呈现作者标记、三段介绍、最近写作、精选项目、摄影和联系方式，不在介绍后额外增加按钮。`/resume` 使用同一 40rem（640px）阅读栏，依次编排介绍、联系入口、工作时间线、项目、三组技能和教育信息。
+
+项目在可用宽度内采用两列，39.999rem 以下切为单列；摄影首页预览为三列，移动端仍保留三幅并缩短高度，完整摄影网格按真实比例响应。关于页的文字和相片在桌面并置、窄屏回到单列。文章、项目和照片详情分别延续各自的领域结构，不套用或复制 Figma 占位模板。正文不因窄屏整体缩小。
+
+当前 shipped 基线已完成桌面与 390px 手机终检，所有关键交互的 44px 最小目标均通过。
+
+**The One Reading Axis Rule.** 默认页面只围绕 640px 中央阅读轴组织；宽栏必须由媒体内容的真实需要来证明。
+
+**The Persistent Dock Rule.** 全站只有一个固定在屏幕底部的图标 dock；不得再增加顶部文字导航或把 dock 放回页面末尾。安全区、内容净空与滚动留白是这个固定控件不可分割的一部分。
 
 ## Elevation & Depth
 
-摄影表面基本扁平。索引依靠留白、真实图片边界和低对比分隔线建立层级，不给照片卡片添加阴影。灯箱通过全屏 backdrop、近黑舞台与暖白信息面板之间的强烈材质对比建立深度；圆形控制以半透明浅色表面浮在舞台上。
+系统以扁平和色调分层为默认。页面结构依靠画布、留白、低对比边线和图像自身建立，不给每段内容套卡片。阴影只用于确实抬升的表面：项目预览内部、胶囊导航与真正浮层。
 
 ### Shadow Vocabulary
 
-- **Hairline：**全站已有的单像素轮廓语汇；摄影区域只在控件或结构需要时使用。
-- **Card：**保留给常规按钮等已有公共组件，不应用于照片格子。
-- **Float：**保留给真正的浮层；灯箱本身依靠原生 dialog backdrop，而不是给照片加投影。
+- **Hairline：**单像素般的低亮轮廓，用于深色表面需要从画布中被识别时。
+- **Card：**紧凑的双层暗影，只用于项目预览或明确独立的控件表面。
+- **Float：**更深、更远的暗影，用于固定底部 dock 和真正浮层。
 
-**The Flat Photograph Rule.** 照片默认不加卡片阴影、白边或装饰框；深度只出现在操作层级与沉浸式观看状态。
+**The Flat-by-Default Rule.** 普通内容行、页面区块和摄影图像保持平面；只有操作层级或真实抬升关系可以使用阴影。
+
+**The Top-Layer Rule.** 固定 dock 使用常规堆叠上下文中的 40 层级；原生 `dialog` 进入浏览器 top layer 后必须覆盖 dock，不通过继续抬高 dock 的 `z-index` 与模态层竞争。
 
 ## Shapes
 
-照片格子与静态详情影像使用轻柔的 0.5rem 圆角，只为裁切边缘，不把摄影包装成厚重卡片。相册封面使用更克制的 0.25rem 圆角。按钮和灯箱控制为完整胶囊或圆形，明确区分“内容”与“操作”。
+形状语言由轻微裁切和明确操作轮廓组成。内容图像多用 0.25–0.5rem 的小圆角，常规容器最多使用 0.75rem；1rem 以上只属于大媒体裁切。导航、按钮和圆形控制使用完整胶囊，以区分“操作”与“内容”。
 
-**The Native Ratio Rule.** 不用统一卡片高度裁切摄影网格；每张照片的外轮廓忠实于发布资产的真实比例。
+**The Content Before Container Rule.** 文章和项目索引优先使用开放内容行；只有媒体裁切、复杂操作或明确独立表面需要卡片容器。
 
 ## Components
 
-### Photo Grid
+### Buttons
 
-- **Structure:** 真实比例的响应式 CSS Grid；增强后由脚本计算 masonry 跨行。
-- **Surface:** 图片本身就是表面，不增加边框或阴影；发布占位色在加载前填充同一比例区域。
-- **State:** 桌面 hover 与键盘 focus 以 1.025 倍轻微放大和底部渐变标题层反馈；小屏隐藏覆盖层，避免文字遮挡照片。
-- **Fallback:** 每个格子都是普通详情页 anchor；JavaScript 只拦截标准主按钮点击以打开灯箱。
+- **Shape:** 44px 最小高度的完整胶囊，左右内边距 1rem。
+- **Primary:** 柔白表面配深夜文字，用于明确主动作，并使用紧凑卡片阴影。
+- **Secondary:** 墨黑胶囊表面、静默边线与柔白文字，适合低声量动作。
+- **Ghost:** 透明背景，保留同样的目标尺寸和点击反馈。
+- **Hover / Focus:** 背景与位移使用快速平滑过渡；按下缩放至 0.97；键盘焦点始终显示 2px 暖色轮廓和 3px offset。
 
-### Album Rows
+### Cards / Containers
 
-- **Structure:** 封面、标题/说明、照片数量三列，最小高度 5.5rem。
-- **Surface:** 无卡片底板，相邻行只以低对比细线分隔。
-- **State:** hover 只将标题切换为暖橙棕；封面保持平静。
+- **Project Card:** 两列媒体卡，视觉区展示真实项目图像；深色半透明框只负责托住内容，不用抽象占位插画取代真实资料。
+- **Content Row:** 文章和归档的默认表达；标题、可选摘要、点状 leader 与右侧日期形成一条开放的出版行，hover 只让正文向右移动 4px。
+- **Photo Tile:** 图片本身就是表面，保持原始比例，不加统一裁切、厚边或卡片阴影。
 
-### Load More Button
+### Inputs / Fields
 
-- **Shape:** 完整胶囊，最小高度 2.75rem。
-- **Style:** 纸张白背景、低对比边框、近黑文字；使用全站次级按钮，不为摄影另造控件。
-- **Behavior:** 显式增加一批最多 12 张照片，并通过 live region 报告“已显示 / 总数”。
+- **Style:** 44px 最小高度，墨黑表面、静默边线、0.5rem 圆角和 0.7rem × 1rem 内边距。
+- **Focus:** 使用全站暖色焦点轮廓，不以移除 outline 换取视觉干净。
 
-### Photo Lightbox
+### Navigation
 
-- **Stage:** 全屏原生 dialog，照片在深夜影像舞台中以 `object-fit: contain` 完整呈现。
-- **Metadata:** 桌面右侧 22rem 暖白面板；移动端堆叠在照片下方，最大约 38dvh。
-- **Controls:** 关闭、上一张、下一张均为 44×44px 圆形控件；支持 Esc、方向键、水平滑动、禁用态与焦点恢复。
-- **URL:** 打开、切换和返回均维护照片地址、浏览语境与批次；浏览器前进/后退是正式交互路径。
+- **Fixed Dock:** 全站唯一导航是固定在屏幕底部、水平居中的 280×56px 墨黑图标胶囊；五个链接均为 44×44px 圆形目标。
+- **Placement:** dock 距视口底部恒定 120px，层级为 40；块末端滚动留白同步覆盖 dock 高度、间隔与呼吸距离。
+- **Assets:** 必须直接使用 `public/assets/figma/nav-home.svg`、`nav-writing.svg`、`nav-projects.svg`、`nav-photos.svg` 与 `nav-about.svg` 的作者版本，不替换为图标库近似品。
+- **State:** 默认图标保持低亮；hover、focus 与当前页恢复完整亮度。悬停底板为 44px 半透明圆，tooltip 使用 #13120f 表面、#232323 描边、4px 圆角和 0 4 8 的 25% 黑色阴影；当前页以 3px 底部圆点标识。
+- **Modal Relationship:** 原生照片 `dialog` 依靠浏览器 top layer 覆盖 dock；dock 不进入 top layer，也不提高到模态层之上。
+- **Motion:** hover 不改变图标位置，只切换底板与 tooltip；所有状态尊重 reduced-motion。
 
-### Photo Metadata
+### Online Resume
 
-- **Structure:** 标题、说明和两列定义列表；标签列宽 3.25rem，值允许任意位置换行。
-- **Content:** 只展示可公开的拍摄日期、器材、参数、模糊地点、相册和标签。
-- **Reuse:** 同一信息结构用于灯箱和静态详情页，避免两套元数据语义漂移。
+`/resume` 是 640px 阅读栏内的结构化在线履历，而不是下载页或宣传落地页。它从 `resume` content 读取并按介绍、联系胶囊、工作时间线、项目经验、三组技能和教育经历的顺序呈现；桌面时间线和技能可以分栏，390px 等手机宽度自然收为单列，联系入口保持 44px 最小高度。
+
+### Domain Detail Pages
+
+文章与项目详情复用 V0.3 的桌面详情骨架：40rem 主栏、640×384px 封面、32px 标题、四列元数据和左侧章节轨道；移动端隐藏轨道并回到单列。照片详情使用 1440×920 画板定义的宽幅影像舞台和横向公开元数据。
 
 ### Static Photo Detail
 
-- **Purpose:** 无 JavaScript、直接链接、分享与回退场景的完整阅读路径。
-- **Desktop:** 影像与 sticky 元数据栏并排。
-- **Mobile:** 影像、元数据和相邻导航自然堆叠；交互链接保持至少 44px 高。
+照片详情在桌面以 1246×758px 外框容纳影像，并在下方水平排列地点、相机、镜头、焦距、光圈、快门与感光度；移动端改为高画幅舞台和可换行元数据。固定导航仍按用户指定悬浮在视口底部。
+
+### Leo Mark
+
+手写 Leo 标记出现在首页开篇和页脚收束处，是全站唯一允许明显手写质感的身份元素。它保持原始比例和 4rem × 3rem 的呈现尺寸，不加底板、描边或动画。
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** 让摄影从第一视口开始成为主角，界面只保留标题、来源语境、元数据与浏览控制。
-- **Do** 保持无 JavaScript 网格、静态详情 anchor、浏览器历史和 URL 驱动语境全部可用。
-- **Do** 使用真实宽高比、响应式发布衍生图、准确 alt 和稳定尺寸，避免布局跳动与不必要下载。
-- **Do** 保证所有控制至少 44×44px、可见 `:focus-visible`、Esc/方向键路径、焦点恢复和 reduced-motion 支持。
-- **Do** 把移动端元数据堆叠在照片下方，并保留自然文档流。
-- **Do** 只发布限制尺寸、清理敏感 EXIF 且逐张确认的资产；摄影页面保持 `noindex,follow`，同时把“不上传原件”作为真正的隐私边界。
+- **Do** 让真实文章、项目图像和原比例摄影承担视觉内容，不用占位装饰填满页面。
+- **Do** 保持 640px 中央阅读栏、24px 移动端 gutter 和正文自然文档流。
+- **Do** 只保留固定在屏幕底部的 280×56px 图标 dock，并同步维护 safe area、内容净空和滚动留白；五个真实链接均满足 44×44px 最小目标。
+- **Do** 使用低声量 14px 中文排版，通过留白、色阶与中等字重建立层级。
+- **Do** 用 #9e9792 承载关键次级文字，只把 #8c8c8c 留给可舍弃元数据。
+- **Do** 保留手写 Leo 标记和五枚 Figma 原作导航 SVG 的作者性。
+- **Do** 保证交互目标至少 44×44px、`:focus-visible` 清晰可见，并尊重 `prefers-reduced-motion`。
+- **Do** 让移动端项目与履历回到单列、内容自然堆叠，确保页脚和滚动目标不被 dock 遮挡，并让 top-layer `dialog` 覆盖 dock；终检同时覆盖桌面与 390px 手机。
 
 ### Don't:
 
-- **Don't** 用 JavaScript 作为看到照片、打开详情或返回浏览语境的前提。
-- **Don't** 把所有照片裁成统一卡片比例，或用阴影、厚边框和装饰 UI 抢夺照片的注意力。
-- **Don't** 在移动端把标题、参数或操作面板覆盖在照片主体上。
-- **Don't** 公开原件、精确坐标、设备序列号、未清理 EXIF 或第三方隐私信息。
-- **Don't** 把 `noindex` 当作隐私措施；任何已经上传到公开站点的资产都应视为可被访问。
-- **Don't** 将灯箱的深色舞台推广成摄影页面或全站的默认深色表面。
+- **Don't** 恢复旧暖白摄影世界、纸张卡片或大面积浅色页面区块。
+- **Don't** 增加顶部文字导航、吸顶栏或第二套导航；固定底部 dock 是唯一站点导航。
+- **Don't** 把 dock 放回页面末尾，或省略底部安全区、内容净空与滚动留白。
+- **Don't** 用高于模态层的 `z-index` 强行显示 dock；原生 top-layer `dialog` 必须完整覆盖它。
+- **Don't** 用巨型英雄字、全屏口号、过度装饰或客户端动效延迟真实内容出现。
+- **Don't** 用通用图标库、emoji 或临摹近似图替换 Figma 导航资产和 Leo 标记。
+- **Don't** 把每一组内容包成圆角卡片，或用阴影代替留白和结构。
+- **Don't** 统一裁切摄影比例，或在移动端整体缩小正文来换取空间。
+- **Don't** 让文章、项目或照片详情复制 Figma 占位模板；每类详情必须保留自己的内容结构。

@@ -2,22 +2,11 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContentRow from "../components/ContentRow.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import PhotoPicture from "../components/photos/PhotoPicture.astro";
-import { getCollection } from "astro:content";
-import { formatDate, projectStatusLabels } from "../lib/content";
-import { getPhotoLibrary } from "../lib/photos";
+import { getEntry } from "astro:content";
 
-const articles = (await getCollection("articles", ({ data }) => !data.draft))
-  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf())
-  .slice(0, 2);
-const projects = (await getCollection("projects", ({ data }) => !data.draft && data.featured))
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 2);
-const projectImages: Record<string, string> = {
-  "workspace-structure-redesign": "/assets/figma/project-workspace.jpg",
-  "content-publishing-system": "/assets/figma/project-publishing.jpg",
-};
-const recentPhotos = (await getPhotoLibrary()).photos.slice(0, 3);
+const resume = await getEntry("resume", "main");
+if (!resume) throw new Error("缺少 main 职业履历内容");
+const github = resume.data.links.find((link) => link.label === "GitHub")?.href ?? "https://github.com/leoyug";
 ---
 
 <BaseLayout>
@@ -25,51 +14,44 @@ const recentPhotos = (await getPhotoLibrary()).photos.slice(0, 3);
     <h1 class="sr-only">Leo 的个人网站</h1>
     <img class="hero__signature" src="/assets/figma/leo-mark.svg" alt="Leo" width="64" height="48" />
     <div class="hero__copy">
-      <p>你好，<a href="/about">我是 Leo</a>，一名设计工程师。我把模糊的需求整理成清晰、可维护的页面与交互。</p>
-      <p>我关注页面结构、设计系统与实现细节。你可以从<a href="/projects">项目</a>开始，看看我做过的工作。</p>
-      <p>我也在这里记录<a href="/writing">写作</a>、收藏<a href="/photos">路上看到的光</a>，以及那些还没有完全想明白的问题。</p>
+      <p>你好，<a href="/about">我是Leo</a>，一名产品设计师。我喜欢把模糊的需求整理成清晰的页面与交互。</p>
+      <p>我关注页面结构、设计系统与实现细节。你可以从<a href="/projects">项目</a>开始，看看我做过的工作，感兴趣的话，也可以看看我的<a href="/resume">简历</a>。</p>
+      <p>我也在这里记录<a href="/writing">写作</a>、收藏路上<a href="/photos">看到的光</a>，以及那些还没有完全想明白的问题。</p>
     </div>
   </section>
 
   <section class="home-section reading-column writing-home">
-    <div class="section-topline">
-      <h2>最近在想</h2>
-      <a class="text-link" href="/writing">全部文章</a>
+    <div class="section-topline"><h2>最近在想</h2><a class="text-link" href="/writing">全部文章</a></div>
+    <div class="home-list">
+      <ContentRow title="把模糊需求变成可维护的界面" meta="2026-08-06" href="/writing/clarity-before-components" density="compact" stackOnMobile={false} />
+      <ContentRow title="我如何整理一座不断生长的个人档案" meta="2026-07-18" href="/writing/a-living-archive" density="compact" stackOnMobile={false} />
     </div>
-    <div>{articles.map((article) => <ContentRow title={article.data.title} meta={formatDate(article.data.publishedAt)} href={`/writing/${article.id}`} density="compact" stackOnMobile={false} />)}</div>
   </section>
 
   <section class="home-section reading-column project-home">
-    <div class="section-topline">
-      <h2>精选项目</h2>
-      <a class="text-link" href="/projects">项目档案</a>
+    <div class="section-topline"><h2>精选项目</h2><a class="text-link" href="/projects">项目档案</a></div>
+    <div class="project-grid">
+      <ProjectCard title="宅畅想 App" summary="家装公司全链路解决方案" year="2026" status="已上线" accent="clay" image="/assets/figma-v03/home/image-01.png" href="/projects/workspace-structure-redesign" />
+      <ProjectCard title="亦我家装后台" summary="帮助企业更高效地管理资产与人员吧" year="2026" status="已上线" accent="sage" image="/assets/figma-v03/home/image-10.png" href="/projects/content-publishing-system" />
     </div>
-    <div class="project-grid">{projects.map((project) => <ProjectCard title={project.data.title} summary={project.data.description} year={project.data.year} status={projectStatusLabels[project.data.status]} accent={project.data.accent} image={projectImages[project.id]} href={`/projects/${project.id}`} />)}</div>
   </section>
 
   <section class="home-section reading-column photo-home">
-    <div class="section-topline">
-      <h2>最近的光</h2>
-      <a class="text-link" href="/photos">进入相册</a>
-    </div>
+    <div class="section-topline"><h2>最近的光</h2><a class="text-link" href="/photos">进入相册</a></div>
     <div class="photo-strip" aria-label="最近摄影">
-      {recentPhotos.map((photo) => (
-        <a href={`/photos/${photo.slug}/`} aria-label={`查看照片：${photo.title}`}><PhotoPicture photo={photo} sizes="(max-width: 640px) 33vw, 174px" /></a>
-      ))}
+      <a href="/photos/public-phone/" aria-label="查看照片：暮色建筑"><img src="/assets/figma-v03/home/image-02.jpg" alt="暮色中的建筑与行人" /></a>
+      <a href="/photos/park-walk/" aria-label="查看照片：公园散步"><img src="/assets/figma-v03/home/image-04.jpg" alt="冬日公园里散步的人" /></a>
+      <a href="/photos/cranes-at-dusk/" aria-label="查看照片：暮色塔吊"><img src="/assets/figma-v03/home/image-05.jpg" alt="暮色天空下的塔吊" /></a>
     </div>
   </section>
 
   <section class="home-section contact-section reading-column" aria-labelledby="contact-title">
     <h2 id="contact-title">联系到我</h2>
     <nav aria-label="联系方式">
-      <a href="mailto:hello@incessantleo.com">Email</a>
+      <a href={github} rel="me">GitHub</a>
+      <a href={`mailto:${resume.data.email}`}>Email</a>
+      <span>微信</span>
       <a href="/rss.xml">RSS</a>
     </nav>
   </section>
 </BaseLayout>
-
-<script>
-  import { initMotion } from "../scripts/motion";
-
-  initMotion();
-</script>
