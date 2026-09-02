@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContentRow from "../components/ContentRow.astro";
 import ProjectCard from "../components/ProjectCard.astro";
+import PhotoCornerMarks from "../components/photos/PhotoCornerMarks.astro";
 import { getEntry } from "astro:content";
 
 const resume = await getEntry("resume", "main");
@@ -39,9 +40,9 @@ const github = resume.data.links.find((link) => link.label === "GitHub")?.href ?
   <section class="home-section reading-column photo-home">
     <div class="section-topline"><h2>最近的光</h2><a class="text-link" href="/photos">进入相册</a></div>
     <div class="photo-strip" aria-label="最近摄影">
-      <a href="/photos/public-phone/" aria-label="查看照片：暮色建筑"><img src="/assets/figma-v03/home/image-02.jpg" alt="暮色中的建筑与行人" /></a>
-      <a href="/photos/park-walk/" aria-label="查看照片：公园散步"><img src="/assets/figma-v03/home/image-04.jpg" alt="冬日公园里散步的人" /></a>
-      <a href="/photos/cranes-at-dusk/" aria-label="查看照片：暮色塔吊"><img src="/assets/figma-v03/home/image-05.jpg" alt="暮色天空下的塔吊" /></a>
+      <a class="photo-hover-target turn-left" href="/photos/public-phone/" aria-label="查看照片：暮色建筑"><img class="photo-hover-image" src="/assets/figma-v03/home/image-02.jpg" alt="暮色中的建筑与行人" /><PhotoCornerMarks /></a>
+      <a class="photo-hover-target turn-right" href="/photos/park-walk/" aria-label="查看照片：公园散步"><img class="photo-hover-image" src="/assets/figma-v03/home/image-04.jpg" alt="冬日公园里散步的人" /><PhotoCornerMarks /></a>
+      <a class="photo-hover-target turn-left" href="/photos/cranes-at-dusk/" aria-label="查看照片：暮色塔吊"><img class="photo-hover-image" src="/assets/figma-v03/home/image-05.jpg" alt="暮色天空下的塔吊" /><PhotoCornerMarks /></a>
     </div>
   </section>
 

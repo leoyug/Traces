@@ -1,15 +1,8 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-const photos = Array.from({ length: 20 }, (_, index) => ({
-  src: `/assets/figma-v03/photos/photo-${String(index + 1).padStart(2, "0")}.jpg`,
-  alt: `Leo 的摄影记录 ${index + 1}`,
-  href: index === 0 ? "/photos/public-phone/" : index === 1 ? "/photos/park-walk/" : index === 2 ? "/photos/cranes-at-dusk/" : "/photos/",
-}));
+import FigmaGallery from "../../components/photos/FigmaGallery.astro";
 ---
 
 <BaseLayout title="摄影｜Leo" description="沿途看见的光。" robots="noindex,follow">
-  <header class="photo-index-header reading-column"><h1>摄影</h1></header>
-  <section class="v03-photo-grid reading-column" aria-label="摄影作品">
-    {photos.map((photo, index) => <a href={photo.href}><img src={photo.src} alt={photo.alt} loading={index < 6 ? "eager" : "lazy"} /></a>)}
-  </section>
+  <FigmaGallery />
 </BaseLayout>

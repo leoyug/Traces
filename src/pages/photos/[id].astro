@@ -1,34 +1,15 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PhotoPicture from "../../components/photos/PhotoPicture.astro";
-import { getPhotoLibrary } from "../../lib/photos";
-import type { PhotoListItem } from "../../lib/photo-types";
+import FigmaGallery from "../../components/photos/FigmaGallery.astro";
+import { galleryPhotos } from "../../data/gallery";
 
 export async function getStaticPaths() {
-  const { photos } = await getPhotoLibrary();
-  return photos.map((photo) => ({ params: { id: photo.slug }, props: { photo } }));
+  return galleryPhotos.map((photo) => ({ params: { id: photo.slug }, props: { photo } }));
 }
-interface Props { photo: PhotoListItem }
+interface Props { photo: (typeof galleryPhotos)[number] }
 const { photo } = Astro.props;
-const socialImage = photo.sources.jpeg.at(-1)?.src ?? null;
-const facts = [
-  ["地点", photo.metadata.place ?? "青岛"],
-  ["相机", photo.metadata.camera ?? "SONY ILCE-7M4"],
-  ["镜头", photo.metadata.lens ?? "SONY G 85mm F1.4"],
-  ["焦距", photo.metadata.focalLength ?? "85 mm"],
-  ["光圈", photo.metadata.aperture ?? "f/1.4"],
-  ["快门", photo.metadata.shutterSpeed ?? "1/400 s"],
-  ["感光度", photo.metadata.iso ?? "800"],
-];
 ---
 
-<BaseLayout title={`${photo.title}｜Leo 的照片`} description={photo.description} wide socialImage={socialImage} robots="noindex,follow">
-  <article class="v03-photo-detail">
-    <figure class="v03-photo-detail__frame">
-      <PhotoPicture photo={photo} loading="eager" fetchpriority="high" sizes="calc(100vw - 220px)" />
-    </figure>
-    <dl class="v03-photo-detail__facts">
-      {facts.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}
-    </dl>
-  </article>
+<BaseLayout title={`摄影｜Leo`} description={photo.alt} socialImage={photo.src} robots="noindex,follow">
+  <FigmaGallery initialSlug={photo.slug} />
 </BaseLayout>

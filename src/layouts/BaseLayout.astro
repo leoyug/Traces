@@ -1,6 +1,7 @@
 ---
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
   wide?: boolean;
   socialImage?: string | null;
   robots?: string;
+  viewTransitions?: boolean;
 }
 
 const {
@@ -17,6 +19,7 @@ const {
   wide = false,
   socialImage = "/og-ian-inspired.png",
   robots,
+  viewTransitions = false,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : null;
@@ -46,10 +49,11 @@ const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : nul
     <meta name="twitter:description" content={description} />
     {resolvedSocialImage && <meta name="twitter:image" content={resolvedSocialImage} />}
     <meta name="generator" content={Astro.generator} />
+    {viewTransitions && <ClientRouter fallback="swap" />}
     <title>{title}</title>
   </head>
   <body>
-    <!-- THESIS: 深夜背景中的一条安静出版栏，把工作、写作与摄影放在同一条长期记录里。 OWN-WORLD: 近黑画布、640px 窄栏、手写标记、灰阶文字与原比例摄影。 STORY: 访客先认识 Leo，再依次进入文章、项目与照片，固定在屏幕底部的胶囊导航持续提供方向。 FIRST VIEWPORT: 签名与三行介绍从 64px 开始，正文在首屏直接给出项目、写作和摄影入口。 FORM: Figma V0.3 的深色个人出版物。 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance -->
+    <!-- THESIS: 深夜背景中的一条安静出版栏，把工作、写作与摄影放在同一条长期记录里。 OWN-WORLD: 近黑画布、592px 内容栏、手写标记、灰阶文字与原比例摄影。 STORY: 访客先认识 Leo，再依次进入文章、项目与照片，距视口底部 24px 的胶囊导航持续提供方向。 FIRST VIEWPORT: 签名与三行介绍从 48px 开始，正文在首屏直接给出项目、写作和摄影入口。 FORM: Figma V0.3.2 的深色个人出版物。 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance -->
     <a class="skip-link" href="#main">跳到主要内容</a>
     <SiteHeader />
     <main id="main" class:list={["page-main", { "page-main--wide": wide }]}>

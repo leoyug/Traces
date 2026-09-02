@@ -3,16 +3,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 
 const projects = [
-  { title: "灵感集", summary: "更好地展示你的收藏夹", year: "2026", href: "/projects/photo-archive-experiment" },
-  { title: "途途 IP", summary: "围绕 IP 形象 TUTU 设计的一系列周边", year: "2026", href: "/projects/photo-archive-experiment" },
-  { title: "「宅畅想」官网", summary: "宅畅想的官方网站，帮助更好的转化用户", year: "2025", href: "/projects/workspace-structure-redesign" },
-  { title: "亦我家装后台", summary: "亦我家装 B 端后台，帮助用户更好地使用产品", year: "2024–2025", href: "/projects/content-publishing-system" },
-  { title: "宅畅想", summary: "B 端家装产品，助力家装企业提效", year: "2020–2025", href: "/projects/workspace-structure-redesign" },
-  { title: "游享 App", summary: "旅游分享类 App", year: "2019–2020", href: "/projects/photo-archive-experiment" },
+  { source: "inspiration", title: "灵感集", summary: "更好地展示你的收藏夹", year: "2026", href: "/projects/photo-archive-experiment", images: ["room-02.jpg", "room-04.jpg", "room-01.jpg"] },
+  { source: "tutu", title: "途途 IP", summary: "围绕 IP 形象 TUTU 设计的一系列周边", year: "2026", href: "/projects/photo-archive-experiment", images: ["room-15.jpg", "room-18.jpg", "room-01.jpg"] },
+  { source: "website", title: "「宅畅想」官网", summary: "宅畅想的官方网站，帮助更好的转化用户", year: "2025", href: "/projects/workspace-structure-redesign", images: ["room-17.jpg", "room-03.jpg", "room-10.jpg"] },
+  { source: "admin", title: "亦我家装后台", summary: "亦我家装 B 端后台，帮助用户更好地使用产品", year: "2024–2025", href: "/projects/content-publishing-system", images: ["room-06.jpg", "room-08.jpg", "room-07.jpg"] },
+  { source: "product", title: "宅畅想", summary: "B 端家装产品，助力家装企业提效", year: "2020–2025", href: "/projects/workspace-structure-redesign", images: ["room-09.jpg", "room-11.jpg", "room-10.jpg"] },
+  { source: "travel", title: "游享 App", summary: "旅游分享类 App", year: "2019–2020", href: "/projects/photo-archive-experiment", images: ["room-12.jpg", "room-16.jpg", "room-01.jpg"] },
 ];
+
+const archiveAsset = (name: string) => `/assets/figma-v03/projects/archive/${name}`;
 ---
 
-<BaseLayout title="项目｜Leo" description="产品设计项目档案。">
+<BaseLayout title="项目｜Leo" description="产品设计项目档案。" viewTransitions>
   <header class="page-intro reading-column">
     <h1>项目</h1>
     <p>作为设计师，我热爱制作有意义的交互，并将有趣的创意变为现实。以下是我从事设计工作以来的项目，我思考最多的往往是使用时的体验。</p>
@@ -26,8 +28,58 @@ const projects = [
   </section>
   <section class="archive-section reading-column" aria-labelledby="archive-title">
     <div class="section-topline"><h2 id="archive-title">全部项目</h2></div>
-    <div class="project-archive-list">
-      {projects.map((project) => <a class="project-archive-row" href={project.href}><span><strong>{project.title}</strong><small>{project.summary}</small></span><time>{project.year}</time></a>)}
+    <div class="project-archive-list" data-project-archive-list>
+      {projects.map((project) => <a class="project-archive-row" href={project.href} data-project-transition data-project-source={project.source}>
+        <span class="project-archive-row__thumb" aria-hidden="true">
+          {project.images.map((image) => <img src={archiveAsset(image)} alt="" loading="lazy" />)}
+        </span>
+        <span class="project-archive-row__copy"><strong>{project.title}</strong><small>{project.summary}</small></span>
+        <time>{project.year}</time>
+      </a>)}
     </div>
   </section>
+  <script>
+    const initializeProjectTransitions = () => {
+      const links = document.querySelectorAll<HTMLElement>("[data-project-transition]");
+      const featuredLinks = document.querySelectorAll<HTMLElement>(".featured-projects .project-card");
+
+      links.forEach((link) => {
+        if (link.dataset.transitionReady === "true") return;
+        link.dataset.transitionReady = "true";
+
+        const markAsSource = () => {
+          links.forEach((item) => item.classList.remove("is-transitioning"));
+          link.classList.add("is-transitioning");
+          const source = link.dataset.projectSource;
+          if (source) sessionStorage.setItem("project-transition-source", source);
+        };
+
+        link.addEventListener("pointerdown", markAsSource, { passive: true });
+        link.addEventListener("click", markAsSource);
+      });
+
+      featuredLinks.forEach((link) => {
+        if (link.dataset.transitionReady === "true") return;
+        link.dataset.transitionReady = "true";
+
+        const clearSource = () => {
+          links.forEach((item) => item.classList.remove("is-transitioning"));
+          sessionStorage.removeItem("project-transition-source");
+        };
+
+        link.addEventListener("pointerdown", clearSource, { passive: true });
+        link.addEventListener("click", clearSource);
+      });
+    };
+
+    initializeProjectTransitions();
+    document.addEventListener("astro:page-load", initializeProjectTransitions);
+    document.addEventListener("astro:before-swap", (event) => {
+      const source = sessionStorage.getItem("project-transition-source");
+      if (!source) return;
+
+      const selector = `[data-project-source="${CSS.escape(source)}"]`;
+      event.newDocument.querySelector(selector)?.classList.add("is-transitioning");
+    });
+  </script>
 </BaseLayout>

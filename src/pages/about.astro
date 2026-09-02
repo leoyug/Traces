@@ -8,17 +8,15 @@ const github = resume.data.links.find((link) => link.label === "GitHub")?.href ?
 
 <BaseLayout title="关于｜Leo" description="产品设计师 Leo 的个人介绍。">
   <header class="about-intro reading-column">
-    <div class="about-intro__copy">
-      <h1>关于我</h1>
-      <p>Hi，我是廖如晟 / Leo，一名产品设计师。我喜欢体验各种有趣的应用或者产品，也爱探索各种有趣的设计。</p>
-      <p>我从事设计工作是出于自己的兴趣。在经历了快 3 年的研究所工作后，我发现还是设计工作比较能让我投入。之前在一家 VR 看房行业的设计岗位工作，做过 App 产品设计、B 端后台设计、Web 端页面设计；使用过 Sketch、Figma、Adobe 套件等相关工具；也热衷于探索将 AI 融入工作流，尝试使用 Agent 开发个人产品。</p>
-      <p>工作之外，我喜欢摄影、搭建博客以及到处寻找好吃的食物。</p>
+    <h1>关于我</h1>
+    <div class="about-intro__body">
+      <div class="about-intro__copy"><p>Hi，我是廖如晟，一名产品设计师。我喜欢体验各种有趣的应用或者产品，也爱探索各种有趣的设计。</p><p>我从事设计工作是出去自己的兴趣，在经历了快 3 年的研究工作后，我发现还是设计工作比较能让我投入。之前是在一家VR 看房行业的设计岗工作，做过 App 产品设计、B 端后台设计、Web 端页面设计；使用过 Sketch、Figma、Adobe 套件等相关工具；也热衷于探索将 AI 融入工作流，尝试使用 Agent 开发个人产品。</p><p>在工作之外，也喜欢折腾各种感兴趣的东西，比如摄影、博客、美食。</p></div>
+      <figure class="about-portrait"><img src="/assets/figma-v03/about/portrait-v032.png" alt="Leo 的像素风肖像" /></figure>
     </div>
-    <figure class="about-portrait"><img src="/assets/figma-v03/about/image-8.png" alt="Leo 的像素风肖像" /></figure>
   </header>
   <div class="about-sections reading-column">
     <section><h2>联系到我</h2><nav class="contact-links" aria-label="联系方式"><a href={github} rel="me">GitHub</a><a href={`mailto:${resume.data.email}`}>Email</a><span>微信</span><a href="/rss.xml">RSS</a></nav></section>
-    <section><h2>最近在干</h2><ul class="plain-list"><li>正在研究将 AI 融入到日常设计工作中</li><li>走到哪，拍到哪</li><li>在看《真探》</li><li>通关《杀戮尖塔 2》</li><li>减到 65kg</li><li>在大桐日本</li></ul></section>
-    <section><h2>生活</h2><p>和喜欢的人一起去到别的地方，体验各种事物，拍美好的景物，吃好吃的美食。</p></section>
+    <section><h2>最近在干</h2><ul class="plain-list"><li>👨🏻‍💻正在研究将 AI 融入到日常设计工作中</li><li>🚶走到哪，📷拍到哪</li><li>📺在看《真探》</li><li>🎮通关《杀戮尖塔 2》</li><li>🏋🏻减到 65kg</li><li>🥲在大A回本</li></ul></section>
+    <section><h2>生活</h2><p>和万万一起去到别的地方，体验各种事物，拍美好的景物，吃好吃的美食</p></section>
   </div>
 </BaseLayout>

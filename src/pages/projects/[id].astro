@@ -11,12 +11,19 @@ export async function getStaticPaths() {
 interface Props { entry: CollectionEntry<"projects">; }
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
+
+const projectCovers: Record<string, string> = {
+  "workspace-structure-redesign": "/assets/figma-v03/projects/archive/room-10.jpg",
+  "content-publishing-system": "/assets/figma-v03/projects/archive/room-07.jpg",
+  "photo-archive-experiment": "/assets/figma-v03/projects/archive/room-01.jpg",
+};
+const cover = projectCovers[entry.id] ?? "/assets/figma-v03/project-detail/cover.png";
 ---
 
-<BaseLayout title={`${entry.data.title}｜Leo`} description={entry.data.description} socialImage="/assets/figma-v03/project-detail/cover.png">
-  <DetailToc headings={headings} ariaLabel="项目目录" />
+<BaseLayout title={`${entry.data.title}｜Leo`} description={entry.data.description} socialImage={cover} viewTransitions>
+  <DetailToc headings={headings} ariaLabel="项目目录" backHref="/projects" backLabel="返回项目" />
   <article class="v03-detail reading-column">
-    <img class="v03-detail__cover" src="/assets/figma-v03/project-detail/cover.png" alt="" />
+    <img class="v03-detail__cover" src={cover} alt="" transition:name="project-cover" />
     <header id="overview">
       <h1>{entry.data.title}</h1>
       <dl class="detail-facts">

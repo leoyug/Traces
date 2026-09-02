@@ -9,14 +9,17 @@ interface Props {
   headings: TocHeading[];
   ariaLabel: string;
   className?: string;
+  backHref?: string;
+  backLabel?: string;
 }
 
-const { headings, ariaLabel, className = "" } = Astro.props;
+const { headings, ariaLabel, className = "", backHref = "/", backLabel = "返回主页" } = Astro.props;
 const items = headings.filter(({ depth }) => depth === 2);
 ---
 
 {items.length >= 2 && (
   <aside class:list={["detail-toc", className]} data-detail-toc>
+    <a class="detail-toc__back" href={backHref} aria-label={backLabel}><img src="/assets/figma-v03/detail/back.svg" alt="" /><span>{backLabel}</span></a>
     <nav aria-label={ariaLabel}>
       <ol class="detail-toc__list">
         {items.map((item, index) => (
@@ -36,6 +39,7 @@ const items = headings.filter(({ depth }) => depth === 2);
         ))}
       </ol>
     </nav>
+    <a class="detail-toc__top" href="#main" aria-label="回到顶部"><img src="/assets/figma-v03/detail/to-top.svg" alt="" /><span>回到顶部</span></a>
   </aside>
 )}
 
