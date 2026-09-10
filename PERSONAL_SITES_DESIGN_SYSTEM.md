@@ -146,8 +146,8 @@
   --color-muted: oklch(53% 0.014 55);
   --color-faint: oklch(68% 0.012 55);
   --color-line: oklch(20% 0.012 55 / 12%);
-  --color-accent: oklch(58% 0.13 42);       /* 暖橙棕 */
-  --color-accent-contrast: white;
+  --color-accent: oklch(65.6% 0.122 180);   /* 青绿色 #00a894 */
+  --color-accent-contrast: #191918;
 
   /* Typography */
   --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;

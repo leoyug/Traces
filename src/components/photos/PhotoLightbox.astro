@@ -1,5 +1,6 @@
 ---
 import type { BrowseContext, PhotoListItem } from "../../lib/photo-types";
+import PlaySpinLoader from "../PlaySpinLoader.astro";
 
 interface Props {
   photos: PhotoListItem[];
@@ -15,6 +16,7 @@ const initialSource = initialPhoto?.sources.webp.at(-1) ?? initialPhoto?.sources
 <dialog class="photo-lightbox" aria-labelledby="photo-lightbox-title" data-photo-lightbox>
   <div class="photo-lightbox__shell">
     <div class="photo-lightbox__stage" data-lightbox-stage>
+      <PlaySpinLoader />
       <img
         data-lightbox-image
         src={initialSource?.src}

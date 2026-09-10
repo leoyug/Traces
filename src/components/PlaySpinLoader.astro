@@ -1,0 +1,89 @@
+---
+interface Props {
+  label?: string;
+  deferred?: boolean;
+}
+
+const { label = "图片加载中", deferred = false } = Astro.props;
+const cells = Array.from({ length: 9 });
+---
+
+<div
+  class:list={["play-spin-loader", { "play-spin-loader--deferred": deferred }]}
+  role="status"
+  aria-live="polite"
+  aria-label={label}
+>
+  {cells.map(() => <span class="play-spin-loader__dot" aria-hidden="true"></span>)}
+</div>
+
+<style>
+  .play-spin-loader {
+    --play-spin-dim: 0.1;
+    --play-spin-lit: 0.9;
+    --play-spin-delay: 180ms;
+
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    grid-template-columns: repeat(3, 6px);
+    grid-template-rows: repeat(3, 6px);
+    gap: 2px;
+    color: var(--color-accent);
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.96);
+    transition:
+      opacity var(--duration-quick) var(--ease-smooth-out),
+      transform var(--duration-quick) var(--ease-smooth-out),
+      visibility 0s linear var(--duration-quick);
+  }
+
+  .play-spin-loader--deferred {
+    --play-spin-delay: 400ms;
+  }
+
+  :global([data-image-loading="true"]) .play-spin-loader {
+    visibility: visible;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    transition-delay: var(--play-spin-delay), var(--play-spin-delay), var(--play-spin-delay);
+  }
+
+  .play-spin-loader__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: var(--p0, var(--play-spin-dim));
+    animation: play-spin-dot 1.4s linear infinite;
+    will-change: opacity;
+  }
+
+  .play-spin-loader__dot:nth-child(1) { --p0: var(--play-spin-lit); --p1: var(--play-spin-lit); --p2: var(--play-spin-dim); --p3: var(--play-spin-dim); }
+  .play-spin-loader__dot:nth-child(2) { --p0: var(--play-spin-dim); --p1: var(--play-spin-lit); --p2: var(--play-spin-dim); --p3: var(--play-spin-dim); }
+  .play-spin-loader__dot:nth-child(3) { --p0: var(--play-spin-dim); --p1: var(--play-spin-lit); --p2: var(--play-spin-lit); --p3: var(--play-spin-dim); }
+  .play-spin-loader__dot:nth-child(4) { --p0: var(--play-spin-lit); --p1: var(--play-spin-dim); --p2: var(--play-spin-dim); --p3: var(--play-spin-dim); }
+  .play-spin-loader__dot:nth-child(5) { --p0: var(--play-spin-lit); --p1: var(--play-spin-lit); --p2: var(--play-spin-lit); --p3: var(--play-spin-lit); }
+  .play-spin-loader__dot:nth-child(6) { --p0: var(--play-spin-dim); --p1: var(--play-spin-dim); --p2: var(--play-spin-lit); --p3: var(--play-spin-dim); }
+  .play-spin-loader__dot:nth-child(7) { --p0: var(--play-spin-lit); --p1: var(--play-spin-dim); --p2: var(--play-spin-dim); --p3: var(--play-spin-lit); }
+  .play-spin-loader__dot:nth-child(8) { --p0: var(--play-spin-dim); --p1: var(--play-spin-dim); --p2: var(--play-spin-dim); --p3: var(--play-spin-lit); }
+  .play-spin-loader__dot:nth-child(9) { --p0: var(--play-spin-dim); --p1: var(--play-spin-dim); --p2: var(--play-spin-lit); --p3: var(--play-spin-lit); }
+
+  @keyframes play-spin-dot {
+    0%, 100% { opacity: var(--p0); }
+    25% { opacity: var(--p1); }
+    50% { opacity: var(--p2); }
+    75% { opacity: var(--p3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .play-spin-loader__dot {
+      animation: none;
+      will-change: auto;
+    }
+  }
+</style>

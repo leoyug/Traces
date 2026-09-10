@@ -148,12 +148,18 @@ const contextValue = context.type === "all" ? undefined : context.slug;
       currentIndex = index;
       const source = photo.sources.webp.at(-1) ?? photo.sources.jpeg.at(-1);
       if (!source) return;
+      dialog?.setAttribute("data-image-loading", "true");
+      stage?.setAttribute("aria-busy", "true");
       image.src = source.src;
       image.srcset = photo.sources.webp.map((variant) => `${variant.src} ${variant.width}w`).join(", ");
       image.sizes = "(max-width: 768px) 100vw, calc(100vw - 360px)";
       image.width = photo.width;
       image.height = photo.height;
       image.alt = photo.alt;
+      if (image.complete && image.naturalWidth > 0) {
+        dialog?.removeAttribute("data-image-loading");
+        stage?.setAttribute("aria-busy", "false");
+      }
       title.textContent = photo.title;
       description.textContent = photo.description;
       facts.replaceChildren();
@@ -222,6 +228,15 @@ const contextValue = context.type === "all" ? undefined : context.slug;
       url.searchParams.set("batch", String(batch));
       history.replaceState({ ...history.state, photoBatch: batch }, "", url);
       showBatch(batch);
+    });
+
+    image?.addEventListener("load", () => {
+      dialog?.removeAttribute("data-image-loading");
+      stage?.setAttribute("aria-busy", "false");
+    });
+    image?.addEventListener("error", () => {
+      dialog?.removeAttribute("data-image-loading");
+      stage?.setAttribute("aria-busy", "false");
     });
     close?.addEventListener("click", requestClose);
     previous?.addEventListener("click", () => renderPhoto(currentIndex - 1, true));

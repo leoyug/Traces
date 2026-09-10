@@ -1,4 +1,6 @@
 ---
+import TextLink from "./TextLink.astro";
+
 interface Props {
   title: string;
   summary: string;
@@ -11,8 +13,8 @@ interface Props {
 const { title, summary, year, status, accent, href = "/projects", image } = Astro.props;
 ---
 
-<a class="project-card" href={href} aria-label={`查看项目：${title}，${year}，${status}`}>
-  <div class:list={["project-card__visual", `tone-${accent}`]} aria-hidden="true">
+<article class="project-card">
+  <a class:list={["project-card__visual", `tone-${accent}`]} href={href} aria-label={`查看项目：${title}，${year}，${status}`}>
     {image ? <img src={image} alt="" loading="lazy" /> : (
       <span class="project-card__preview">
         <span class="project-card__chrome"></span>
@@ -22,9 +24,9 @@ const { title, summary, year, status, accent, href = "/projects", image } = Astr
         </span>
       </span>
     )}
-  </div>
+  </a>
   <div class="project-card__body">
-    <div class="project-card__heading"><h3>{title}</h3></div>
+    <div class="project-card__heading"><h3><TextLink href={href} underline="reveal">{title}</TextLink></h3></div>
     <p>{summary}</p>
   </div>
-</a>
+</article>

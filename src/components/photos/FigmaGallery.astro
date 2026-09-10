@@ -1,5 +1,6 @@
 ---
 import { galleryPhotos } from "../../data/gallery";
+import PlaySpinLoader from "../PlaySpinLoader.astro";
 import PhotoCornerMarks from "./PhotoCornerMarks.astro";
 
 interface Props {
@@ -66,6 +67,7 @@ const facts = [
   >
     <div class="figma-lightbox__shell">
       <div class="figma-lightbox__stage">
+        <PlaySpinLoader deferred />
         <figure class="figma-lightbox__frame">
           <img class="figma-lightbox__corner is-top-left" src="/assets/figma-v03/photo-lightbox/corner-top-left.svg" alt="" />
           <img class="figma-lightbox__corner is-top-right" src="/assets/figma-v03/photo-lightbox/corner-top-right.svg" alt="" />
@@ -133,9 +135,15 @@ const facts = [
     const renderPhoto = (index: number) => {
       const photo = photos[index];
       if (!photo || !image) return;
+      dialog?.setAttribute("data-image-loading", "true");
+      stage?.setAttribute("aria-busy", "true");
       image.src = photo.src;
       image.alt = photo.alt;
-      if (image.complete) requestAnimationFrame(fitPhotoFrame);
+      if (image.complete && image.naturalWidth > 0) {
+        dialog?.removeAttribute("data-image-loading");
+        stage?.setAttribute("aria-busy", "false");
+        requestAnimationFrame(fitPhotoFrame);
+      }
     };
 
     const clearTransition = () => {
@@ -336,7 +344,15 @@ const facts = [
     });
 
     dialog?.addEventListener("click", requestClose);
-    image?.addEventListener("load", () => fitPhotoFrame());
+    image?.addEventListener("load", () => {
+      dialog?.removeAttribute("data-image-loading");
+      stage?.setAttribute("aria-busy", "false");
+      fitPhotoFrame();
+    });
+    image?.addEventListener("error", () => {
+      dialog?.removeAttribute("data-image-loading");
+      stage?.setAttribute("aria-busy", "false");
+    });
     if (stage) new ResizeObserver(() => fitPhotoFrame()).observe(stage);
     dialog?.addEventListener("cancel", (event) => {
       event.preventDefault();

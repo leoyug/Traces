@@ -1,0 +1,288 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+}
+
+const { src, alt, class: className } = Astro.props;
+---
+
+<figure class:list={["particle-portrait", className]} data-particle-portrait>
+  <img src={src} alt={alt} width="700" height="700" decoding="async" />
+  <canvas aria-hidden="true"></canvas>
+</figure>
+
+<script>
+  interface Particle {
+    x: number;
+    y: number;
+    startX: number;
+    startY: number;
+    offsetX: number;
+    offsetY: number;
+    velocityX: number;
+    velocityY: number;
+    delay: number;
+    color: string;
+  }
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+  document.querySelectorAll<HTMLElement>("[data-particle-portrait]").forEach((portrait) => {
+    if (portrait.dataset.particlePortrait === "ready") return;
+    portrait.dataset.particlePortrait = "ready";
+
+    const image = portrait.querySelector<HTMLImageElement>("img");
+    const canvas = portrait.querySelector<HTMLCanvasElement>("canvas");
+    const context = canvas?.getContext("2d", { alpha: true });
+    if (!image || !canvas || !context) return;
+
+    let particles: Particle[] = [];
+    let frame = 0;
+    let visible = true;
+    let assembled = false;
+    let startTime = 0;
+    let lastTime = 0;
+    let radius = 1.2;
+    const pointer = { x: 0, y: 0, active: false };
+
+    const seededRandom = (seed: number) => {
+      const value = Math.sin(seed * 12.9898) * 43758.5453;
+      return value - Math.floor(value);
+    };
+
+    const stop = () => {
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    const draw = (time: number) => {
+      frame = 0;
+      if (!visible || document.hidden || reduceMotion.matches) return;
+
+      const delta = Math.min((time - lastTime) / 16.67 || 1, 2);
+      lastTime = time;
+      const elapsed = time - startTime;
+      let stillMoving = false;
+
+      context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+
+      for (const particle of particles) {
+        const progress = Math.min(Math.max((elapsed - particle.delay) / 780, 0), 1);
+        const eased = 1 - Math.pow(1 - progress, 4);
+        const baseX = particle.startX + (particle.x - particle.startX) * eased;
+        const baseY = particle.startY + (particle.y - particle.startY) * eased;
+
+        let desiredX = 0;
+        let desiredY = 0;
+        if (assembled && pointer.active) {
+          const dx = particle.x - pointer.x;
+          const dy = particle.y - pointer.y;
+          const distance = Math.hypot(dx, dy);
+          const influenceRadius = 56;
+          if (distance > 0 && distance < influenceRadius) {
+            const force = Math.pow(1 - distance / influenceRadius, 2) * 14;
+            desiredX = (dx / distance) * force;
+            desiredY = (dy / distance) * force;
+          }
+        }
+
+        particle.velocityX += (desiredX - particle.offsetX) * 0.16 * delta;
+        particle.velocityY += (desiredY - particle.offsetY) * 0.16 * delta;
+        particle.velocityX *= Math.pow(0.72, delta);
+        particle.velocityY *= Math.pow(0.72, delta);
+        particle.offsetX += particle.velocityX * delta;
+        particle.offsetY += particle.velocityY * delta;
+
+        if (
+          progress < 1 ||
+          Math.abs(desiredX - particle.offsetX) > 0.04 ||
+          Math.abs(desiredY - particle.offsetY) > 0.04 ||
+          Math.abs(particle.velocityX) > 0.03 ||
+          Math.abs(particle.velocityY) > 0.03
+        ) {
+          stillMoving = true;
+        }
+
+        context.beginPath();
+        context.arc(baseX + particle.offsetX, baseY + particle.offsetY, radius, 0, Math.PI * 2);
+        context.fillStyle = particle.color;
+        context.fill();
+      }
+
+      if (!assembled && elapsed >= 920) assembled = true;
+      if (stillMoving || !assembled) frame = requestAnimationFrame(draw);
+    };
+
+    const schedule = () => {
+      if (!frame && visible && !document.hidden && !reduceMotion.matches) {
+        lastTime = performance.now();
+        frame = requestAnimationFrame(draw);
+      }
+    };
+
+    const prepare = async () => {
+      stop();
+      portrait.classList.remove("is-particle-ready");
+      if (reduceMotion.matches) return;
+
+      try {
+        if (!image.complete) await new Promise<void>((resolve, reject) => {
+          image.addEventListener("load", () => resolve(), { once: true });
+          image.addEventListener("error", () => reject(new Error("portrait failed to load")), { once: true });
+        });
+        await image.decode();
+      } catch {
+        return;
+      }
+
+      const width = portrait.clientWidth;
+      const height = portrait.clientHeight;
+      if (!width || !height) return;
+
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(width * pixelRatio);
+      canvas.height = Math.round(height * pixelRatio);
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
+      const sampleCanvas = document.createElement("canvas");
+      sampleCanvas.width = Math.round(width);
+      sampleCanvas.height = Math.round(height);
+      const sampleContext = sampleCanvas.getContext("2d", { willReadFrequently: true });
+      if (!sampleContext) return;
+
+      const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+      const renderedWidth = image.naturalWidth * scale;
+      const renderedHeight = image.naturalHeight * scale;
+      const drawX = (width - renderedWidth) * 0.76;
+      const drawY = (height - renderedHeight) * 0.5;
+      sampleContext.drawImage(image, drawX, drawY, renderedWidth, renderedHeight);
+      const pixels = sampleContext.getImageData(0, 0, sampleCanvas.width, sampleCanvas.height).data;
+
+      const gap = 4;
+      radius = 1.2;
+      const nextParticles: Particle[] = [];
+      let seed = 1;
+
+      for (let y = gap / 2; y < height; y += gap) {
+        for (let x = gap / 2; x < width; x += gap) {
+          let red = 0;
+          let green = 0;
+          let blue = 0;
+          let alpha = 0;
+          let samples = 0;
+          const startX = Math.max(0, Math.floor(x - gap / 2));
+          const endX = Math.min(sampleCanvas.width, Math.ceil(x + gap / 2));
+          const startY = Math.max(0, Math.floor(y - gap / 2));
+          const endY = Math.min(sampleCanvas.height, Math.ceil(y + gap / 2));
+
+          for (let sampleY = startY; sampleY < endY; sampleY += 1) {
+            for (let sampleX = startX; sampleX < endX; sampleX += 1) {
+              const index = (sampleY * sampleCanvas.width + sampleX) * 4;
+              red += pixels[index];
+              green += pixels[index + 1];
+              blue += pixels[index + 2];
+              alpha += pixels[index + 3];
+              samples += 1;
+            }
+          }
+
+          if (!samples || alpha / samples < 12) continue;
+          const scatter = 28 + seededRandom(seed++) * 54;
+          const angle = seededRandom(seed++) * Math.PI * 2;
+          nextParticles.push({
+            x,
+            y,
+            startX: x + Math.cos(angle) * scatter,
+            startY: y + Math.sin(angle) * scatter,
+            offsetX: 0,
+            offsetY: 0,
+            velocityX: 0,
+            velocityY: 0,
+            delay: seededRandom(seed++) * 140,
+            color: `rgba(${Math.round(red / samples)}, ${Math.round(green / samples)}, ${Math.round(blue / samples)}, ${Math.min(alpha / samples / 255, 0.96)})`,
+          });
+        }
+      }
+
+      particles = nextParticles;
+      assembled = false;
+      startTime = performance.now();
+      lastTime = startTime;
+      portrait.classList.add("is-particle-ready");
+      schedule();
+    };
+
+    portrait.addEventListener("pointermove", (event) => {
+      if (!finePointer.matches || reduceMotion.matches) return;
+      const bounds = portrait.getBoundingClientRect();
+      pointer.x = event.clientX - bounds.left;
+      pointer.y = event.clientY - bounds.top;
+      pointer.active = true;
+      schedule();
+    });
+
+    portrait.addEventListener("pointerleave", () => {
+      pointer.active = false;
+      schedule();
+    });
+
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry?.isIntersecting ?? false;
+      if (visible) schedule();
+      else stop();
+    }, { rootMargin: "80px" });
+    observer.observe(portrait);
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stop();
+      else schedule();
+    });
+    reduceMotion.addEventListener("change", prepare);
+    prepare();
+  });
+</script>
+
+<style>
+  .particle-portrait {
+    position: relative;
+    width: min(248px, 100%);
+    height: auto;
+    aspect-ratio: 31 / 35;
+    overflow: hidden;
+    border-radius: var(--radius-xxs);
+    background: var(--color-surface-2);
+    isolation: isolate;
+  }
+
+  .particle-portrait img,
+  .particle-portrait canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .particle-portrait img {
+    object-fit: cover;
+    object-position: 76% center;
+    opacity: 1;
+    transition: opacity 120ms var(--ease-smooth-out);
+  }
+
+  .particle-portrait canvas {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms var(--ease-smooth-out);
+  }
+
+  .particle-portrait.is-particle-ready img { opacity: 0; }
+  .particle-portrait.is-particle-ready canvas { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .particle-portrait img { opacity: 1; }
+    .particle-portrait canvas { display: none; }
+  }
+</style>
