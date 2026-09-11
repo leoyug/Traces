@@ -20,11 +20,11 @@ const projectCovers: Record<string, string> = {
 const cover = projectCovers[entry.id] ?? "/assets/figma-v03/project-detail/cover.png";
 ---
 
-<BaseLayout title={`${entry.data.title}｜Leo`} description={entry.data.description} socialImage={cover} viewTransitions>
+<BaseLayout title={`${entry.data.title}｜Leo`} description={entry.data.description} socialImage={cover}>
   <DetailToc headings={headings} ariaLabel="项目目录" backHref="/projects" backLabel="返回项目" />
-  <article class="v03-detail reading-column">
+  <article class="v03-detail reading-column" data-detail-page="project">
     <img class="v03-detail__cover" src={cover} alt="" transition:name="project-cover" />
-    <header id="overview">
+    <header id="overview" data-route-enter>
       <h1>{entry.data.title}</h1>
       <dl class="detail-facts">
         <div><dt>年份</dt><dd>{entry.data.year}</dd></div>
@@ -33,7 +33,7 @@ const cover = projectCovers[entry.id] ?? "/assets/figma-v03/project-detail/cover
         <div><dt>范围</dt><dd>产品设计</dd></div>
       </dl>
     </header>
-    <div class="article__body" id="content"><Content /></div>
+    <div class="article__body" id="content" data-route-enter-body><Content /></div>
     <span id="reflection" class="detail-anchor" aria-hidden="true"></span>
   </article>
 </BaseLayout>

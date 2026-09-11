@@ -3,6 +3,7 @@ export interface GalleryPhoto {
   src: string;
   alt: string;
   size: "tall" | "short";
+  orientation: "portrait" | "landscape";
 }
 
 const photos = [
@@ -39,5 +40,6 @@ export const galleryPhotos: GalleryPhoto[] = photos.map(([alt, size], index) => 
     src: `/assets/figma-v03/photos/photo-${String(number).padStart(2, "0")}.jpg`,
     alt,
     size,
+    orientation: [2, 3, 4, 6, 8, 11, 12, 13, 15, 16].includes(number) ? "landscape" : "portrait",
   };
 });

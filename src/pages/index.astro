@@ -1,10 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContentRow from "../components/ContentRow.astro";
+import DraggablePhotoStack from "../components/DraggablePhotoStack.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import PhotoCornerMarks from "../components/photos/PhotoCornerMarks.astro";
 import TextLink from "../components/TextLink.astro";
 import { getCollection, getEntry } from "astro:content";
+import { galleryPhotos } from "../data/gallery";
 import { formatDate } from "../lib/content";
 
 const resume = await getEntry("resume", "main");
@@ -13,6 +14,8 @@ const github = resume.data.links.find((link) => link.label === "GitHub")?.href ?
 const recentArticles = (await getCollection("articles", ({ data }) => !data.draft))
   .sort((left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime())
   .slice(0, 4);
+const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
+const recentPhotos = shuffle(galleryPhotos.filter((photo) => photo.orientation === "portrait")).slice(0, 6);
 ---
 
 <BaseLayout>
@@ -43,11 +46,7 @@ const recentArticles = (await getCollection("articles", ({ data }) => !data.draf
 
   <section class="home-section reading-column photo-home">
     <div class="section-topline"><h2>最近的光</h2></div>
-    <div class="photo-strip" aria-label="最近摄影">
-      <a class="photo-hover-target turn-left" href="/photos/public-phone/" aria-label="查看照片：暮色建筑"><img class="photo-hover-image" src="/assets/figma-v03/home/image-02.jpg" alt="暮色中的建筑与行人" /><PhotoCornerMarks /></a>
-      <a class="photo-hover-target turn-right" href="/photos/park-walk/" aria-label="查看照片：公园散步"><img class="photo-hover-image" src="/assets/figma-v03/home/image-04.jpg" alt="冬日公园里散步的人" /><PhotoCornerMarks /></a>
-      <a class="photo-hover-target turn-left" href="/photos/cranes-at-dusk/" aria-label="查看照片：暮色塔吊"><img class="photo-hover-image" src="/assets/figma-v03/home/image-05.jpg" alt="暮色天空下的塔吊" /><PhotoCornerMarks /></a>
-    </div>
+    <DraggablePhotoStack photos={recentPhotos} label="最近的光：桌面端可拖拽照片" />
   </section>
 
   <section class="home-section contact-section reading-column" aria-labelledby="contact-title">

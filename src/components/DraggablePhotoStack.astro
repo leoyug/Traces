@@ -1,0 +1,159 @@
+---
+import type { GalleryPhoto } from "../data/gallery";
+
+interface Props {
+  photos: GalleryPhoto[];
+  label?: string;
+}
+
+const { photos, label = "可拖拽的近期照片" } = Astro.props;
+const layouts = [
+  { left: "15%", top: "31%", rotate: "-6deg" },
+  { left: "43%", top: "28%", rotate: "5deg" },
+  { left: "75%", top: "31%", rotate: "-3deg" },
+  { left: "24%", top: "69%", rotate: "4deg" },
+  { left: "54%", top: "67%", rotate: "-5deg" },
+  { left: "80%", top: "69%", rotate: "6deg" },
+] as const;
+---
+
+<section class="photo-drag-stack" data-photo-drag-stack aria-label={label}>
+  {photos.slice(0, layouts.length).map((photo, index) => {
+    const layout = layouts[index];
+    return (
+      <button
+        type="button"
+        class:list={["photo-drag-stack__card", `is-${photo.orientation}`]}
+        aria-label={`选择照片：${photo.alt}`}
+        aria-pressed="false"
+        data-photo-drag-card
+        style={`--stack-left:${layout.left};--stack-top:${layout.top};--stack-rotate:${layout.rotate};--stack-z:${index + 1}`}
+      >
+        <img src={photo.src} alt={photo.alt} draggable="false" loading="lazy" />
+      </button>
+    );
+  })}
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-photo-drag-stack]").forEach((stack) => {
+    if (stack.dataset.ready === "true") return;
+    stack.dataset.ready = "true";
+
+    const canDrag = matchMedia("(hover: hover) and (pointer: fine)");
+    const cards = [...stack.querySelectorAll<HTMLButtonElement>("[data-photo-drag-card]")];
+    let topLayer = cards.length;
+
+    const selectCard = (selectedCard: HTMLButtonElement) => {
+      cards.forEach((card) => {
+        const isSelected = card === selectedCard;
+        card.toggleAttribute("data-selected", isSelected);
+        card.setAttribute("aria-pressed", String(isSelected));
+      });
+      topLayer += 1;
+      selectedCard.style.zIndex = String(topLayer);
+    };
+
+    cards.forEach((card) => {
+      let pointerId: number | undefined;
+      let startX = 0;
+      let startY = 0;
+      let startLeft = 0;
+      let startTop = 0;
+      let dragged = false;
+
+      const finishDrag = () => {
+        if (pointerId !== undefined && card.hasPointerCapture(pointerId)) card.releasePointerCapture(pointerId);
+        pointerId = undefined;
+        card.removeAttribute("data-dragging");
+      };
+
+      card.addEventListener("pointerdown", (event) => {
+        selectCard(card);
+        if (!canDrag.matches || event.button !== 0) return;
+        const stackRect = stack.getBoundingClientRect();
+        const cardRect = card.getBoundingClientRect();
+        pointerId = event.pointerId;
+        startX = event.clientX;
+        startY = event.clientY;
+        startLeft = cardRect.left - stackRect.left + cardRect.width / 2;
+        startTop = cardRect.top - stackRect.top + cardRect.height / 2;
+        dragged = false;
+        card.setPointerCapture(pointerId);
+        card.setAttribute("data-dragging", "");
+      });
+
+      card.addEventListener("pointermove", (event) => {
+        if (pointerId !== event.pointerId) return;
+        const stackRect = stack.getBoundingClientRect();
+        const deltaX = event.clientX - startX;
+        const deltaY = event.clientY - startY;
+        dragged ||= Math.hypot(deltaX, deltaY) > 5;
+        if (!dragged) return;
+
+        const cardRect = card.getBoundingClientRect();
+        const nextLeft = Math.min(Math.max(startLeft + deltaX, cardRect.width / 2), stackRect.width - cardRect.width / 2);
+        const nextTop = Math.min(Math.max(startTop + deltaY, cardRect.height / 2), stackRect.height - cardRect.height / 2);
+        card.style.setProperty("--stack-left", `${(nextLeft / stackRect.width) * 100}%`);
+        card.style.setProperty("--stack-top", `${(nextTop / stackRect.height) * 100}%`);
+        event.preventDefault();
+      });
+
+      card.addEventListener("pointerup", finishDrag);
+      card.addEventListener("pointercancel", finishDrag);
+      card.addEventListener("click", () => selectCard(card));
+    });
+  });
+</script>
+
+<style>
+  .photo-drag-stack {
+    position: relative;
+    aspect-ratio: 841 / 558;
+    overflow: hidden;
+    isolation: isolate;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-felt);
+  }
+
+  .photo-drag-stack__card {
+    position: absolute;
+    top: var(--stack-top);
+    left: var(--stack-left);
+    z-index: var(--stack-z);
+    width: clamp(5.5rem, 22%, 8.5rem);
+    padding: 0.625rem 0.625rem 1.75rem;
+    background: var(--color-photo-paper);
+    box-shadow: var(--shadow-card);
+    color: var(--color-ink);
+    border: 0;
+    cursor: grab;
+    transform: translate(-50%, -50%) rotate(var(--stack-rotate));
+    touch-action: none;
+    user-select: none;
+  }
+
+  .photo-drag-stack__card[data-dragging] { cursor: grabbing; }
+  .photo-drag-stack__card:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; }
+
+  .photo-drag-stack__card img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    pointer-events: none;
+  }
+
+  .photo-drag-stack__card.is-landscape img { aspect-ratio: 4 / 3; }
+
+  @media (max-width: 47.999rem), (hover: none), (pointer: coarse) {
+    .photo-drag-stack__card { width: clamp(3.75rem, 19%, 5rem); padding: 0.375rem 0.375rem 1rem; cursor: pointer; touch-action: pan-y; }
+    .photo-drag-stack__card:nth-child(1) { --stack-left: 16% !important; --stack-top: 33% !important; }
+    .photo-drag-stack__card:nth-child(2) { --stack-left: 45% !important; --stack-top: 32% !important; }
+    .photo-drag-stack__card:nth-child(3) { --stack-left: 76% !important; --stack-top: 35% !important; }
+    .photo-drag-stack__card:nth-child(4) { --stack-left: 22% !important; --stack-top: 70% !important; }
+    .photo-drag-stack__card:nth-child(5) { --stack-left: 54% !important; --stack-top: 68% !important; }
+    .photo-drag-stack__card:nth-child(6) { --stack-left: 81% !important; --stack-top: 70% !important; }
+  }
+</style>
