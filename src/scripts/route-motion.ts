@@ -27,6 +27,7 @@ export function initRouteMotion() {
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   let targets: HTMLElement[] = [];
+  let entrancePrepared = false;
 
   const prepareEntrance = () => {
     if (reducedMotion.matches) return;
@@ -36,10 +37,12 @@ export function initRouteMotion() {
 
     targets = getEntranceTargets(main);
     gsap.set(targets, { autoAlpha: 0, y: 18 });
+    entrancePrepared = targets.length > 0;
   };
 
   const playEntrance = () => {
-    if (reducedMotion.matches || targets.length === 0) return;
+    if (reducedMotion.matches || !entrancePrepared || targets.length === 0) return;
+    entrancePrepared = false;
 
     gsap.to(targets, {
       autoAlpha: 1,
@@ -53,6 +56,7 @@ export function initRouteMotion() {
   };
 
   prepareEntrance();
+  requestAnimationFrame(playEntrance);
   document.addEventListener("astro:after-swap", prepareEntrance);
   document.addEventListener("astro:page-load", playEntrance);
 
