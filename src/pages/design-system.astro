@@ -13,22 +13,57 @@ import TextLink from "../components/TextLink.astro";
 import { galleryPhotos } from "../data/gallery";
 
 if (import.meta.env.PROD) return Astro.redirect("/");
-const colors = ["canvas", "surface", "surface-2", "surface-felt", "photo-paper", "ink", "copy", "link", "muted", "faint", "line", "accent", "contact"];
-const colorRules: Record<string, string> = {
-  canvas: "页面最底层背景",
-  surface: "导航、卡片等基础表面",
-  "surface-2": "嵌套表面与局部层级",
-  "surface-felt": "照片拖拽板的浅色底",
-  "photo-paper": "拍立得相纸边框",
-  ink: "页面标题与高强调信息",
-  copy: "连续正文与描述文字",
-  link: "正文内可点击链接",
-  muted: "区块小标题与辅助信息",
-  faint: "低优先级元数据",
-  line: "分割线、边框与下划线底色",
-  accent: "焦点、当前状态与必要强调",
-  contact: "联系模块链接，复用正文色",
-};
+
+const colorGroups = [
+  {
+    title: "基础表面",
+    description: "定义页面、容器与图片材质的层级。",
+    tokens: [
+      ["canvas", "页面最底层背景"],
+      ["surface", "导航、卡片等基础表面"],
+      ["surface-2", "嵌套表面与局部层级"],
+      ["surface-felt", "照片拖拽板的底"],
+      ["photo-paper", "拍立得相纸边框"],
+    ],
+  },
+  {
+    title: "内容层级",
+    description: "从高强调标题到低优先级说明，保持阅读层级一致。",
+    tokens: [
+      ["ink", "标题与高强调信息"],
+      ["copy", "连续正文与描述文字"],
+      ["link", "正文内可点击链接"],
+      ["muted", "区块小标题与辅助信息"],
+      ["faint", "低优先级元数据"],
+      ["contact", "联系模块链接"],
+      ["on-dark", "深色背景上的反白文字"],
+    ],
+  },
+  {
+    title: "边界与结构",
+    description: "用较弱的线条区分区域，而不抢占内容层级。",
+    tokens: [
+      ["line", "常规分割线与边框"],
+      ["line-subtle", "浮层和提示的弱边框"],
+      ["leader", "目录与时间线引导线"],
+      ["contact-underline", "联系链接默认下划线"],
+      ["contact-underline-active", "联系链接交互下划线"],
+    ],
+  },
+  {
+    title: "强调与交互",
+    description: "保留青绿色主色，并让控件默认、悬停和选中态共享同一套语义。",
+    tokens: [
+      ["accent", "焦点、当前状态与必要强调"],
+      ["accent-ink", "强调色上的深色文字"],
+      ["accent-soft", "选择和提示的柔和底色"],
+      ["control-idle", "控件默认文字与图标"],
+      ["control-emphasis", "控件悬停与聚焦前景"],
+      ["control-selected", "控件选中背景"],
+      ["control-selected-ink", "控件选中前景"],
+    ],
+  },
+] as const;
 const spaces = [1, 2, 3, 4, 5, 6, 8, 12, 16];
 const tocHeadings = [
   { depth: 2, slug: "toc-demo-context", text: "背景与约束" },
@@ -43,8 +78,30 @@ const tocHeadings = [
     <p>从项目调研中提取的暖纸色、克制排版与低层级表面。这个页面只在开发环境呈现，用于验证变量和组件复用。</p>
   </header>
   <div class="ds-stack wide-column">
-    <section><SectionHeading title="颜色" description="语义变量优先于固定色值，页面和组件只引用语义 token。" /><div class="swatch-grid">{colors.map((color) => <div class="swatch"><div style={`background:var(--color-${color})`}></div><code>--color-{color}</code><p>{colorRules[color]}</p></div>)}</div></section>
-    <section><SectionHeading title="正文与链接颜色" description="关于页与简历页共用：正文 #D0CECB，链接 #FAFAFA。" /><div class="text-color-demo"><p>普通文字用于连续阅读的段落；<TextLink href="/writing">链接文字</TextLink>用于可点击的内容。</p><code>--color-copy · #D0CECB</code><code>--color-link · #FAFAFA</code></div></section>
+    <section>
+      <SectionHeading title="颜色系统" description="按表面、内容、边界与交互分层；切换外观后，色块与实际值会同步更新。" />
+      <div class="color-groups">
+        {colorGroups.map((group) => (
+          <section class="color-group" aria-labelledby={`color-group-${group.title}`}>
+            <div class="color-group__heading">
+              <h3 id={`color-group-${group.title}`}>{group.title}</h3>
+              <p>{group.description}</p>
+            </div>
+            <div class="swatch-grid">
+              {group.tokens.map(([color, rule]) => (
+                <article class="swatch">
+                  <div class="swatch__color" style={`background:var(--color-${color})`}></div>
+                  <code>--color-{color}</code>
+                  <p>{rule}</p>
+                  <output data-color-token={color}>读取中</output>
+                </article>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </section>
+    <section><SectionHeading title="正文与链接颜色" description="正文与链接都使用语义 token，并随亮暗模式同步映射。" /><div class="text-color-demo"><p>普通文字用于连续阅读的段落；<TextLink href="/writing">链接文字</TextLink>用于可点击的内容。</p><code>--color-copy · <output data-color-token="copy">读取中</output></code><code>--color-link · <output data-color-token="link">读取中</output></code></div></section>
     <section><SectionHeading title="字体与层级" /><div class="type-specimens"><p class="type-display">把复杂的事，设计得清楚一点。</p><p class="type-title">页面标题使用 28px、600 字重。</p><p class="type-body">界面正文与文章正文统一使用 14px；普通内容采用 1.55 行高，长文章采用 1.8 行高。English and numbers 2026.</p><p class="type-meta">说明标签 · 12PX · REGULAR</p><p class="type-script">只留一点手写痕迹。</p></div></section>
     <section><SectionHeading title="间距与圆角" /><div class="space-row">{spaces.map((space) => <div><span style={`width:var(--space-${space})`}></span><code>{space}</code></div>)}</div><div class="radius-row"><i></i><i></i><i></i><i></i></div></section>
     <section><SectionHeading title="按钮" /><div class="component-row"><Button>主要按钮</Button><Button variant="secondary">次要按钮</Button><Button variant="ghost">文字按钮</Button><Button size="small">小按钮</Button></div></section>
@@ -61,13 +118,35 @@ const tocHeadings = [
   </div>
 </BaseLayout>
 
+<script>
+  const updateColorValues = () => {
+    const styles = getComputedStyle(document.documentElement);
+    document.querySelectorAll<HTMLOutputElement>("[data-color-token]").forEach((element) => {
+      const token = element.dataset.colorToken;
+      if (token) element.value = styles.getPropertyValue(`--color-${token}`).trim();
+    });
+  };
+
+  updateColorValues();
+  new MutationObserver(updateColorValues).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+</script>
+
 <style>
   .ds-intro { padding-bottom: var(--space-12); }
   .ds-stack { display: grid; gap: var(--space-20); padding-bottom: var(--space-20); }
+  .color-groups { display: grid; gap: var(--space-12); }
+  .color-group { display: grid; gap: var(--space-5); }
+  .color-group__heading { display: grid; gap: var(--space-1); }
+  .color-group__heading h3 { font-size: var(--text-subhead); font-weight: var(--weight-medium); }
+  .color-group__heading p { color: var(--color-muted); }
   .swatch-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: var(--space-4); }
   .swatch { display: grid; gap: var(--space-2); font-size: var(--text-xs); }
-  .swatch div { aspect-ratio: 1.5; border: 1px solid var(--color-line); border-radius: var(--radius-md); box-shadow: var(--shadow-card); }
+  .swatch__color { aspect-ratio: 1.5; border: 1px solid var(--color-line); border-radius: var(--radius-md); box-shadow: var(--shadow-card); }
   .swatch p { margin: 0; color: var(--color-muted); font-size: var(--text-body); line-height: var(--leading-copy); }
+  .swatch output { color: var(--color-faint); font-family: var(--font-mono); font-size: var(--text-meta); }
   code { font-family: var(--font-mono); color: var(--color-copy); }
   .type-specimens { display: grid; gap: var(--space-6); }
   .type-display { font: var(--weight-semibold) var(--text-display)/var(--leading-title) var(--font-sans); letter-spacing: var(--tracking-display); }

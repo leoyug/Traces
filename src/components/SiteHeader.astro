@@ -24,4 +24,126 @@ const isCurrent = (href: string) => {
       </a>
     </>
   ))}
+  <span class="floating-nav__divider floating-nav__divider--theme" aria-hidden="true"></span>
+  <button class="preferences-toggle" type="button" data-preferences-toggle aria-controls="preferences-panel" aria-expanded="false" aria-label="偏好">
+    <img src="/assets/figma/preferences/sliders.svg" alt="" width="24" height="24" />
+    <span class="floating-nav__tooltip" aria-hidden="true">偏好</span>
+  </button>
 </nav>
+
+<aside id="preferences-panel" class="preferences-panel" data-preferences-panel aria-label="偏好" hidden>
+  <section class="preferences-panel__row">
+    <h2>语言</h2>
+    <div class="preferences-panel__options" role="radiogroup" aria-label="语言">
+      <button class="is-selected" type="button" data-preference-option data-preference-group="language" data-preference-value="zh-CN" role="radio" aria-checked="true">中文</button><button type="button" data-preference-option data-preference-group="language" data-preference-value="en" role="radio" aria-checked="false">English</button>
+    </div>
+  </section>
+  <section class="preferences-panel__row">
+    <h2>外观</h2>
+    <div class="preferences-panel__options" role="radiogroup" aria-label="外观">
+      <button type="button" data-theme-option data-theme-value="light" role="radio" aria-label="亮色模式"><img src="/assets/figma/preferences/light.svg" alt="" width="20" height="20" /></button>
+      <button type="button" data-theme-option data-theme-value="system" role="radio" aria-label="跟随系统"><img src="/assets/figma/preferences/system.svg" alt="" width="20" height="20" /></button>
+      <button type="button" data-theme-option data-theme-value="dark" role="radio" aria-label="深色模式"><img src="/assets/figma/preferences/dark.svg" alt="" width="20" height="20" /></button>
+    </div>
+  </section>
+  <section class="preferences-panel__row">
+    <h2>音效</h2>
+    <div class="preferences-panel__options" role="radiogroup" aria-label="音效">
+      <button class="is-selected" type="button" data-preference-option data-preference-group="sound" data-preference-value="on" role="radio" aria-checked="true" aria-label="打开音效"><img src="/assets/figma/preferences/sound-on.svg" alt="" width="20" height="20" /></button><button type="button" data-preference-option data-preference-group="sound" data-preference-value="off" role="radio" aria-checked="false" aria-label="关闭音效"><img src="/assets/figma/preferences/sound-off.svg" alt="" width="20" height="20" /></button>
+    </div>
+  </section>
+</aside>
+
+<script>
+  type ThemePreference = "light" | "system" | "dark";
+  const storageKey = "incessant-theme";
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+  const resolveTheme = (preference: ThemePreference) => preference === "system" ? (mediaQuery.matches ? "dark" : "light") : preference;
+
+  const applyTheme = (preference: ThemePreference) => {
+    const theme = resolveTheme(preference);
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset.themePreference = preference;
+    document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#191918" : "#f3eee8");
+
+    document.querySelectorAll<HTMLButtonElement>("[data-theme-option]").forEach((option) => {
+      const selected = option.dataset.themeValue === preference;
+      option.setAttribute("aria-checked", String(selected));
+      option.classList.toggle("is-selected", selected);
+    });
+  };
+
+  const initializePreferences = () => {
+    const savedTheme = localStorage.getItem(storageKey);
+    const preference: ThemePreference = savedTheme === "dark" || savedTheme === "system" ? savedTheme : "light";
+    applyTheme(preference);
+  };
+
+  const themeWindow = window as Window & { __incessantThemeToggleInitialized?: boolean };
+
+  if (!themeWindow.__incessantThemeToggleInitialized) {
+    themeWindow.__incessantThemeToggleInitialized = true;
+    document.addEventListener("click", (event) => {
+      const target = event.target as Element;
+      const toggle = target.closest<HTMLButtonElement>("[data-preferences-toggle]");
+      const panel = document.querySelector<HTMLElement>("[data-preferences-panel]");
+      const themeOption = target.closest<HTMLButtonElement>("[data-theme-option]");
+      const preferenceOption = target.closest<HTMLButtonElement>("[data-preference-option]");
+
+      if (toggle && panel) {
+        const isOpen = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", String(!isOpen));
+        panel.hidden = isOpen;
+        return;
+      }
+
+      if (themeOption) {
+        const preference = themeOption.dataset.themeValue as ThemePreference;
+        localStorage.setItem(storageKey, preference);
+        applyTheme(preference);
+        return;
+      }
+
+      if (preferenceOption) {
+        const group = preferenceOption.dataset.preferenceGroup;
+        document.querySelectorAll<HTMLButtonElement>(`[data-preference-group="${group}"]`).forEach((option) => {
+          const selected = option === preferenceOption;
+          option.setAttribute("aria-checked", String(selected));
+          option.classList.toggle("is-selected", selected);
+        });
+        return;
+      }
+
+      if (panel && !panel.hidden && !target.closest("[data-preferences-panel]")) {
+        panel.hidden = true;
+        document.querySelector<HTMLButtonElement>("[data-preferences-toggle]")?.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    document.addEventListener("focusin", (event) => {
+      const target = event.target as Element;
+      const panel = document.querySelector<HTMLElement>("[data-preferences-panel]");
+      if (!panel || panel.hidden || target.closest("[data-preferences-panel], [data-preferences-toggle]")) return;
+      panel.hidden = true;
+      document.querySelector<HTMLButtonElement>("[data-preferences-toggle]")?.setAttribute("aria-expanded", "false");
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      const panel = document.querySelector<HTMLElement>("[data-preferences-panel]");
+      if (!panel || panel.hidden) return;
+      panel.hidden = true;
+      const toggle = document.querySelector<HTMLButtonElement>("[data-preferences-toggle]");
+      toggle?.setAttribute("aria-expanded", "false");
+      toggle?.focus();
+    });
+
+    mediaQuery.addEventListener("change", () => {
+      if (document.documentElement.dataset.themePreference === "system") applyTheme("system");
+    });
+  }
+
+  initializePreferences();
+  document.addEventListener("astro:page-load", initializePreferences);
+</script>
