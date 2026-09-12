@@ -23,9 +23,9 @@ const recentPhotos = shuffle(galleryPhotos.filter((photo) => photo.orientation =
     <h1 class="sr-only">Leo 的个人网站</h1>
     <img class="hero__signature" src="/assets/figma/leo-mark.svg" alt="Leo" width="64" height="48" />
     <div class="hero__copy">
-      <p>你好，<TextLink href="/about">我是Leo</TextLink>，一名<span class="hero-highlight" tabindex="0"><svg class="hero-highlight__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="hero-highlight__stroke" pathLength="1" d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074Z" /><path class="hero-highlight__stroke hero-highlight__stroke--first" pathLength="1" d="M14 4.1 12 6" /><path class="hero-highlight__stroke hero-highlight__stroke--second" pathLength="1" d="m5.1 8-2.9-.8" /><path class="hero-highlight__stroke hero-highlight__stroke--third" pathLength="1" d="m6 12-1.9 2" /><path class="hero-highlight__stroke hero-highlight__stroke--fourth" pathLength="1" d="M7.2 2.2 8 5.1" /></svg>产品设计师</span>兼兴趣体验官。</p>
-      <p>我喜欢探索，好看的界面、有趣的功能、舒服的动效，以及任何用心创作的事物，这也形成了我的一些设计方式。目前我在 AI 的发展下，正在折腾一些自己的<TextLink href="/projects">项目</TextLink>。</p>
-      <p>在工作之外，我会带着相机到处跑一跑、<TextLink href="/photos">拍一拍</TextLink>，也会在这里<TextLink href="/writing">记录</TextLink>生活、学习、兴趣，以及那些还没有完全想明白的问题。</p>
+      <p>这里是 <TextLink href="/about">Leo</TextLink> 的数字花园。</p>
+      <p>可以在这里找到我正在折腾的<TextLink href="/projects">项目</TextLink>。</p>
+      <p>也可以探索我正在记录的<TextLink href="/writing">文字</TextLink>和<TextLink href="/photos">影像</TextLink>，关于生活、工作、兴趣和没想明白的问题。</p>
     </div>
   </section>
 
@@ -45,8 +45,8 @@ const recentPhotos = shuffle(galleryPhotos.filter((photo) => photo.orientation =
   </section>
 
   <section class="home-section reading-column photo-home">
-    <div class="section-topline"><h2>最近的光</h2></div>
-    <DraggablePhotoStack photos={recentPhotos} label="最近的光：桌面端可拖拽照片" />
+    <div class="section-topline"><h2>光影记录</h2></div>
+    <DraggablePhotoStack photos={recentPhotos} label="光影记录：桌面端可拖拽照片" />
   </section>
 
   <section class="home-section contact-section reading-column" aria-labelledby="contact-title">
@@ -54,8 +54,8 @@ const recentPhotos = shuffle(galleryPhotos.filter((photo) => photo.orientation =
     <nav aria-label="联系方式">
       <TextLink href={github} rel="me">GitHub</TextLink>
       <TextLink href={`mailto:${resume.data.email}`}>Email</TextLink>
-      <span>微信</span>
-      <TextLink href="/rss.xml">RSS</TextLink>
+      <TextLink href="https://x.com/Incessant_Leo">X/Twitter</TextLink>
+      <TextLink href="/rss.xml">Xiaohongshu</TextLink>
     </nav>
   </section>
 </BaseLayout>

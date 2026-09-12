@@ -46,6 +46,8 @@ const { src, alt, class: className } = Astro.props;
     let startTime = 0;
     let lastTime = 0;
     let radius = 1.2;
+    let preparedWidth = 0;
+    let preparedHeight = 0;
     const pointer = { x: 0, y: 0, active: false };
 
     const seededRandom = (seed: number) => {
@@ -81,9 +83,9 @@ const { src, alt, class: className } = Astro.props;
           const dx = particle.x - pointer.x;
           const dy = particle.y - pointer.y;
           const distance = Math.hypot(dx, dy);
-          const influenceRadius = 56;
+          const influenceRadius = 72;
           if (distance > 0 && distance < influenceRadius) {
-            const force = Math.pow(1 - distance / influenceRadius, 2) * 14;
+            const force = Math.pow(1 - distance / influenceRadius, 2) * 8;
             desiredX = (dx / distance) * force;
             desiredY = (dy / distance) * force;
           }
@@ -141,6 +143,8 @@ const { src, alt, class: className } = Astro.props;
       const width = portrait.clientWidth;
       const height = portrait.clientHeight;
       if (!width || !height) return;
+      preparedWidth = width;
+      preparedHeight = height;
 
       const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(width * pixelRatio);
@@ -241,7 +245,13 @@ const { src, alt, class: className } = Astro.props;
       else schedule();
     });
     reduceMotion.addEventListener("change", prepare);
-    prepare();
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (portrait.clientWidth === preparedWidth && portrait.clientHeight === preparedHeight) return;
+      prepare();
+    });
+
+    prepare().then(() => resizeObserver.observe(portrait));
   });
 </script>
 

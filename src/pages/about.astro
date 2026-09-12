@@ -13,17 +13,35 @@ const github = resume.data.links.find((link) => link.label === "GitHub")?.href ?
     <h1>关于我</h1>
     <div class="about-intro__body">
       <div class="about-intro__copy">
-        <p>Hi，我是廖如晟，一名产品设计师。我喜欢体验各种有趣的应用或者产品，也爱探索各种有趣的设计。</p>
-        <p>我从事设计工作是出去自己的兴趣，在经历了快 3 年的研究工作后，我发现还是设计工作比较能让我投入。之前是在一家VR 看房行业的设计岗工作，做过 App 产品设计、B 端后台设计、Web 端页面设计；使用过 Sketch、Figma、Adobe 套件等相关工具；也热衷于探索将 AI 融入工作流，尝试使用 Agent 开发个人产品。对我感兴趣，可以查看<TextLink href="/resume">简历</TextLink>，也可以聊一聊</p>
-        <p>在工作之外，也喜欢折腾各种感兴趣的东西，比如摄影、博客、美食。</p>
+        <p>你好，我是Leo，一名<span class="hero-highlight" tabindex="0"><svg class="hero-highlight__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="hero-highlight__stroke" pathLength="1" d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074Z" /><path class="hero-highlight__stroke hero-highlight__stroke--first" pathLength="1" d="M14 4.1 12 6" /><path class="hero-highlight__stroke hero-highlight__stroke--second" pathLength="1" d="m5.1 8-2.9-.8" /><path class="hero-highlight__stroke hero-highlight__stroke--third" pathLength="1" d="m6 12-1.9 2" /><path class="hero-highlight__stroke hero-highlight__stroke--fourth" pathLength="1" d="M7.2 2.2 8 5.1" /></svg>产品设计师</span>兼兴趣体验官。</p>
+        <p>我喜欢探索，好看的界面、有趣的功能、舒服的动效，以及任何用心创作的事物，这也形成了我的一些设计方式。目前我热衷于将 AI 融入工作流，并尝试使用 Agent 开发个人产品。</p>
+        <p>在工作之外，我会和万万带着相机到处走走拍拍，也享受游戏、漫画和电影。</p>
+        <p>如果的你们需要找人的话，也可以看一下我的<TextLink href="/resume">简历</TextLink>页。</p>
       </div>
       <ParticlePortrait class="about-portrait" src="/assets/figma-v03/about/portrait-particles.webp" alt="Leo 的像素风肖像" />
     </div>
   </header>
   <div class="about-sections reading-column">
-    <section><h2>联系到我</h2><nav class="contact-links" aria-label="联系方式"><TextLink href={github} rel="me">GitHub</TextLink><TextLink href={`mailto:${resume.data.email}`}>Email</TextLink><span>微信</span><TextLink href="/rss.xml">RSS</TextLink></nav></section>
-    <section><h2>最近忙着</h2><ul class="plain-list"><li>👨🏻‍💻正在研究将 AI 融入到日常设计工作中</li><li>🚶走到哪，📷拍到哪</li><li>📺在看《真探》</li><li>🎮通关《杀戮尖塔 2》</li><li>🏋🏻减到 65kg</li><li>🥲在大A回本</li></ul></section>
-    <section><h2>生活</h2><p>和万万一起去到别的地方，体验各种事物，拍美好的景物，吃好吃的美食</p></section>
-    <section><h2>本站相关</h2><nav class="contact-links" aria-label="本站相关"><TextLink href="/design-system">设计系统</TextLink></nav></section>
+    <section><h2>最近忙着</h2>
+      <ul class="plain-list">
+        <li>👨🏻‍💻正在研究将 AI 融入到日常设计工作中</li>
+        <li>🚶走到哪，📷拍到哪</li>
+        <li>📺在看《真探》</li>
+        <li>🎮通关《杀戮尖塔 2》</li>
+        <li>🏋🏻减到 65kg</li>
+        <li>🥲在大A回本</li>
+        <li>和万万一起去到别的地方，体验各种事物，拍美好的景物，吃好吃的美食</li>
+      </ul></section>
+    <section><h2>联系到我</h2>
+      <nav class="contact-links" aria-label="联系方式">
+        <TextLink href={github} rel="me">GitHub</TextLink>
+        <TextLink href={`mailto:${resume.data.email}`}>Email</TextLink>
+        <TextLink href="https://x.com/Incessant_Leo">X/Twitter</TextLink>
+        <TextLink href="/rss.xml">Xiaohongshu</TextLink>
+      </nav></section>
+    <section><h2>本站相关</h2>
+      <nav class="contact-links" aria-label="本站相关">
+        <TextLink href="/design-system">设计系统</TextLink>
+      </nav></section>
   </div>
 </BaseLayout>

@@ -49,6 +49,8 @@ npm run photos:process  # 处理照片原件并更新发布资产
 npm run photos:audit    # 单独审计照片发布资产
 ```
 
+`npm run build` 会自动根据 `src/` 中的文案重建寒蝉宋体的 WOFF2 子集。完整 OTF 仅放在 `scripts/fonts/source/` 作为构建源，不会被公开发布；新增文案或模块后不需要手动维护字符表。Compact Regular、Compact Bold 与仅供在线简历姓名使用的 Text Regular 都通过该流程生成。
+
 生产构建输出到 `dist/`，可部署到支持静态站点的平台。
 
 ## 内容结构

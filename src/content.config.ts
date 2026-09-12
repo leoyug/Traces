@@ -80,6 +80,7 @@ const resume = defineCollection({
     location: z.string().min(1),
     email: z.email(),
     summary: z.string().min(1),
+    introduction: z.array(z.string().min(1)).min(1),
     experience: z.array(z.object({
       period: z.string().min(1),
       role: z.string().min(1),

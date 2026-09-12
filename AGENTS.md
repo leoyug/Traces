@@ -40,6 +40,10 @@ src/
 - 容器：阅读栏 592px，常规宽栏 768px；移动端默认 24px gutter。首页、导航、页脚和文章详情优先使用阅读栏，项目与相册等媒体展示页使用常规宽栏。
 - 响应式：移动优先；640px 调整内容行，768px 切换导航和主要网格。正文不因窄屏整体缩小。
 
+### 字体子集
+
+寒蝉宋体的完整 OTF 源文件存放在 `scripts/fonts/source/`，仅用于构建，不能作为公开静态资源引用。`npm run fonts:subset` 会扫描 `src/` 内的文案和内容，重新生成 `public/fonts/chill-jinshu-song/` 中的 Compact Regular、Compact Bold 与 Text Regular WOFF2 子集；`npm run build` 会自动执行该步骤。新增文案、标题或页面模块后，无需手动提示字体更新，只要使用正常构建流程即可。Text Regular 目前仅用于在线简历的姓名。
+
 开发环境运行后访问 `/design-system` 可查看颜色、字体、间距、圆角、按钮、卡片、内容行、表单和布局。该路由在生产构建中重定向到首页，不公开预览内容。
 
 ## 组件复用规范

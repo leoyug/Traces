@@ -4,11 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
+    "fonts:subset": "python3 scripts/fonts/subset.py",
+    "dev": "npm run fonts:subset && astro dev",
     "photos:process": "tsx scripts/photos/process.ts",
     "photos:audit": "tsx scripts/photos/audit.ts",
     "check": "astro check && npm run photos:audit",
-    "build": "npm run check && astro build",
+    "build": "npm run fonts:subset && npm run check && astro build",
     "preview": "astro preview"
   },
   "dependencies": {

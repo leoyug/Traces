@@ -10,7 +10,15 @@
 
 @font-face {
   font-family: "Chill Jinshu Song Compact";
-  src: url("/fonts/chill-jinshu-song/compact-regular-v2.woff2") format("woff2");
+  src: url("/fonts/chill-jinshu-song/compact-regular-v3.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Chill Jinshu Song Text";
+  src: url("/fonts/chill-jinshu-song/text-regular-v1.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -18,7 +26,7 @@
 
 @font-face {
   font-family: "Chill Jinshu Song Compact";
-  src: url("/fonts/chill-jinshu-song/compact-bold-v2.woff2") format("woff2");
+  src: url("/fonts/chill-jinshu-song/compact-bold-v3.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -112,7 +120,7 @@
     content: "";
     position: absolute;
     right: 0;
-    bottom: -3px;
+    bottom: -2px;
     left: 0;
     height: 1px;
     background: currentColor;
@@ -378,7 +386,7 @@
   }
 
   .project-card {
-    gap: 12px;
+    gap: 16px;
   }
 
   .project-card__visual {
@@ -406,7 +414,7 @@
 
   .project-card__body p {
     color: #808080;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 18px;
   }
 
@@ -640,6 +648,12 @@
     padding-top: 48px;
   }
 
+  .photo-index-header p {
+    margin-top: 16px;
+    color: #d0cecb;
+    line-height: 24px;
+  }
+
   .v03-photo-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -749,8 +763,8 @@
 
   .about-intro__body {
     display: grid;
-    grid-template-columns: minmax(0, 304px) 248px;
-    gap: 40px;
+    grid-template-columns: minmax(0, 1fr) 216px;
+    gap: 24px;
     align-items: start;
     margin-top: 16px;
   }
@@ -765,11 +779,11 @@
   .about-intro__copy p + p { margin-top: 12px; }
 
   .about-portrait {
-    width: 248px;
-    height: 280px;
+    width: 216px;
+    height: 244px;
     overflow: hidden;
     border-radius: 2px;
-    transform: none;
+    transform: translateY(-14px);
   }
 
   .about-portrait img {
@@ -782,7 +796,7 @@
   .about-sections {
     display: grid;
     gap: 80px;
-    margin-top: 80px;
+    margin-top: 64px;
   }
 
   .about-sections section {
@@ -1304,28 +1318,33 @@
   }
 
   .resume {
-    display: flex;
-    flex-direction: column;
-    gap: 80px;
+    display: block;
     padding-top: 48px;
   }
 
+  .resume__page-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-page-title);
+    font-weight: var(--weight-bold);
+    line-height: 32px;
+  }
+
   .resume__intro {
-    min-height: 356px;
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
+    min-height: 0;
+    display: grid;
+    gap: 32px;
+    margin-top: 24px;
   }
 
   .resume__heading {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
   }
 
-  .resume__intro h1 {
-    font-family: var(--font-heading);
-    font-size: var(--text-resume-title);
+  .resume__name {
+    font-family: "Chill Jinshu Song Text", var(--font-sans);
+    font-size: 36px;
     font-weight: var(--weight-regular);
     line-height: 44px;
   }
@@ -1365,28 +1384,45 @@
   }
 
   .resume__summary p { margin: 0; }
-  .resume__summary p + p { margin-top: 12px; }
+  .resume__summary p + p { margin-top: 16px; }
   .about-intro__copy .text-link,
   .resume__summary a { color: var(--color-link); }
 
   .resume__contacts {
-    gap: 8px;
+    gap: 12px;
     margin-top: 0;
   }
 
   .resume__contacts a {
-    min-height: 30px;
-    gap: 8px;
-    padding: 5px 12px;
+    min-height: 0;
+    gap: 6px;
+    padding: 6px 10px;
   }
 
-  .resume__contacts img {
-    width: 20px;
-    height: 20px;
+  .resume__contact-icon {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    background-color: var(--color-faint);
+    mask: center / contain no-repeat;
+  }
+
+  .resume__contact-icon--web { mask-image: url("/assets/resume-contacts/web.svg"); }
+  .resume__contact-icon--mail { mask-image: url("/assets/resume-contacts/mail.svg"); }
+  .resume__contact-icon--github { mask-image: url("/assets/resume-contacts/github.svg"); }
+
+  .resume__contacts a:hover,
+  .resume__contacts a:focus-visible {
+    color: var(--color-ink);
+  }
+
+  .resume__contacts a:hover .resume__contact-icon,
+  .resume__contacts a:focus-visible .resume__contact-icon {
+    background-color: var(--color-ink);
   }
 
   .resume__section {
-    margin-top: 0;
+    margin-top: 80px;
   }
 
   .resume__section > h2 {
@@ -1487,7 +1523,7 @@
   .resume-education time {
     border-color: #232323;
     background: transparent;
-    border-radius: 2px;
+    border-radius: var(--radius-xs);
   }
 
   .resume-skills > section,
@@ -1611,9 +1647,10 @@
     }
 
     .about-portrait {
-      width: 248px;
-      height: 280px;
+      width: 216px;
+      height: 244px;
       margin-top: 8px;
+      transform: none;
     }
 
     .v03-detail h1 {
@@ -1941,7 +1978,7 @@
   .resume-projects { display: grid; gap: var(--space-12); }
   .resume-projects article { display: grid; }
   .resume-projects ul, .resume-skills ul { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); list-style: none; }
-  .resume-projects li, .resume-skills li { padding: .22rem .65rem; border: 1px solid var(--color-line); border-radius: var(--radius-xs); color: var(--color-muted); font-size: var(--text-meta); }
+  .resume-projects li, .resume-skills li { padding: .22rem .65rem; border: 1px solid var(--color-line); border-radius: var(--radius-xs); color: var(--color-muted); font-family: var(--font-mono); font-size: var(--text-meta); }
   .resume-skills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
   .resume-skills > section { min-height: 11rem; padding: var(--space-5); border: 1px solid var(--color-line); border-radius: var(--radius-xs); background: var(--color-surface); }
   .resume-skills h3 { color: var(--color-muted); font-size: var(--text-body); font-weight: var(--weight-regular); }

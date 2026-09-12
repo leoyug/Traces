@@ -16,17 +16,22 @@ colors:
   primary-accent-soft: "#14352f"
 typography:
   display:
-    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans SC, PingFang SC, Microsoft YaHei, sans-serif"
+    fontFamily: "Chill Jinshu Song Compact, PingFang SC, system-ui, sans-serif"
     fontSize: "2rem"
     fontWeight: 500
     lineHeight: 1.2
     letterSpacing: "-0.025em"
   page-title:
-    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans SC, PingFang SC, Microsoft YaHei, sans-serif"
+    fontFamily: "Chill Jinshu Song Compact, PingFang SC, system-ui, sans-serif"
     fontSize: "1.25rem"
     fontWeight: 500
     lineHeight: 1.4
     letterSpacing: "-0.015em"
+  resume-name:
+    fontFamily: "Chill Jinshu Song Text, PingFang SC, system-ui, sans-serif"
+    fontSize: "2.25rem"
+    fontWeight: 400
+    lineHeight: "2.75rem"
   body:
     fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans SC, PingFang SC, Microsoft YaHei, sans-serif"
     fontSize: "0.875rem"
@@ -168,11 +173,12 @@ V0.3 是一份在深夜画布上自然展开的中文个人出版物。它把工
 
 ## Typography
 
-**Display Font:** Geist Mono（拉丁、数字）+ PingFang SC（中文）
+**Display Font:** Chill Jinshu Song Compact（中文标题：Bold 用于大标题，Regular 用于小标题）
+**Resume Name Font:** Chill Jinshu Song Text Regular（仅用于在线履历中的姓名）
 **Body Font:** Geist Mono（拉丁、数字）+ PingFang SC（中文）
 **Label/Mono Font:** 日期、数字和英文统一使用 Geist Mono
 
-**Character:** 中文使用系统中文无衬线，日期、数字和英文使用 Geist Mono，形成设计稿中克制且清晰的字形对比。手写 Kaiti 字形只属于 Leo 标记和少量作者批注，不能扩展为界面字体。
+**Character:** 中文标题使用寒蝉宋体，Regular 与 Bold 分别承载小标题和大标题；正文维持系统中文无衬线，日期、数字和英文使用 Geist Mono，形成克制且清晰的字形对比。手写 Kaiti 字形只属于 Leo 标记和少量作者批注，不能扩展为界面字体。
 
 ### Hierarchy
 
