@@ -25,34 +25,35 @@ const isCurrent = (href: string) => {
     </>
   ))}
   <span class="floating-nav__divider floating-nav__divider--theme" aria-hidden="true"></span>
-  <button class="preferences-toggle" type="button" data-preferences-toggle aria-controls="preferences-panel" aria-expanded="false" aria-label="偏好">
-    <img src="/assets/figma/preferences/sliders.svg" alt="" width="24" height="24" />
-    <span class="floating-nav__tooltip" aria-hidden="true">偏好</span>
-  </button>
+  <div class="preferences-control">
+    <button class="preferences-toggle" type="button" data-preferences-toggle aria-controls="preferences-panel" aria-expanded="false" aria-label="偏好">
+      <img src="/assets/figma/preferences/sliders.svg" alt="" width="24" height="24" />
+      <span class="floating-nav__tooltip" aria-hidden="true">偏好</span>
+    </button>
+    <aside id="preferences-panel" class="preferences-panel" data-preferences-panel aria-label="偏好" hidden>
+      <section class="preferences-panel__row">
+        <h2>语言</h2>
+        <div class="preferences-panel__options" role="radiogroup" aria-label="语言">
+          <button class="is-selected" type="button" data-preference-option data-preference-group="language" data-preference-value="zh-CN" role="radio" aria-checked="true">中文</button><button type="button" data-preference-option data-preference-group="language" data-preference-value="en" role="radio" aria-checked="false">English</button>
+        </div>
+      </section>
+      <section class="preferences-panel__row">
+        <h2>外观</h2>
+        <div class="preferences-panel__options" role="radiogroup" aria-label="外观">
+          <button type="button" data-theme-option data-theme-value="light" role="radio" aria-label="亮色模式"><img src="/assets/figma/preferences/light.svg" alt="" width="20" height="20" /></button>
+          <button type="button" data-theme-option data-theme-value="system" role="radio" aria-label="跟随系统"><img src="/assets/figma/preferences/system.svg" alt="" width="20" height="20" /></button>
+          <button type="button" data-theme-option data-theme-value="dark" role="radio" aria-label="深色模式"><img src="/assets/figma/preferences/dark.svg" alt="" width="20" height="20" /></button>
+        </div>
+      </section>
+      <section class="preferences-panel__row">
+        <h2>音效</h2>
+        <div class="preferences-panel__options" role="radiogroup" aria-label="音效">
+          <button class="is-selected" type="button" data-preference-option data-preference-group="sound" data-preference-value="on" role="radio" aria-checked="true" aria-label="打开音效"><img src="/assets/figma/preferences/sound-on.svg" alt="" width="20" height="20" /></button><button type="button" data-preference-option data-preference-group="sound" data-preference-value="off" role="radio" aria-checked="false" aria-label="关闭音效"><img src="/assets/figma/preferences/sound-off.svg" alt="" width="20" height="20" /></button>
+        </div>
+      </section>
+    </aside>
+  </div>
 </nav>
-
-<aside id="preferences-panel" class="preferences-panel" data-preferences-panel aria-label="偏好" hidden>
-  <section class="preferences-panel__row">
-    <h2>语言</h2>
-    <div class="preferences-panel__options" role="radiogroup" aria-label="语言">
-      <button class="is-selected" type="button" data-preference-option data-preference-group="language" data-preference-value="zh-CN" role="radio" aria-checked="true">中文</button><button type="button" data-preference-option data-preference-group="language" data-preference-value="en" role="radio" aria-checked="false">English</button>
-    </div>
-  </section>
-  <section class="preferences-panel__row">
-    <h2>外观</h2>
-    <div class="preferences-panel__options" role="radiogroup" aria-label="外观">
-      <button type="button" data-theme-option data-theme-value="light" role="radio" aria-label="亮色模式"><img src="/assets/figma/preferences/light.svg" alt="" width="20" height="20" /></button>
-      <button type="button" data-theme-option data-theme-value="system" role="radio" aria-label="跟随系统"><img src="/assets/figma/preferences/system.svg" alt="" width="20" height="20" /></button>
-      <button type="button" data-theme-option data-theme-value="dark" role="radio" aria-label="深色模式"><img src="/assets/figma/preferences/dark.svg" alt="" width="20" height="20" /></button>
-    </div>
-  </section>
-  <section class="preferences-panel__row">
-    <h2>音效</h2>
-    <div class="preferences-panel__options" role="radiogroup" aria-label="音效">
-      <button class="is-selected" type="button" data-preference-option data-preference-group="sound" data-preference-value="on" role="radio" aria-checked="true" aria-label="打开音效"><img src="/assets/figma/preferences/sound-on.svg" alt="" width="20" height="20" /></button><button type="button" data-preference-option data-preference-group="sound" data-preference-value="off" role="radio" aria-checked="false" aria-label="关闭音效"><img src="/assets/figma/preferences/sound-off.svg" alt="" width="20" height="20" /></button>
-    </div>
-  </section>
-</aside>
 
 <script>
   type ThemePreference = "light" | "system" | "dark";

@@ -73,7 +73,20 @@
     --font-heading: "Chill Jinshu Song Compact", var(--font-sans);
     --content-reading: 37rem;
     --dock-bottom-gap: 24px;
-    --dock-reserve: calc(var(--dock-height) + 24px + var(--space-8));
+    /* Dock spacing is measured from the outer border to the visible 24px icon. */
+    --dock-border-width: 1px;
+    --dock-control-size: 44px;
+    --dock-icon-size: 24px;
+    --dock-control-icon-gutter: 10px;
+    --dock-icon-edge-gap: 20px;
+    --dock-item-gap: 20px;
+    --dock-middle-icon-gap: 24px;
+    /* Links use a negative inline margin, which cancels their icon gutter horizontally. */
+    --dock-container-padding-inline: calc(var(--dock-icon-edge-gap) - var(--dock-border-width));
+    --dock-container-padding-block: calc(var(--dock-icon-edge-gap) - var(--dock-border-width) - var(--dock-control-icon-gutter));
+    --dock-control-inset: calc(var(--dock-border-width) + var(--dock-container-padding-block));
+    --dock-height: calc(var(--dock-control-size) + var(--dock-container-padding-block) + var(--dock-container-padding-block) + var(--dock-border-width) + var(--dock-border-width));
+    --dock-reserve: calc(var(--dock-height) + var(--dock-bottom-gap) + var(--space-8));
     --lightbox-backdrop-duration: 400ms;
     --lightbox-photo-duration: 560ms;
     --lightbox-fact-duration: 180ms;
@@ -151,18 +164,18 @@
 
   .floating-nav {
     inset-block-end: 24px;
-    gap: 20px;
-    padding: 16px 24px;
+    gap: var(--dock-item-gap);
+    padding: var(--dock-container-padding-block) var(--dock-container-padding-inline);
     border-color: var(--color-line);
     background: var(--color-surface);
     box-shadow: var(--shadow-float);
   }
 
   .floating-nav__link {
-    width: 44px;
-    height: 44px;
-    flex-basis: 44px;
-    margin-inline: -10px;
+    width: var(--dock-control-size);
+    height: var(--dock-control-size);
+    flex-basis: var(--dock-control-size);
+    margin-inline: calc(-1 * var(--dock-control-icon-gutter));
     border-radius: 0;
   }
 
@@ -177,8 +190,14 @@
   }
 
   .floating-nav__link img {
-    width: 24px;
-    height: 24px;
+    width: var(--dock-icon-size);
+    height: var(--dock-icon-size);
+  }
+
+  .floating-nav__link:nth-of-type(2),
+  .floating-nav__link:nth-of-type(3),
+  .floating-nav__link:nth-of-type(4) {
+    margin-inline-end: calc(var(--dock-middle-icon-gap) - var(--dock-item-gap) - var(--dock-control-icon-gutter));
   }
 
   .floating-nav__link:hover,
@@ -193,7 +212,7 @@
   }
 
   .floating-nav__tooltip {
-    bottom: calc(100% + 20px);
+    bottom: calc(100% + var(--dock-control-inset) + var(--space-1));
     min-height: 28px;
     padding: 3px 7px;
     border: 1px solid var(--color-line-subtle);
@@ -213,14 +232,21 @@
     transform: translate(-50%, 0);
   }
 
+  .preferences-control {
+    position: relative;
+    width: var(--dock-control-size);
+    height: var(--dock-control-size);
+    flex: 0 0 var(--dock-control-size);
+    margin-inline: calc(-1 * var(--dock-control-icon-gutter));
+  }
+
   .preferences-toggle {
     position: relative;
-    width: 44px;
-    height: 44px;
-    flex: 0 0 44px;
+    width: 100%;
+    height: 100%;
     display: grid;
     place-items: center;
-    margin-inline: -10px;
+    margin: 0;
     padding: 0;
     border: 0;
     border-radius: 50%;
@@ -245,10 +271,10 @@
   .preferences-toggle:hover .floating-nav__tooltip, .preferences-toggle:focus-visible .floating-nav__tooltip { visibility: visible; opacity: 1; transform: translate(-50%, 0); }
 
   .preferences-panel {
-    position: fixed;
+    position: absolute;
     z-index: 41;
-    left: calc(50% + 9.5rem);
-    bottom: calc(var(--dock-bottom-gap) + var(--dock-height) + var(--space-3) + env(safe-area-inset-bottom, 0px));
+    inset-inline-start: 50%;
+    inset-block-end: calc(100% + var(--dock-control-inset) + var(--space-1));
     width: 12.5rem;
     display: flex;
     flex-direction: column;
@@ -586,9 +612,9 @@
     top: 7px;
     width: 80px;
     height: 50px;
-    border: 2px solid var(--color-ink);
+    border: 3px solid var(--color-photo-paper);
     object-fit: cover;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+    box-shadow: var(--shadow-photo-stack);
     transform-origin: center;
     transition: transform var(--duration-fast) var(--ease-smooth-out), box-shadow var(--duration-fast) var(--ease-smooth-out);
   }
@@ -659,7 +685,7 @@
     }
 
     .project-archive-row:is(:hover, :focus-visible, .is-transitioning) .project-archive-row__thumb img:nth-child(3) {
-      box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+      box-shadow: var(--shadow-photo-stack);
       transform: rotate(-1deg);
     }
 
@@ -1686,10 +1712,11 @@
 
   }
 
-  @media (max-width: 39.999rem) {
-    .floating-nav {
-      gap: 18px;
-      padding-inline: 20px;
+  @media (max-width: 47.999rem) {
+    :root {
+      --dock-icon-edge-gap: 18px;
+      --dock-item-gap: 18px;
+      --dock-middle-icon-gap: 20px;
     }
 
     .project-grid {
@@ -1859,11 +1886,11 @@
     --tracking-body: 0; --tracking-title: -.015em; --tracking-display: -.025em;
     --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-12: 3rem; --space-16: 4rem; --space-20: 5rem; --space-24: 6rem; --space-32: 8rem;
     --radius-xs: .25rem; --radius-sm: .5rem; --radius-md: .75rem; --radius-lg: 1rem; --radius-xl: 1.5rem; --radius-pill: 9999px;
-    --shadow-hairline: 0 0 0 1px rgb(38 35 32 / 8%); --shadow-card: 0 1px 2px rgb(55 45 36 / 7%), 0 4px 14px rgb(55 45 36 / 9%); --shadow-float: 0 8px 28px rgb(55 45 36 / 16%);
+    --shadow-hairline: 0 0 0 1px rgb(38 35 32 / 8%); --shadow-card: 0 1px 2px rgb(55 45 36 / 7%), 0 4px 14px rgb(55 45 36 / 9%); --shadow-float: 0 8px 28px rgb(55 45 36 / 16%); --shadow-photo-stack: 0 2px 8px rgb(55 45 36 / 11%);
     --content-reading: 40rem; --content-wide: 75rem; --content-showcase: 75rem; --gutter: 1.5rem;
     --duration-micro: 80ms; --duration-quick: 150ms; --duration-fast: 250ms; --duration-text-link: 600ms; --duration-very-slow: 500ms; --duration-highlight-draw: 600ms; --duration-highlight-glint: 200ms; --delay-highlight-glint-first: 420ms; --delay-highlight-glint-second: 480ms; --delay-highlight-glint-third: 540ms; --delay-highlight-glint-fourth: 600ms; --ease-smooth-out: cubic-bezier(.22, 1, .36, 1); --ease-highlight-draw: ease-in-out;
     --dropdown-open-dur: 250ms; --dropdown-close-dur: 150ms; --dropdown-pre-scale: .97; --dropdown-closing-scale: .99; --dropdown-ease: cubic-bezier(.22, 1, .36, 1);
-    --dock-height: 3.5rem; --dock-bottom-gap: var(--space-4); --dock-reserve: calc(var(--dock-height) + var(--dock-bottom-gap) + var(--space-8) + env(safe-area-inset-bottom, 0px));
+    --dock-height: calc(2.75rem + var(--dock-hover-inset) + var(--dock-hover-inset) + 2px); --dock-bottom-gap: var(--space-4); --dock-reserve: calc(var(--dock-height) + var(--dock-bottom-gap) + var(--space-8) + env(safe-area-inset-bottom, 0px));
     --detail-toc-width: 16.5rem; --detail-toc-label-width: 12.5rem;
   }
 
@@ -1885,6 +1912,7 @@
     --color-on-dark: #fafafa;
 
     --color-line: #343331;
+    --color-line-subtle: color-mix(in srgb, var(--color-line) 55%, var(--color-surface));
     --color-leader: #353231;
     --color-contact-underline: rgb(208 206 203 / 20%);
     --color-contact-underline-active: var(--color-copy);
@@ -1902,6 +1930,7 @@
     --shadow-hairline: 0 0 0 1px rgb(255 255 255 / 7%);
     --shadow-card: 0 1px 2px rgb(0 0 0 / 18%), 0 4px 14px rgb(0 0 0 / 16%);
     --shadow-float: 0 8px 28px rgb(0 0 0 / 36%);
+    --shadow-photo-stack: 0 2px 8px rgb(0 0 0 / 18%);
   }
 }
 
@@ -1927,7 +1956,7 @@
 }
 
 @layer components {
-  .floating-nav { position: fixed; z-index: 40; inset-inline-start: 50%; inset-block-end: calc(var(--dock-bottom-gap) + env(safe-area-inset-bottom, 0px)); width: 21.5rem; max-width: calc(100vw - 2 * var(--space-3)); height: var(--dock-height); display: flex; align-items: center; gap: .25rem; margin: 0; padding: .375rem .75rem; border: 1px solid var(--color-line); border-radius: var(--radius-pill); background: var(--color-surface); box-shadow: var(--shadow-float); transform: translateX(-50%); }
+  .floating-nav { position: fixed; z-index: 40; inset-inline-start: 50%; inset-block-end: calc(var(--dock-bottom-gap) + env(safe-area-inset-bottom, 0px)); width: fit-content; max-width: calc(100vw - 2 * var(--space-3)); height: var(--dock-height); display: flex; align-items: center; gap: .25rem; margin: 0; padding: .375rem .75rem; border: 1px solid var(--color-line); border-radius: var(--radius-pill); background: var(--color-surface); box-shadow: var(--shadow-float); transform: translateX(-50%); }
   .floating-nav__link { position: relative; width: 2.75rem; height: 2.75rem; flex: 0 0 2.75rem; display: grid; place-items: center; border-radius: var(--radius-pill); color: var(--color-muted); text-decoration: none; transition: background var(--duration-quick) var(--ease-smooth-out), transform var(--duration-quick) var(--ease-smooth-out); }
   .floating-nav__link:hover, .floating-nav__link:focus-visible { background: var(--color-surface-2); transform: translateY(-1px); }
   .floating-nav__link img { width: 1.5rem; height: 1.5rem; opacity: var(--control-icon-idle-opacity); transition: filter var(--duration-quick) var(--ease-smooth-out), opacity var(--duration-quick) var(--ease-smooth-out); }
@@ -2171,6 +2200,10 @@
 }
 
 @layer v03 {
+  :root[data-theme="dark"] :is(.floating-nav, .floating-nav__tooltip, .preferences-panel) {
+    border-color: var(--color-line-subtle);
+  }
+
   :root[data-theme="light"] .floating-nav__link img,
   :root[data-theme="light"] .preferences-toggle > img { filter: brightness(0); }
 
