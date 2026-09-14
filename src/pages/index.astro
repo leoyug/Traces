@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContentRow from "../components/ContentRow.astro";
 import DraggablePhotoStack from "../components/DraggablePhotoStack.astro";
+import PhotoFanStack from "../components/PhotoFanStack.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import TextLink from "../components/TextLink.astro";
 import { getCollection, getEntry } from "astro:content";
@@ -14,6 +15,11 @@ const github = resume.data.links.find((link) => link.label === "GitHub")?.href ?
 const recentArticles = (await getCollection("articles", ({ data }) => !data.draft))
   .sort((left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime())
   .slice(0, 4);
+const homeFanPhotoLabels = ["夜行", "栈桥", "帐篷", "散步", "晚风", "树影", "远望"];
+const homeFanPhotos = galleryPhotos.slice(0, 7).map((photo, index) => ({
+  photo,
+  label: homeFanPhotoLabels[index],
+}));
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
 const recentPhotos = shuffle(galleryPhotos.filter((photo) => photo.orientation === "portrait")).slice(0, 6);
 ---
@@ -46,7 +52,12 @@ const recentPhotos = shuffle(galleryPhotos.filter((photo) => photo.orientation =
 
   <section class="home-section reading-column photo-home">
     <div class="section-topline"><h2>光影记录</h2></div>
-    <DraggablePhotoStack photos={recentPhotos} label="光影记录：桌面端可拖拽照片" />
+    <div class="photo-home__variant photo-home__variant--fan">
+      <PhotoFanStack photos={homeFanPhotos} label="光影记录：悬停展开照片" />
+    </div>
+    <div class="photo-home__variant photo-home__variant--drag">
+      <DraggablePhotoStack photos={recentPhotos} label="光影记录：桌面端可拖拽照片" />
+    </div>
   </section>
 
   <section class="home-section contact-section reading-column" aria-labelledby="contact-title">

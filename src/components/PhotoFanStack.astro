@@ -1,0 +1,284 @@
+---
+import type { GalleryPhoto } from "../data/gallery";
+
+export interface PhotoFanItem {
+  photo: GalleryPhoto;
+  label: string;
+}
+
+interface Props {
+  photos: PhotoFanItem[];
+  label?: string;
+}
+
+const { photos, label = "可展开的光影记录" } = Astro.props;
+const angles = [-10, -6.5, -3, 0, 3, 6.5, 10];
+const spreadAngles = [-11.5, -7.5, -3.5, 0, 3.5, 7.5, 11.5];
+const positions = [16, 27, 38, 50, 62, 73, 84];
+const centerIndex = 3;
+---
+
+<section class="photo-fan-stack" data-photo-fan-stack aria-label={label}>
+  {photos.slice(0, angles.length).map(({ photo, label: photoLabel }, index) => (
+    <button
+      class="photo-fan-stack__anchor"
+      type="button"
+      data-photo-fan-card
+      aria-label={`${photoLabel}：${photo.alt}`}
+      style={`--fan-left:${positions[index]}%;--fan-angle:${angles[index]}deg;--fan-spread-angle:${spreadAngles[index]}deg;--fan-distance:${index - centerIndex};--fan-z:${index + 1}`}
+    >
+      <span class="photo-fan-stack__paper">
+        <span class="photo-fan-stack__label" aria-hidden="true">
+          {[...photoLabel].map((character, characterIndex) => (
+            <span style={`--label-delay:${characterIndex * 240}ms`}>{character}</span>
+          ))}
+        </span>
+        <img src={photo.src} alt={photo.alt} draggable="false" loading="lazy" />
+      </span>
+    </button>
+  ))}
+</section>
+
+<script>
+  type FanRoot = HTMLElement & { photoFanCleanup?: () => void };
+  type Point = { x: number; y: number };
+
+  document.querySelectorAll<FanRoot>("[data-photo-fan-stack]").forEach((stack) => {
+    stack.photoFanCleanup?.();
+    const cards = [...stack.querySelectorAll<HTMLButtonElement>("[data-photo-fan-card]")];
+    const hoverable = matchMedia("(hover: hover) and (pointer: fine)");
+    const controller = new AbortController();
+    const options = { signal: controller.signal };
+    const center = Math.floor(cards.length / 2);
+    let activeIndex = -1;
+    let expanded = false;
+    let pointer: Point | null = null;
+    let pressedCard: HTMLButtonElement | null = null;
+
+    // The anchors never move; animation on their children cannot change hit geometry.
+    const geometry = () => {
+      const step = Number.parseFloat(getComputedStyle(stack).getPropertyValue("--space-2")) || 8;
+      return cards.map((card, index) => {
+        const rect = card.getBoundingClientRect();
+        return {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+          halfWidth: rect.width / 2,
+          halfHeight: rect.height / 2,
+          spreadX: (index - center) * step,
+          lift: rect.height * 0.18,
+        };
+      });
+    };
+
+    const score = (point: Point, x: number, y: number, halfWidth: number, halfHeight: number, padding: number) => {
+      const dx = Math.abs(point.x - x);
+      const dy = Math.abs(point.y - y);
+      if (dx > halfWidth + padding || dy > halfHeight + padding) return Infinity;
+      return (dx / halfWidth) ** 2 + (dy / halfHeight) ** 2;
+    };
+
+    const targetAt = (point: Point) => {
+      let nearest = -1;
+      let nearestScore = Infinity;
+      let nearAnyPhoto = false;
+      geometry().forEach(({ x, y, halfWidth, halfHeight, spreadX, lift }, index) => {
+        // Keep both endpoints valid while the paper is moving between them.
+        const endpoints = [
+          [x, y],
+          [x + spreadX, y],
+          ...(index === activeIndex ? [[x + spreadX, y - lift]] : []),
+        ];
+        for (const [candidateX, candidateY] of endpoints) {
+          if (score(point, candidateX, candidateY, halfWidth, halfHeight, 12) !== Infinity) nearAnyPhoto = true;
+          const exact = score(point, candidateX, candidateY, halfWidth, halfHeight, 0);
+          if (exact < nearestScore) {
+            nearestScore = exact;
+            nearest = index;
+          }
+        }
+      });
+      return { nearAnyPhoto, index: nearest };
+    };
+
+    const setState = (nextExpanded: boolean, nextIndex = -1) => {
+      if (expanded === nextExpanded && activeIndex === nextIndex) return;
+      expanded = nextExpanded;
+      activeIndex = nextIndex;
+      stack.toggleAttribute("data-expanded", expanded);
+      cards.forEach((card, index) => card.toggleAttribute("data-active", index === activeIndex));
+    };
+
+    const updateFromPointer = (point: Point) => {
+      pointer = point;
+      if (!hoverable.matches) return;
+      const target = targetAt(point);
+      setState(target.nearAnyPhoto, target.nearAnyPhoto ? target.index : -1);
+    };
+
+    const clear = () => {
+      pointer = null;
+      pressedCard?.removeAttribute("data-pressed");
+      pressedCard = null;
+      setState(false);
+    };
+
+    window.addEventListener("pointermove", (event) => {
+      if (event.pointerType !== "touch") updateFromPointer({ x: event.clientX, y: event.clientY });
+    }, { ...options, passive: true });
+    window.addEventListener("pointerleave", clear, options);
+    document.documentElement.addEventListener("pointerleave", clear, options);
+    window.addEventListener("blur", clear, options);
+    document.addEventListener("visibilitychange", () => { if (document.hidden) clear(); }, options);
+    window.addEventListener("scroll", () => { if (pointer) updateFromPointer(pointer); }, { ...options, passive: true });
+    window.addEventListener("resize", () => { if (pointer) updateFromPointer(pointer); }, options);
+    const release = () => {
+      pressedCard?.removeAttribute("data-pressed");
+      pressedCard = null;
+    };
+    window.addEventListener("pointerup", release, options);
+    window.addEventListener("pointercancel", release, options);
+
+    cards.forEach((card, index) => {
+      card.addEventListener("pointerdown", (event) => {
+        if (event.button !== 0) return;
+        updateFromPointer({ x: event.clientX, y: event.clientY });
+        release();
+        pressedCard = cards[activeIndex] ?? card;
+        pressedCard.setAttribute("data-pressed", "");
+      }, options);
+      card.addEventListener("focus", () => {
+        if (card.matches(":focus-visible")) setState(true, index);
+      }, options);
+      card.addEventListener("keydown", (event) => {
+        if (event.key === " " || event.key === "Enter") card.setAttribute("data-pressed", "");
+      }, options);
+      card.addEventListener("keyup", () => card.removeAttribute("data-pressed"), options);
+    });
+    stack.addEventListener("focusout", () => {
+      requestAnimationFrame(() => {
+        if (stack.contains(document.activeElement)) return;
+        if (pointer) updateFromPointer(pointer);
+        else setState(false);
+      });
+    }, options);
+
+    // Astro may rerun this script during development; listeners never accumulate.
+    stack.photoFanCleanup = () => { controller.abort(); clear(); };
+    clear();
+  });
+</script>
+
+<style>
+  .photo-fan-stack {
+    position: relative;
+    width: min(calc(100% + var(--space-16) * 2), calc(100vw - var(--space-8)));
+    height: calc(clamp(13rem, 30vw, 15rem) + var(--space-6));
+    margin-left: 50%;
+    isolation: isolate;
+    transform: translateX(-50%);
+  }
+
+  .photo-fan-stack__anchor {
+    position: absolute;
+    top: calc(58% - var(--space-12));
+    left: var(--fan-left);
+    z-index: var(--fan-z);
+    width: clamp(4.75rem, 17%, 7.5rem);
+    aspect-ratio: 4 / 5.25;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-ink);
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    user-select: none;
+  }
+
+  .photo-fan-stack__anchor[data-active] { z-index: 8; }
+  .photo-fan-stack__anchor:focus-visible { outline: none; }
+  .photo-fan-stack__anchor:focus-visible .photo-fan-stack__paper {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  .photo-fan-stack__paper {
+    position: absolute;
+    inset: 0;
+    display: block;
+    padding: calc(var(--space-1) + 3px) calc(var(--space-1) + 3px) calc(var(--space-3) + 2px);
+    background: var(--color-photo-paper);
+    box-shadow: var(--shadow-photo-stack);
+    transform-origin: center;
+    transform: translateX(var(--fan-x, 0px)) translateY(var(--fan-y, 0%)) rotate(var(--fan-current-angle, var(--fan-angle))) scale(var(--fan-scale, 1));
+    transition: transform var(--duration-photo-fan) var(--ease-smooth-out), box-shadow var(--duration-fast) var(--ease-smooth-out);
+  }
+
+  .photo-fan-stack[data-expanded] .photo-fan-stack__anchor {
+    --fan-x: calc(var(--fan-distance) * var(--space-2));
+    --fan-current-angle: var(--fan-spread-angle);
+    --fan-scale: 1.03;
+  }
+  .photo-fan-stack__anchor[data-active] {
+    --fan-current-angle: 0deg !important;
+    --fan-y: -18%;
+    --fan-scale: 1.1 !important;
+  }
+  .photo-fan-stack__anchor[data-pressed] { --fan-scale: .96 !important; }
+  .photo-fan-stack__anchor[data-active] .photo-fan-stack__paper { box-shadow: var(--shadow-photo-stack-active); }
+
+  .photo-fan-stack__paper img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    outline: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+    outline-offset: -1px;
+    pointer-events: none;
+  }
+
+  .photo-fan-stack__label {
+    position: absolute;
+    bottom: calc(100% + var(--space-2));
+    left: 50%;
+    z-index: 1;
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-line-subtle);
+    border-radius: var(--radius-xs);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    color: var(--color-ink);
+    font-size: var(--text-meta);
+    line-height: 1.2;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, var(--space-1)) scale(.98);
+    transition: opacity var(--duration-quick) var(--ease-smooth-out), transform var(--duration-quick) var(--ease-smooth-out), visibility 0s linear var(--duration-quick);
+    visibility: hidden;
+    white-space: nowrap;
+  }
+  .photo-fan-stack__anchor[data-active] .photo-fan-stack__label {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+    transition-delay: var(--duration-micro);
+    visibility: visible;
+  }
+  .photo-fan-stack__label > span { display: inline-block; filter: blur(2px); opacity: 0; }
+  .photo-fan-stack__anchor[data-active] .photo-fan-stack__label > span {
+    animation: photo-fan-label-character var(--duration-label-character) var(--ease-smooth-out) forwards;
+    animation-delay: calc(var(--duration-micro) + var(--label-delay));
+  }
+  @keyframes photo-fan-label-character {
+    from { filter: blur(2px); opacity: 0; }
+    to { filter: blur(0); opacity: 1; }
+  }
+
+  @media (max-width: 47.999rem) {
+    .photo-fan-stack { width: 100%; height: calc(9rem + var(--space-6)); margin-left: 0; transform: none; }
+    .photo-fan-stack__anchor { top: calc(58% - var(--space-8)); width: clamp(3.25rem, 18%, 4.75rem); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .photo-fan-stack__paper, .photo-fan-stack__label { transition: none; }
+    .photo-fan-stack__label > span { animation: none !important; filter: none; opacity: 1; }
+  }
+</style>
