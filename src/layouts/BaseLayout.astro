@@ -30,7 +30,7 @@ const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : nul
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={description} />
     {robots && <meta name="robots" content={robots} />}
-    <meta name="theme-color" content="#f3eee8" />
+    <meta name="theme-color" content="#fbfaf9" />
     <script is:inline>
       const storedTheme = localStorage.getItem("incessant-theme");
       const themePreference = storedTheme === "dark" || storedTheme === "system" ? storedTheme : "light";
@@ -57,7 +57,7 @@ const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : nul
     <title>{title}</title>
   </head>
   <body>
-    <!-- THESIS: 暖纸背景中的一条安静出版栏，把工作、写作与摄影放在同一条长期记录里。 OWN-WORLD: 暖纸画布、592px 内容栏、手写标记、灰阶文字与原比例摄影。 STORY: 访客先认识 Leo，再依次进入文章、项目与照片，距视口底部 24px 的胶囊导航持续提供方向。 FIRST VIEWPORT: 签名与三行介绍从 48px 开始，正文在首屏直接给出项目、写作和摄影入口。 FORM: 可切换的亮色个人出版物。 -->
+    <!-- THESIS: 中性纸色背景中的一条安静出版栏，把工作、写作与摄影放在同一条长期记录里。 OWN-WORLD: 中性纸色画布、592px 内容栏、手写标记、灰阶文字与原比例摄影。 STORY: 访客先认识 Leo，再依次进入文章、项目与照片，距视口底部 24px 的胶囊导航持续提供方向。 FIRST VIEWPORT: 签名与三行介绍从 48px 开始，正文在首屏直接给出项目、写作和摄影入口。 FORM: 可切换的亮色个人出版物。 -->
     <a class="skip-link" href="#main">跳到主要内容</a>
     <SiteHeader />
     <main id="main" class:list={["page-main", { "page-main--wide": wide }]} data-route-main>

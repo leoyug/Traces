@@ -66,7 +66,7 @@ const isCurrent = (href: string) => {
     const theme = resolveTheme(preference);
     document.documentElement.dataset.theme = theme;
     document.documentElement.dataset.themePreference = preference;
-    document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#191918" : "#f3eee8");
+    document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#191918" : "#fbfaf9");
 
     document.querySelectorAll<HTMLButtonElement>("[data-theme-option]").forEach((option) => {
       const selected = option.dataset.themeValue === preference;

@@ -903,16 +903,20 @@
     line-height: 20px;
   }
 
-  .about-sections p,
-  .plain-list {
+  .about-sections p {
     color: var(--color-copy);
+    font-weight: 500;
+  }
+
+  .about-sections .plain-list {
+    color: var(--color-ink);
     font-weight: 500;
   }
 
   .plain-list {
     display: grid;
     gap: 16px;
-    color: var(--color-copy);
+    color: var(--color-ink);
     list-style: none;
   }
 
@@ -1845,32 +1849,32 @@
   :root {
     color-scheme: light;
     /* Foundation: page and material surfaces. */
-    --color-canvas: #f3eee8;
-    --color-surface: #fbf8f4;
-    --color-surface-2: #ebe4dc;
-    --color-surface-felt: #e4dbd1;
-    --color-photo-paper: #fffdf9;
+    --color-canvas: #fbfaf9;
+    --color-surface: #fff;
+    --color-surface-2: #f2f1ef;
+    --color-surface-felt: #ededeb;
+    --color-photo-paper: #fff;
 
     /* Content: hierarchy for readable, non-interactive information. */
-    --color-ink: #262320;
-    --color-copy: #4e4943;
-    --color-link: #262320;
-    --color-muted: #65615c;
-    --color-faint: #817b74;
-    --color-contact: var(--color-copy);
+    --color-ink: #242424;
+    --color-copy: #4d4d4d;
+    --color-link: #242424;
+    --color-muted: #646464;
+    --color-faint: #6b6b6b;
+    --color-contact: var(--color-link);
     --color-on-dark: #fafafa;
 
     /* Boundaries: structural separation without competing with content. */
-    --color-line: #d6cec5;
+    --color-line: #dedddb;
     --color-line-subtle: color-mix(in srgb, var(--color-line) 55%, var(--color-surface));
-    --color-leader: #d9d2ca;
-    --color-contact-underline: rgb(78 73 67 / 25%);
+    --color-leader: #e2e1df;
+    --color-contact-underline: rgb(77 77 77 / 25%);
     --color-contact-underline-active: var(--color-ink);
 
     /* Accent and controls: teal identity plus shared interactive states. */
     --color-accent: #00a894;
     --color-accent-ink: #007e6e;
-    --color-accent-soft: #cfe8e1;
+    --color-accent-soft: #dceee9;
     --color-control-idle: var(--color-muted);
     --color-control-emphasis: var(--color-ink);
     --color-control-selected: var(--color-ink);
@@ -1886,7 +1890,7 @@
     --tracking-body: 0; --tracking-title: -.015em; --tracking-display: -.025em;
     --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-12: 3rem; --space-16: 4rem; --space-20: 5rem; --space-24: 6rem; --space-32: 8rem;
     --radius-xs: .25rem; --radius-sm: .5rem; --radius-md: .75rem; --radius-lg: 1rem; --radius-xl: 1.5rem; --radius-pill: 9999px;
-    --shadow-hairline: 0 0 0 1px rgb(38 35 32 / 8%); --shadow-card: 0 1px 2px rgb(55 45 36 / 7%), 0 4px 14px rgb(55 45 36 / 9%); --shadow-float: 0 8px 28px rgb(55 45 36 / 16%); --shadow-photo-stack: 0 2px 2px rgb(55 45 36 / 7%), 0 4px 7px rgb(55 45 36 / 11%); --shadow-photo-stack-active: 0 2px 3px rgb(55 45 36 / 10%), 0 6px 10px rgb(55 45 36 / 15%);
+    --shadow-hairline: 0 0 0 1px rgb(0 0 0 / 7%); --shadow-card: 0 1px 2px rgb(0 0 0 / 6%), 0 4px 14px rgb(0 0 0 / 8%); --shadow-float: 0 8px 28px rgb(0 0 0 / 14%); --shadow-photo-stack: 0 2px 2px rgb(0 0 0 / 6%), 0 4px 7px rgb(0 0 0 / 10%); --shadow-photo-stack-active: 0 2px 3px rgb(0 0 0 / 9%), 0 6px 10px rgb(0 0 0 / 14%);
     --content-reading: 40rem; --content-wide: 75rem; --content-showcase: 75rem; --gutter: 1.5rem;
     --duration-micro: 80ms; --duration-quick: 150ms; --duration-fast: 250ms; --duration-photo-fan: 420ms; --duration-label-character: 300ms; --duration-text-link: 600ms; --duration-very-slow: 500ms; --duration-highlight-draw: 600ms; --duration-highlight-glint: 200ms; --delay-highlight-glint-first: 420ms; --delay-highlight-glint-second: 480ms; --delay-highlight-glint-third: 540ms; --delay-highlight-glint-fourth: 600ms; --ease-smooth-out: cubic-bezier(.22, 1, .36, 1); --ease-highlight-draw: ease-in-out;
     --dropdown-open-dur: 250ms; --dropdown-close-dur: 150ms; --dropdown-pre-scale: .97; --dropdown-closing-scale: .99; --dropdown-ease: cubic-bezier(.22, 1, .36, 1);
@@ -1908,7 +1912,7 @@
     --color-link: #fafafa;
     --color-muted: #808080;
     --color-faint: #808080;
-    --color-contact: var(--color-copy);
+    --color-contact: var(--color-link);
     --color-on-dark: #fafafa;
 
     --color-line: #343331;
@@ -1949,7 +1953,7 @@
   .reading-column { width: min(calc(100% - 2 * var(--gutter)), var(--content-reading)); margin-inline: auto; }
   .wide-column { width: min(calc(100% - 2 * var(--gutter)), var(--content-wide)); margin-inline: auto; }
   .meta-line, .section-label { color: var(--color-faint); }
-  .text-link { color: var(--color-faint); text-decoration-line: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .text-link { color: var(--color-link); text-decoration-line: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
   .text-link:hover { color: var(--color-ink); text-underline-offset: 4px; }
   ::-webkit-scrollbar { width: 10px; }
   ::-webkit-scrollbar-track { background: var(--color-canvas); }
