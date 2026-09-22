@@ -55,6 +55,8 @@ const contextValue = context.type === "all" ? undefined : context.slug;
 </section>
 
 <script>
+  import { playInterfaceSound } from "../../scripts/sound";
+
   type LightboxPhoto = {
     slug: string;
     title: string;
@@ -193,6 +195,7 @@ const contextValue = context.type === "all" ? undefined : context.slug;
       if (!dialog.open) dialog.showModal();
       document.documentElement.classList.add("has-photo-lightbox");
       close?.focus();
+      if (shouldPush) playInterfaceSound("loading", 0.5);
       if (shouldPush) {
         const cardLink = cards[index]?.querySelector<HTMLAnchorElement>("[data-photo-link]");
         if (cardLink) history.pushState({ photoOverlay: true, photoSlug: photos[index].slug }, "", cardLink.href);
@@ -208,8 +211,15 @@ const contextValue = context.type === "all" ? undefined : context.slug;
     }
 
     function requestClose() {
+      playInterfaceSound("droplet", 0.45);
       if (history.state?.photoOverlay) history.back();
       else hidePhoto();
+    }
+
+    function movePhoto(index: number) {
+      if (index < 0 || index >= photos.length) return;
+      playInterfaceSound("page", 0.35);
+      renderPhoto(index, true);
     }
 
     browser.addEventListener("click", (event) => {
@@ -228,6 +238,7 @@ const contextValue = context.type === "all" ? undefined : context.slug;
       url.searchParams.set("batch", String(batch));
       history.replaceState({ ...history.state, photoBatch: batch }, "", url);
       showBatch(batch);
+      playInterfaceSound("ready", 0.4);
     });
 
     image?.addEventListener("load", () => {
@@ -239,8 +250,8 @@ const contextValue = context.type === "all" ? undefined : context.slug;
       stage?.setAttribute("aria-busy", "false");
     });
     close?.addEventListener("click", requestClose);
-    previous?.addEventListener("click", () => renderPhoto(currentIndex - 1, true));
-    next?.addEventListener("click", () => renderPhoto(currentIndex + 1, true));
+    previous?.addEventListener("click", () => movePhoto(currentIndex - 1));
+    next?.addEventListener("click", () => movePhoto(currentIndex + 1));
     dialog?.addEventListener("cancel", (event) => { event.preventDefault(); requestClose(); });
     dialog?.addEventListener("click", (event) => { if (event.target === dialog) requestClose(); });
     stage?.addEventListener("touchstart", (event) => {
@@ -253,8 +264,8 @@ const contextValue = context.type === "all" ? undefined : context.slug;
       const dx = touch.clientX - touchStartX;
       const dy = touch.clientY - touchStartY;
       if (Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
-      if (dx > 0 && currentIndex > 0) renderPhoto(currentIndex - 1, true);
-      if (dx < 0 && currentIndex < photos.length - 1) renderPhoto(currentIndex + 1, true);
+      if (dx > 0 && currentIndex > 0) movePhoto(currentIndex - 1);
+      if (dx < 0 && currentIndex < photos.length - 1) movePhoto(currentIndex + 1);
     }, { passive: true });
 
     document.addEventListener("keydown", (event) => {
@@ -264,8 +275,8 @@ const contextValue = context.type === "all" ? undefined : context.slug;
         requestClose();
         return;
       }
-      if (event.key === "ArrowLeft" && currentIndex > 0) renderPhoto(currentIndex - 1, true);
-      if (event.key === "ArrowRight" && currentIndex < photos.length - 1) renderPhoto(currentIndex + 1, true);
+      if (event.key === "ArrowLeft" && currentIndex > 0) movePhoto(currentIndex - 1);
+      if (event.key === "ArrowRight" && currentIndex < photos.length - 1) movePhoto(currentIndex + 1);
     });
     addEventListener("popstate", () => {
       const match = location.pathname.match(/^\/photos\/([^/]+)\/?$/);

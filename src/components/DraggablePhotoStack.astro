@@ -36,13 +36,20 @@ const layouts = [
 </section>
 
 <script>
-  document.querySelectorAll<HTMLElement>("[data-photo-drag-stack]").forEach((stack) => {
-    if (stack.dataset.ready === "true") return;
-    stack.dataset.ready = "true";
+  import { playInterfaceSound } from "../scripts/sound";
 
-    const canDrag = matchMedia("(hover: hover) and (pointer: fine)");
-    const cards = [...stack.querySelectorAll<HTMLButtonElement>("[data-photo-drag-card]")];
-    let topLayer = cards.length;
+  type DragRoot = HTMLElement & { photoDragCleanup?: () => void };
+
+  const initializePhotoDragStacks = () => {
+    document.querySelectorAll<DragRoot>("[data-photo-drag-stack]").forEach((stack) => {
+      if (stack.dataset.ready === "true") return;
+      stack.dataset.ready = "true";
+
+      const canDrag = matchMedia("(hover: hover) and (pointer: fine)");
+      const cards = [...stack.querySelectorAll<HTMLButtonElement>("[data-photo-drag-card]")];
+      const controller = new AbortController();
+      const options = { signal: controller.signal };
+      let topLayer = cards.length;
 
     const selectCard = (selectedCard: HTMLButtonElement) => {
       cards.forEach((card) => {
@@ -61,16 +68,23 @@ const layouts = [
       let startLeft = 0;
       let startTop = 0;
       let dragged = false;
+      let isPressed = false;
 
-      const finishDrag = () => {
+      const releaseCard = () => {
         if (pointerId !== undefined && card.hasPointerCapture(pointerId)) card.releasePointerCapture(pointerId);
         pointerId = undefined;
         card.removeAttribute("data-dragging");
+        if (!isPressed) return;
+        isPressed = false;
+        playInterfaceSound("toggle", 0.35);
       };
 
       card.addEventListener("pointerdown", (event) => {
+        if (event.button !== 0) return;
         selectCard(card);
-        if (!canDrag.matches || event.button !== 0) return;
+        isPressed = true;
+        playInterfaceSound("press", 0.55);
+        if (!canDrag.matches) return;
         const stackRect = stack.getBoundingClientRect();
         const cardRect = card.getBoundingClientRect();
         pointerId = event.pointerId;
@@ -81,7 +95,7 @@ const layouts = [
         dragged = false;
         card.setPointerCapture(pointerId);
         card.setAttribute("data-dragging", "");
-      });
+      }, options);
 
       card.addEventListener("pointermove", (event) => {
         if (pointerId !== event.pointerId) return;
@@ -97,12 +111,33 @@ const layouts = [
         card.style.setProperty("--stack-left", `${(nextLeft / stackRect.width) * 100}%`);
         card.style.setProperty("--stack-top", `${(nextTop / stackRect.height) * 100}%`);
         event.preventDefault();
-      });
+      }, options);
 
-      card.addEventListener("pointerup", finishDrag);
-      card.addEventListener("pointercancel", finishDrag);
-      card.addEventListener("click", () => selectCard(card));
+      card.addEventListener("pointerup", releaseCard, options);
+      card.addEventListener("pointercancel", releaseCard, options);
+      card.addEventListener("keydown", (event) => {
+        if (event.repeat || (event.key !== " " && event.key !== "Enter")) return;
+        isPressed = true;
+        playInterfaceSound("press", 0.55);
+      }, options);
+      card.addEventListener("keyup", (event) => {
+        if (event.key !== " " && event.key !== "Enter") return;
+        releaseCard();
+      }, options);
+      card.addEventListener("click", () => selectCard(card), options);
     });
+
+      stack.photoDragCleanup = () => {
+        controller.abort();
+        stack.removeAttribute("data-ready");
+      };
+    });
+  };
+
+  initializePhotoDragStacks();
+  document.addEventListener("astro:page-load", initializePhotoDragStacks);
+  document.addEventListener("astro:before-swap", () => {
+    document.querySelectorAll<DragRoot>("[data-photo-drag-stack]").forEach((stack) => stack.photoDragCleanup?.());
   });
 </script>
 

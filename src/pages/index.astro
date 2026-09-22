@@ -51,12 +51,12 @@ const recentPhotos = shuffle(galleryPhotos.filter((photo) => photo.orientation =
   </section>
 
   <section class="home-section reading-column photo-home">
-    <div class="section-topline"><h2>光影记录</h2></div>
+    <div class="section-topline"><h2>屏幕之外</h2></div>
     <div class="photo-home__variant photo-home__variant--fan">
-      <PhotoFanStack photos={homeFanPhotos} label="光影记录：悬停展开照片" />
+      <PhotoFanStack photos={homeFanPhotos} label="屏幕之外：悬停展开照片" />
     </div>
     <div class="photo-home__variant photo-home__variant--drag">
-      <DraggablePhotoStack photos={recentPhotos} label="光影记录：桌面端可拖拽照片" />
+      <DraggablePhotoStack photos={recentPhotos} label="屏幕之外：桌面端可拖拽照片" />
     </div>
   </section>
 

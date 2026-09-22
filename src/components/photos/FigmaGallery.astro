@@ -86,6 +86,7 @@ const facts = [
 
 <script>
   import gsap from "gsap";
+  import { playInterfaceSound } from "../../scripts/sound";
 
   type GalleryPhoto = { slug: string; src: string; alt: string };
 
@@ -244,6 +245,7 @@ const facts = [
       if (!dialog.open) dialog.showModal();
       document.documentElement.classList.add("has-figma-lightbox");
       dialog.focus();
+      if (push) playInterfaceSound("loading", 0.5);
       requestAnimationFrame(() => {
         fitPhotoFrame(sourceRatio);
         dialog.classList.add("is-opening");
@@ -337,6 +339,7 @@ const facts = [
       // Keep the gallery document in place when dismissing the overlay. A
       // history back() here asks Astro's client router to replace the whole
       // page, which causes a visible flash before the next photo can open.
+      playInterfaceSound("droplet", 0.45);
       closePhoto("replace");
     };
 

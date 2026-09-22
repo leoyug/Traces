@@ -48,7 +48,7 @@ const isCurrent = (href: string) => {
       <section class="preferences-panel__row">
         <h2>音效</h2>
         <div class="preferences-panel__options" role="radiogroup" aria-label="音效">
-          <button class="is-selected" type="button" data-preference-option data-preference-group="sound" data-preference-value="on" role="radio" aria-checked="true" aria-label="打开音效"><img src="/assets/figma/preferences/sound-on.svg" alt="" width="20" height="20" /></button><button type="button" data-preference-option data-preference-group="sound" data-preference-value="off" role="radio" aria-checked="false" aria-label="关闭音效"><img src="/assets/figma/preferences/sound-off.svg" alt="" width="20" height="20" /></button>
+          <button type="button" data-preference-option data-preference-group="sound" data-preference-value="on" role="radio" aria-checked="false" aria-label="打开音效"><img src="/assets/figma/preferences/sound-on.svg" alt="" width="20" height="20" /></button><button class="is-selected" type="button" data-preference-option data-preference-group="sound" data-preference-value="off" role="radio" aria-checked="true" aria-label="关闭音效"><img src="/assets/figma/preferences/sound-off.svg" alt="" width="20" height="20" /></button>
         </div>
       </section>
     </aside>
@@ -56,11 +56,32 @@ const isCurrent = (href: string) => {
 </nav>
 
 <script>
-  type ThemePreference = "light" | "system" | "dark";
-  const storageKey = "incessant-theme";
-  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  import {
+    initializeSound,
+    playInterfaceSound,
+    setSoundPreference,
+    type SoundPreference,
+  } from "../scripts/sound";
 
-  const resolveTheme = (preference: ThemePreference) => preference === "system" ? (mediaQuery.matches ? "dark" : "light") : preference;
+  type ThemePreference = "light" | "system" | "dark";
+  type ResolvedTheme = "light" | "dark";
+  type ThemeTransition = {
+    finished: Promise<void>;
+    skipTransition?: () => void;
+  };
+  type ThemeTransitionDocument = Document & {
+    startViewTransition?: (update: () => void) => ThemeTransition;
+  };
+
+  const storageKey = "incessant-theme";
+  const topLevelPaths = new Set(["/", "/projects/", "/writing/", "/photos/", "/about/"]);
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let isThemeTransitioning = false;
+  let activeThemeTransition: ThemeTransition | null = null;
+  let pendingPageSound = false;
+
+  const resolveTheme = (preference: ThemePreference): ResolvedTheme => preference === "system" ? (mediaQuery.matches ? "dark" : "light") : preference;
 
   const applyTheme = (preference: ThemePreference) => {
     const theme = resolveTheme(preference);
@@ -75,10 +96,86 @@ const isCurrent = (href: string) => {
     });
   };
 
+  const clearThemeTransition = () => {
+    const root = document.documentElement;
+    activeThemeTransition?.skipTransition?.();
+    activeThemeTransition = null;
+    delete root.dataset.themeTransition;
+    root.style.removeProperty("--theme-transition-x");
+    root.style.removeProperty("--theme-transition-y");
+    root.style.removeProperty("--theme-transition-radius");
+    isThemeTransitioning = false;
+  };
+
+  const transitionTheme = (preference: ThemePreference, origin: HTMLElement) => {
+    const root = document.documentElement;
+    const nextTheme = resolveTheme(preference);
+    const transitionDocument = document as ThemeTransitionDocument;
+
+    if (
+      root.dataset.theme === nextTheme
+      || reducedMotionQuery.matches
+      || !transitionDocument.startViewTransition
+    ) {
+      localStorage.setItem(storageKey, preference);
+      applyTheme(preference);
+      return;
+    }
+
+    if (isThemeTransitioning) return;
+
+    const bounds = origin.getBoundingClientRect();
+    const originX = bounds.left + bounds.width / 2;
+    const originY = bounds.top + bounds.height / 2;
+    const radius = Math.hypot(
+      Math.max(originX, window.innerWidth - originX),
+      Math.max(originY, window.innerHeight - originY),
+    );
+
+    root.style.setProperty("--theme-transition-x", `${originX}px`);
+    root.style.setProperty("--theme-transition-y", `${originY}px`);
+    root.style.setProperty("--theme-transition-radius", `${radius}px`);
+    root.dataset.themeTransition = "circle-blur";
+    isThemeTransitioning = true;
+
+    try {
+      const transition = transitionDocument.startViewTransition(() => {
+        localStorage.setItem(storageKey, preference);
+        applyTheme(preference);
+      });
+      activeThemeTransition = transition;
+
+      transition.finished.then(clearThemeTransition, clearThemeTransition);
+    } catch {
+      clearThemeTransition();
+      localStorage.setItem(storageKey, preference);
+      applyTheme(preference);
+    }
+  };
+
   const initializePreferences = () => {
     const savedTheme = localStorage.getItem(storageKey);
     const preference: ThemePreference = savedTheme === "dark" || savedTheme === "system" ? savedTheme : "light";
     applyTheme(preference);
+    syncSoundControls(initializeSound());
+  };
+
+  const syncSoundControls = (preference: SoundPreference) => {
+    document.querySelectorAll<HTMLButtonElement>('[data-preference-group="sound"]').forEach((option) => {
+      const selected = option.dataset.preferenceValue === preference;
+      option.setAttribute("aria-checked", String(selected));
+      option.classList.toggle("is-selected", selected);
+    });
+  };
+
+  const closePreferences = (restoreFocus = false) => {
+    const panel = document.querySelector<HTMLElement>("[data-preferences-panel]");
+    if (!panel || panel.hidden) return;
+    panel.hidden = true;
+    const toggle = document.querySelector<HTMLButtonElement>("[data-preferences-toggle]");
+    toggle?.setAttribute("aria-expanded", "false");
+    if (restoreFocus) toggle?.focus();
+    playInterfaceSound("droplet", 0.45);
   };
 
   const themeWindow = window as Window & { __incessantThemeToggleInitialized?: boolean };
@@ -96,29 +193,37 @@ const isCurrent = (href: string) => {
         const isOpen = toggle.getAttribute("aria-expanded") === "true";
         toggle.setAttribute("aria-expanded", String(!isOpen));
         panel.hidden = isOpen;
+        playInterfaceSound(isOpen ? "droplet" : "bloom", isOpen ? 0.45 : 0.5);
         return;
       }
 
       if (themeOption) {
         const preference = themeOption.dataset.themeValue as ThemePreference;
-        localStorage.setItem(storageKey, preference);
-        applyTheme(preference);
+        playInterfaceSound("toggle", 0.6);
+        transitionTheme(preference, themeOption);
         return;
       }
 
       if (preferenceOption) {
         const group = preferenceOption.dataset.preferenceGroup;
+        if (group === "sound") {
+          const preference = preferenceOption.dataset.preferenceValue as SoundPreference;
+          setSoundPreference(preference);
+          syncSoundControls(preference);
+          return;
+        }
+        const wasSelected = preferenceOption.getAttribute("aria-checked") === "true";
         document.querySelectorAll<HTMLButtonElement>(`[data-preference-group="${group}"]`).forEach((option) => {
           const selected = option === preferenceOption;
           option.setAttribute("aria-checked", String(selected));
           option.classList.toggle("is-selected", selected);
         });
+        if (group === "language" && !wasSelected) playInterfaceSound("toggle", 0.6);
         return;
       }
 
       if (panel && !panel.hidden && !target.closest("[data-preferences-panel]")) {
-        panel.hidden = true;
-        document.querySelector<HTMLButtonElement>("[data-preferences-toggle]")?.setAttribute("aria-expanded", "false");
+        closePreferences();
       }
     });
 
@@ -126,22 +231,30 @@ const isCurrent = (href: string) => {
       const target = event.target as Element;
       const panel = document.querySelector<HTMLElement>("[data-preferences-panel]");
       if (!panel || panel.hidden || target.closest("[data-preferences-panel], [data-preferences-toggle]")) return;
-      panel.hidden = true;
-      document.querySelector<HTMLButtonElement>("[data-preferences-toggle]")?.setAttribute("aria-expanded", "false");
+      closePreferences();
     });
 
     document.addEventListener("keydown", (event) => {
       if (event.key !== "Escape") return;
       const panel = document.querySelector<HTMLElement>("[data-preferences-panel]");
       if (!panel || panel.hidden) return;
-      panel.hidden = true;
-      const toggle = document.querySelector<HTMLButtonElement>("[data-preferences-toggle]");
-      toggle?.setAttribute("aria-expanded", "false");
-      toggle?.focus();
+      closePreferences(true);
     });
 
     mediaQuery.addEventListener("change", () => {
       if (document.documentElement.dataset.themePreference === "system") applyTheme("system");
+    });
+
+    document.addEventListener("astro:before-preparation", () => {
+      pendingPageSound = true;
+      clearThemeTransition();
+    });
+
+    document.addEventListener("astro:page-load", () => {
+      if (!pendingPageSound) return;
+      pendingPageSound = false;
+      const path = location.pathname.endsWith("/") ? location.pathname : `${location.pathname}/`;
+      if (topLevelPaths.has(path)) playInterfaceSound("ready", 0.45);
     });
   }
 

@@ -40,11 +40,15 @@ const centerIndex = 3;
 </section>
 
 <script>
+  import { playInterfaceSound } from "../scripts/sound";
+
   type FanRoot = HTMLElement & { photoFanCleanup?: () => void };
   type Point = { x: number; y: number };
 
-  document.querySelectorAll<FanRoot>("[data-photo-fan-stack]").forEach((stack) => {
-    stack.photoFanCleanup?.();
+  const initializePhotoFanStacks = () => {
+    document.querySelectorAll<FanRoot>("[data-photo-fan-stack]").forEach((stack) => {
+      if (stack.dataset.ready === "true") return;
+      stack.dataset.ready = "true";
     const cards = [...stack.querySelectorAll<HTMLButtonElement>("[data-photo-fan-card]")];
     const hoverable = matchMedia("(hover: hover) and (pointer: fine)");
     const controller = new AbortController();
@@ -113,7 +117,9 @@ const centerIndex = 3;
       pointer = point;
       if (!hoverable.matches) return;
       const target = targetAt(point);
-      setState(target.nearAnyPhoto, target.nearAnyPhoto ? target.index : -1);
+      const nextIndex = target.nearAnyPhoto ? target.index : -1;
+      if (nextIndex >= 0 && nextIndex !== activeIndex) playInterfaceSound("tick", 0.42);
+      setState(target.nearAnyPhoto, nextIndex);
     };
 
     const clear = () => {
@@ -164,8 +170,19 @@ const centerIndex = 3;
     }, options);
 
     // Astro may rerun this script during development; listeners never accumulate.
-    stack.photoFanCleanup = () => { controller.abort(); clear(); };
-    clear();
+      stack.photoFanCleanup = () => {
+        controller.abort();
+        clear();
+        stack.removeAttribute("data-ready");
+      };
+      clear();
+    });
+  };
+
+  initializePhotoFanStacks();
+  document.addEventListener("astro:page-load", initializePhotoFanStacks);
+  document.addEventListener("astro:before-swap", () => {
+    document.querySelectorAll<FanRoot>("[data-photo-fan-stack]").forEach((stack) => stack.photoFanCleanup?.());
   });
 </script>
 

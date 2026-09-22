@@ -59,12 +59,33 @@
     animation: route-page-in 420ms var(--ease-smooth-out) both;
   }
 
+  html[data-theme-transition="circle-blur"]::view-transition-old(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  html[data-theme-transition="circle-blur"]::view-transition-new(root) {
+    animation: theme-circle-blur-reveal var(--theme-transition-duration) cubic-bezier(.4, 0, .2, 1) both;
+    mix-blend-mode: normal;
+  }
+
   @keyframes route-page-out {
     to { opacity: 0; }
   }
 
   @keyframes route-page-in {
     from { opacity: 0; }
+  }
+
+  @keyframes theme-circle-blur-reveal {
+    from {
+      clip-path: circle(0 at var(--theme-transition-x) var(--theme-transition-y));
+      filter: blur(var(--theme-transition-blur));
+    }
+    to {
+      clip-path: circle(var(--theme-transition-radius) at var(--theme-transition-x) var(--theme-transition-y));
+      filter: blur(0);
+    }
   }
 
   :root {
@@ -91,6 +112,8 @@
     --lightbox-photo-duration: 560ms;
     --lightbox-fact-duration: 180ms;
     --lightbox-close-duration: 400ms;
+    --theme-transition-duration: 700ms;
+    --theme-transition-blur: 8px;
   }
 
   body {
@@ -153,6 +176,11 @@
   @media (prefers-reduced-motion: reduce) {
     ::view-transition-old(root),
     ::view-transition-new(root) {
+      animation: none;
+    }
+
+    html[data-theme-transition="circle-blur"]::view-transition-old(root),
+    html[data-theme-transition="circle-blur"]::view-transition-new(root) {
       animation: none;
     }
 
