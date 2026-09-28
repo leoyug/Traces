@@ -274,6 +274,17 @@ const centerIndex = 3;
     visibility: hidden;
     white-space: nowrap;
   }
+  :global(:root[data-theme="light"]) .photo-fan-stack__label {
+    border-radius: var(--radius-sm);
+    border-color: transparent;
+    box-shadow: inset 0 0 0 var(--photo-tooltip-border-width) var(--photo-tooltip-border-color), var(--shadow-card);
+    min-height: var(--photo-tooltip-min-height);
+    padding: var(--photo-tooltip-padding-block) var(--tooltip-padding-inline);
+    font-size: var(--text-body);
+    line-height: var(--tooltip-line-height);
+    font-family: var(--font-heading);
+    font-weight: var(--weight-regular);
+  }
   .photo-fan-stack__anchor[data-active] .photo-fan-stack__label {
     opacity: 1;
     transform: translate(-50%, 0) scale(1);

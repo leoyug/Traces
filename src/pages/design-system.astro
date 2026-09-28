@@ -108,6 +108,15 @@ const fanPhotos = galleryPhotos.slice(0, 7).map((photo, index) => ({ photo, labe
     <section><SectionHeading title="正文与链接颜色" description="正文与链接都使用语义 token，并随亮暗模式同步映射。" /><div class="text-color-demo"><p>普通文字用于连续阅读的段落；<TextLink href="/writing">链接文字</TextLink>用于可点击的内容。</p><code>--color-copy · <output data-color-token="copy">读取中</output></code><code>--color-link · <output data-color-token="link">读取中</output></code></div></section>
     <section><SectionHeading title="字体与层级" /><div class="type-specimens"><p class="type-display">把复杂的事，设计得清楚一点。</p><p class="type-title">页面标题使用 28px、600 字重。</p><p class="type-body">界面正文与文章正文统一使用 14px；普通内容采用 1.55 行高，长文章采用 1.8 行高。English and numbers 2026.</p><p class="type-meta">说明标签 · 12PX · REGULAR</p><p class="type-script">只留一点手写痕迹。</p></div></section>
     <section><SectionHeading title="间距与圆角" /><div class="space-row">{spaces.map((space) => <div><span style={`width:var(--space-${space})`}></span><code>{space}</code></div>)}</div><div class="radius-row"><i></i><i></i><i></i><i></i></div></section>
+    <section>
+      <SectionHeading title="平滑圆角" description="Lisse Squircle · 60% 平滑度，保持原有圆角尺寸。左侧为普通圆角，右侧为平滑圆角；底部偏好入口可查看实际浮层。" />
+      <div class="corner-comparison">
+        <div><p>普通圆角 · 偏好面板</p><div class="corner-panel-demo"><span>语言</span><span>中文 / English</span><span>外观</span><span>跟随系统</span></div></div>
+        <div><p>平滑圆角 · 偏好面板</p><div class="corner-panel-demo" data-smooth-corners="surface" data-smooth-shadow><span>语言</span><span>中文 / English</span><span>外观</span><span>跟随系统</span></div></div>
+        <div><p>普通圆角 · 项目图片</p><img class="corner-media-demo" src="/assets/figma-v03/project-detail/cover.png" alt="" loading="lazy" /></div>
+        <div><p>平滑圆角 · 项目图片</p><img class="corner-media-demo" data-smooth-corners="clip" src="/assets/figma-v03/project-detail/cover.png" alt="" loading="lazy" /></div>
+      </div>
+    </section>
     <section><SectionHeading title="按钮" /><div class="component-row"><Button>主要按钮</Button><Button variant="secondary">次要按钮</Button><Button variant="ghost">文字按钮</Button><Button size="small">小按钮</Button></div></section>
     <section><SectionHeading title="文字链接" description="默认使用低对比下划线；悬停或键盘聚焦时在 300ms 内加深，以保留可点击提示。" /><div class="component-row"><TextLink href="/">查看项目</TextLink><TextLink href="/writing">阅读文章</TextLink></div></section>
     <section><SectionHeading title="卡片" /><div class="project-grid"><Card><h3>标准卡片</h3><p>用于需要明确表面层级的内容。</p></Card><Card variant="quiet"><h3>安静卡片</h3><p>保留组件结构，但移除阴影和底色。</p></Card></div></section>
@@ -178,6 +187,12 @@ const fanPhotos = galleryPhotos.slice(0, 7).map((photo, index) => ({ photo, labe
   .radius-row i { width: 5rem; height: 3.5rem; background: var(--color-surface-2); border: 1px solid var(--color-line); }
   .radius-row i:nth-child(1) { border-radius: var(--radius-xs); }.radius-row i:nth-child(2) { border-radius: var(--radius-sm); }.radius-row i:nth-child(3) { border-radius: var(--radius-lg); }.radius-row i:nth-child(4) { border-radius: var(--radius-pill); }
   .component-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+  .corner-comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8) var(--space-4); }
+  .corner-comparison p { margin-bottom: var(--space-4); color: var(--color-muted); }
+  .corner-panel-demo { position: relative; display: grid; grid-template-columns: auto 1fr; gap: var(--space-4); padding: var(--space-3); border: 1px solid var(--color-line-subtle); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-float); }
+  .corner-panel-demo:global(.has-smooth-corners) { background: transparent; border-color: transparent; box-shadow: none; overflow: visible; }
+  .corner-panel-demo span:nth-child(even) { text-align: right; }
+  .corner-media-demo { width: 100%; aspect-ratio: 1.96; object-fit: cover; border-radius: var(--radius-md); }
   .text-color-demo { display: grid; gap: var(--space-3); max-width: 37rem; color: var(--color-copy); font-size: 1rem; line-height: 1.7; }
   .text-color-demo .text-link { color: var(--color-link); }
   .text-color-demo code { font-size: var(--text-meta); }

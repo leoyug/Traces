@@ -14,8 +14,8 @@ const { title, summary, year, status, accent, href = "/projects", image } = Astr
 ---
 
 <article class="project-card">
-  <a class:list={["project-card__visual", `tone-${accent}`]} href={href} aria-label={`查看项目：${title}，${year}，${status}`}>
-    {image ? <img src={image} alt="" loading="lazy" /> : (
+  <a class:list={["project-card__visual", `tone-${accent}`]} data-smooth-corners="surface" href={href} aria-label={`查看项目：${title}，${year}，${status}`}>
+    {image ? <img data-smooth-corners="clip" src={image} alt="" loading="lazy" /> : (
       <span class="project-card__preview">
         <span class="project-card__chrome"></span>
         <span class="project-card__screen">

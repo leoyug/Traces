@@ -66,8 +66,10 @@ const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : nul
     <SiteFooter />
     <script>
       import { initRouteMotion } from "../scripts/route-motion";
+      import { initSmoothCorners } from "../scripts/smooth-corners";
 
       initRouteMotion();
+      initSmoothCorners();
     </script>
   </body>
 </html>
