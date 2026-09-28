@@ -1,5 +1,6 @@
 ---
 import { navigation } from "../data/site";
+import ProgressiveBlur from "./ProgressiveBlur.astro";
 const currentPath = Astro.url.pathname;
 const isCurrent = (href: string) => {
   if (href === "/") return currentPath === "/";
@@ -8,6 +9,7 @@ const isCurrent = (href: string) => {
 };
 ---
 
+<ProgressiveBlur placement="viewport" class="dock-backdrop" />
 <nav class="floating-nav" aria-label="主要导航">
   {navigation.map((item, index) => (
     <>
@@ -56,6 +58,7 @@ const isCurrent = (href: string) => {
 </nav>
 
 <script>
+  import { gsap } from "gsap";
   import {
     initializeSound,
     playInterfaceSound,
@@ -168,10 +171,31 @@ const isCurrent = (href: string) => {
     });
   };
 
+  const setPreferencesPanelOpen = (panel: HTMLElement, open: boolean) => {
+    gsap.killTweensOf(panel);
+    gsap.set(panel, { clearProps: "transform,opacity,visibility" });
+    panel.hidden = !open;
+    if (!open || reducedMotionQuery.matches) return;
+
+    const styles = getComputedStyle(document.documentElement);
+    gsap.fromTo(panel, {
+      autoAlpha: 0,
+      y: parseFloat(styles.getPropertyValue("--preferences-enter-distance")),
+      scale: parseFloat(styles.getPropertyValue("--dropdown-pre-scale")),
+    }, {
+      autoAlpha: 1,
+      y: 0,
+      scale: 1,
+      duration: parseFloat(styles.getPropertyValue("--dropdown-open-dur")) / 1000,
+      ease: "power3.out",
+      clearProps: "transform,opacity,visibility",
+    });
+  };
+
   const closePreferences = (restoreFocus = false) => {
     const panel = document.querySelector<HTMLElement>("[data-preferences-panel]");
     if (!panel || panel.hidden) return;
-    panel.hidden = true;
+    setPreferencesPanelOpen(panel, false);
     const toggle = document.querySelector<HTMLButtonElement>("[data-preferences-toggle]");
     toggle?.setAttribute("aria-expanded", "false");
     if (restoreFocus) toggle?.focus();
@@ -192,7 +216,7 @@ const isCurrent = (href: string) => {
       if (toggle && panel) {
         const isOpen = toggle.getAttribute("aria-expanded") === "true";
         toggle.setAttribute("aria-expanded", String(!isOpen));
-        panel.hidden = isOpen;
+        setPreferencesPanelOpen(panel, !isOpen);
         playInterfaceSound(isOpen ? "droplet" : "bloom", isOpen ? 0.45 : 0.5);
         return;
       }

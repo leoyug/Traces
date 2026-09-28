@@ -107,7 +107,6 @@
     --dock-container-padding-block: calc(var(--dock-icon-edge-gap) - var(--dock-border-width) - var(--dock-control-icon-gutter));
     --dock-control-inset: calc(var(--dock-border-width) + var(--dock-container-padding-block));
     --dock-height: calc(var(--dock-control-size) + var(--dock-container-padding-block) + var(--dock-container-padding-block) + var(--dock-border-width) + var(--dock-border-width));
-    --dock-reserve: calc(var(--dock-height) + var(--dock-bottom-gap) + var(--space-8));
     --lightbox-backdrop-duration: 400ms;
     --lightbox-photo-duration: 560ms;
     --lightbox-fact-duration: 180ms;
@@ -120,7 +119,7 @@
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    padding-block-end: 0;
+    padding-block-end: var(--dock-page-padding);
     color: var(--color-ink);
     font-size: 14px;
     line-height: 24px;
@@ -317,6 +316,7 @@
     color: var(--color-ink);
     transform: translateX(-50%);
     transition: border-color var(--duration-quick) var(--ease-smooth-out), background var(--duration-quick) var(--ease-smooth-out), color var(--duration-quick) var(--ease-smooth-out), box-shadow var(--duration-quick) var(--ease-smooth-out);
+    transform-origin: bottom center;
   }
 
   .preferences-panel[hidden] { display: none; }
@@ -1751,6 +1751,13 @@
       --dock-middle-icon-gap: 20px;
     }
 
+    .preferences-panel {
+      inset-inline-start: auto;
+      inset-inline-end: 0;
+      transform: none;
+      transform-origin: bottom right;
+    }
+
     .project-grid {
       grid-template-columns: 1fr;
     }
@@ -1923,6 +1930,18 @@
     --duration-micro: 80ms; --duration-quick: 150ms; --duration-fast: 250ms; --duration-photo-fan: 420ms; --duration-label-character: 300ms; --duration-text-link: 600ms; --duration-very-slow: 500ms; --duration-highlight-draw: 600ms; --duration-highlight-glint: 200ms; --delay-highlight-glint-first: 420ms; --delay-highlight-glint-second: 480ms; --delay-highlight-glint-third: 540ms; --delay-highlight-glint-fourth: 600ms; --ease-smooth-out: cubic-bezier(.22, 1, .36, 1); --ease-highlight-draw: ease-in-out;
     --dropdown-open-dur: 250ms; --dropdown-close-dur: 150ms; --dropdown-pre-scale: .97; --dropdown-closing-scale: .99; --dropdown-ease: cubic-bezier(.22, 1, .36, 1);
     --dock-height: calc(2.75rem + var(--dock-hover-inset) + var(--dock-hover-inset) + 2px); --dock-bottom-gap: var(--space-4); --dock-reserve: calc(var(--dock-height) + var(--dock-bottom-gap) + var(--space-8) + env(safe-area-inset-bottom, 0px));
+    --duration-route-enter: 840ms;
+    --preferences-enter-distance: 8px;
+    --duration-route-stagger: 70ms;
+    --duration-route-stagger-max: 420ms;
+    --distance-route-enter: 16px;
+    --blur-route-enter: 4px;
+    --progressive-blur-height: var(--space-32);
+    --progressive-blur-radius: 8px;
+    --progressive-blur-color: var(--color-canvas);
+    --dock-backdrop-height: calc(144px + env(safe-area-inset-bottom, 0px));
+    --dock-page-padding: calc(var(--space-16) + env(safe-area-inset-bottom, 0px));
+    --dock-reserve: calc(var(--dock-backdrop-height) + var(--space-4));
     --detail-toc-width: 16.5rem; --detail-toc-label-width: 12.5rem;
   }
 
@@ -1969,7 +1988,7 @@
 
 @layer base {
   html { scroll-padding-block-end: var(--dock-reserve); scrollbar-color: var(--color-muted) var(--color-canvas); }
-  body { min-height: 100vh; overflow-x: clip; padding-block-end: var(--dock-reserve); background: var(--color-canvas); color: var(--color-ink); font: var(--weight-regular) var(--text-body)/1.5rem var(--font-sans); letter-spacing: var(--tracking-body); font-synthesis: none; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { min-height: 100vh; overflow-x: clip; padding-block-end: var(--dock-page-padding); background: var(--color-canvas); color: var(--color-ink); font: var(--weight-regular) var(--text-body)/1.5rem var(--font-sans); letter-spacing: var(--tracking-body); font-synthesis: none; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
   a { color: inherit; text-decoration-color: var(--color-line); }
   button, a { -webkit-tap-highlight-color: transparent; }
   :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; box-shadow: 0 0 0 4px var(--color-ink); }
@@ -2255,4 +2274,39 @@
   :root[data-theme="light"] .preferences-panel__options button.is-selected > img { filter: invert(1); opacity: 1; }
   :root[data-theme="dark"] .preferences-panel__options button > img { filter: brightness(0) invert(1); }
   :root[data-theme="dark"] .preferences-panel__options button.is-selected > img { filter: brightness(0); opacity: 1; }
+}
+
+@layer components {
+  .progressive-blur {
+    position: absolute;
+    inset: auto 0 0;
+    height: var(--progressive-blur-height);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .progressive-blur--viewport { position: fixed; }
+
+  .progressive-blur__layer,
+  .progressive-blur__tint {
+    position: absolute;
+    inset: 0;
+  }
+
+  .progressive-blur__layer {
+    -webkit-backdrop-filter: blur(calc(var(--progressive-blur-radius) * var(--blur-strength)));
+    backdrop-filter: blur(calc(var(--progressive-blur-radius) * var(--blur-strength)));
+    -webkit-mask-image: linear-gradient(to bottom, transparent var(--blur-start), black var(--blur-end));
+    mask-image: linear-gradient(to bottom, transparent var(--blur-start), black var(--blur-end));
+  }
+
+  /* Also serves as a fallback when backdrop filtering is unavailable. */
+  .progressive-blur__tint {
+    background: linear-gradient(to bottom, transparent, var(--progressive-blur-color));
+  }
+
+  .dock-backdrop {
+    z-index: 39;
+    --progressive-blur-height: var(--dock-backdrop-height);
+  }
 }

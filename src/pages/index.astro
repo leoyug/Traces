@@ -27,30 +27,30 @@ const recentPhotos = shuffle(galleryPhotos.filter((photo) => photo.orientation =
 <BaseLayout>
   <section class="hero reading-column">
     <h1 class="sr-only">Leo 的个人网站</h1>
-    <img class="hero__signature" src="/assets/figma/leo-mark.svg" alt="Leo" width="64" height="48" />
+    <img class="hero__signature" src="/assets/figma/leo-mark.svg" alt="Leo" width="64" height="48" data-route-enter />
     <div class="hero__copy">
-      <p>这里是 <TextLink href="/about">Leo</TextLink> 的数字花园。</p>
-      <p>可以在这里找到我正在折腾的<TextLink href="/projects">项目</TextLink>。</p>
-      <p>也可以探索我正在记录的<TextLink href="/writing">文字</TextLink>和<TextLink href="/photos">影像</TextLink>，关于生活、工作、兴趣和没想明白的问题。</p>
+      <p data-route-enter>这里是 <TextLink href="/about">Leo</TextLink> 的数字花园。</p>
+      <p data-route-enter>可以在这里找到我正在折腾的<TextLink href="/projects">项目</TextLink>。</p>
+      <p data-route-enter>也可以探索我正在记录的<TextLink href="/writing">文字</TextLink>和<TextLink href="/photos">影像</TextLink>，关于生活、工作、兴趣和没想明白的问题。</p>
     </div>
   </section>
 
   <section class="home-section reading-column writing-home">
-    <div class="section-topline"><h2>最近在想</h2></div>
-    <div class="home-list">
+    <div class="section-topline" data-route-enter><h2>最近在想</h2></div>
+    <div class="home-list" data-route-enter-group>
       {recentArticles.map((article) => <ContentRow title={article.data.title} meta={formatDate(article.data.publishedAt).replaceAll(".", "-")} href={`/writing/${article.id}`} density="compact" stackOnMobile={false} />)}
     </div>
   </section>
 
   <section class="home-section reading-column project-home">
-    <div class="section-topline"><h2>精选项目</h2></div>
-    <div class="project-grid">
+    <div class="section-topline" data-route-enter><h2>精选项目</h2></div>
+    <div class="project-grid" data-route-enter-group>
       <ProjectCard title="宅畅想 App" summary="家装公司全链路解决方案" year="2026" status="已上线" accent="clay" image="/assets/figma-v03/home/image-01.png" href="/projects/workspace-structure-redesign" />
       <ProjectCard title="亦我家装后台" summary="帮助企业更高效地管理资产与人员吧" year="2026" status="已上线" accent="sage" image="/assets/figma-v03/home/image-10.png" href="/projects/content-publishing-system" />
     </div>
   </section>
 
-  <section class="home-section reading-column photo-home">
+  <section class="home-section reading-column photo-home" data-route-enter>
     <div class="section-topline"><h2>屏幕之外</h2></div>
     <div class="photo-home__variant photo-home__variant--fan">
       <PhotoFanStack photos={homeFanPhotos} label="屏幕之外：悬停展开照片" />
@@ -60,7 +60,7 @@ const recentPhotos = shuffle(galleryPhotos.filter((photo) => photo.orientation =
     </div>
   </section>
 
-  <section class="home-section contact-section reading-column" aria-labelledby="contact-title">
+  <section class="home-section contact-section reading-column" aria-labelledby="contact-title" data-route-enter>
     <h2 id="contact-title">联系到我</h2>
     <nav aria-label="联系方式">
       <TextLink href={github} rel="me">GitHub</TextLink>

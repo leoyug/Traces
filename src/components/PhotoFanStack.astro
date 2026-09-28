@@ -190,7 +190,7 @@ const centerIndex = 3;
   .photo-fan-stack {
     position: relative;
     width: min(calc(100% + var(--space-16) * 2), calc(100vw - var(--space-8)));
-    height: calc(clamp(13rem, 30vw, 15rem) + var(--space-6));
+    height: calc(clamp(13rem, 30vw, 15rem) + var(--space-6) - var(--space-16));
     margin-left: 50%;
     isolation: isolate;
     transform: translateX(-50%);
@@ -198,7 +198,7 @@ const centerIndex = 3;
 
   .photo-fan-stack__anchor {
     position: absolute;
-    top: calc(58% - var(--space-12));
+    top: calc(58% - var(--space-3));
     left: var(--fan-left);
     z-index: var(--fan-z);
     width: clamp(4.75rem, 17%, 7.5rem);
@@ -291,8 +291,8 @@ const centerIndex = 3;
   }
 
   @media (max-width: 47.999rem) {
-    .photo-fan-stack { width: 100%; height: calc(9rem + var(--space-6)); margin-left: 0; transform: none; }
-    .photo-fan-stack__anchor { top: calc(58% - var(--space-8)); width: clamp(3.25rem, 18%, 4.75rem); }
+    .photo-fan-stack { width: 100%; height: calc(9rem + var(--space-6) - var(--space-8)); margin-left: 0; transform: none; }
+    .photo-fan-stack__anchor { top: calc(58% - var(--space-3)); width: clamp(3.25rem, 18%, 4.75rem); }
   }
   @media (prefers-reduced-motion: reduce) {
     .photo-fan-stack__paper, .photo-fan-stack__label { transition: none; }

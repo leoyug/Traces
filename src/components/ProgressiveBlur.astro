@@ -1,0 +1,25 @@
+---
+interface Props {
+  placement?: "viewport" | "container";
+  class?: string;
+}
+
+const { placement = "container", class: className } = Astro.props;
+// Mask each layer instead of the wrapper, so children can sample the page backdrop.
+const layers = [
+  { strength: 0.125, start: 0, end: 30 },
+  { strength: 0.25, start: 20, end: 50 },
+  { strength: 0.5, start: 40, end: 70 },
+  { strength: 1, start: 60, end: 90 },
+];
+---
+
+<div class:list={["progressive-blur", `progressive-blur--${placement}`, className]} aria-hidden="true">
+  {layers.map(({ strength, start, end }) => (
+    <span
+      class="progressive-blur__layer"
+      style={`--blur-strength: ${strength}; --blur-start: ${start}%; --blur-end: ${end}%;`}
+    />
+  ))}
+  <span class="progressive-blur__tint" />
+</div>

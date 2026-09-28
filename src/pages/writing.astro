@@ -14,6 +14,6 @@ const groups = [...articles.reduce((years, article) => {
 ---
 
 <BaseLayout title="写作｜Leo" description="生活、设计与学习记录。">
-  <header class="page-intro reading-column"><h1>写作</h1><p>记录当下的感受与发生过的事情。</p></header>
-  {groups.map(([year, entries]) => <section class="archive-section writing-year reading-column" aria-labelledby={`year-${year}`}><div class="section-topline"><h2 id={`year-${year}`}>{year}</h2></div><div>{entries.map((article) => <ContentRow title={article.data.title} meta={formatDate(article.data.publishedAt).slice(5).replace(".", "-")} href={`/writing/${article.id}`} density="compact" stackOnMobile={false} />)}</div></section>)}
+  <header class="page-intro reading-column"><h1 data-route-enter>写作</h1><p data-route-enter>记录当下的感受与发生过的事情。</p></header>
+  {groups.map(([year, entries]) => <section class="archive-section writing-year reading-column" aria-labelledby={`year-${year}`}><div class="section-topline" data-route-enter><h2 id={`year-${year}`}>{year}</h2></div><div data-route-enter-group>{entries.map((article) => <ContentRow title={article.data.title} meta={formatDate(article.data.publishedAt).slice(5).replace(".", "-")} href={`/writing/${article.id}`} density="compact" stackOnMobile={false} />)}</div></section>)}
 </BaseLayout>
