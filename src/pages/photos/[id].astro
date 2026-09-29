@@ -1,15 +1,16 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import FigmaGallery from "../../components/photos/FigmaGallery.astro";
-import { galleryPhotos } from "../../data/gallery";
+import PhotoGallery from "../../components/photos/PhotoGallery.astro";
+import { getGalleryPhotos, type GalleryPhoto } from "../../lib/gallery";
 
 export async function getStaticPaths() {
-  return galleryPhotos.map((photo) => ({ params: { id: photo.slug }, props: { photo } }));
+  const photos = await getGalleryPhotos();
+  return photos.map((photo) => ({ params: { id: photo.slug }, props: { photo, photos } }));
 }
-interface Props { photo: (typeof galleryPhotos)[number] }
-const { photo } = Astro.props;
+interface Props { photo: GalleryPhoto; photos: GalleryPhoto[] }
+const { photo, photos } = Astro.props;
 ---
 
 <BaseLayout title={`摄影｜Leo`} description={photo.alt} socialImage={photo.src} robots="noindex,follow">
-  <FigmaGallery initialSlug={photo.slug} />
+  <PhotoGallery photos={photos} initialSlug={photo.slug} />
 </BaseLayout>

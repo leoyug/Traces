@@ -1,0 +1,223 @@
+@layer site-responsive {
+  @media (max-width: 79.999rem) {
+    .photo-lightbox__shell {
+      width: calc(100% - 80px);
+    }
+
+    .photo-lightbox__frame {
+      aspect-ratio: 880 / 536;
+    }
+
+    .detail-toc {
+      width: 44px;
+    }
+
+    .detail-toc__back {
+      position: relative;
+    }
+
+    .detail-toc__back span,
+    .detail-toc__top span,
+    .detail-toc__label {
+      position: absolute;
+      z-index: 1;
+      left: calc(100% + 8px);
+      display: block;
+      padding: 2px 6px;
+      background: var(--color-canvas);
+      color: var(--color-ink);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-4px, -50%);
+      transition: opacity var(--duration-quick) var(--ease-smooth-out), transform var(--duration-quick) var(--ease-smooth-out);
+      visibility: hidden;
+      white-space: nowrap;
+    }
+
+    .detail-toc__back span,
+    .detail-toc__top span {
+      top: 50%;
+    }
+
+    .detail-toc__label {
+      top: 50%;
+      max-width: min(12rem, calc(100vw - 6rem));
+    }
+
+    .detail-toc__back:is(:hover, :focus-visible) span,
+    .detail-toc__top:is(:hover, :focus-visible) span,
+    .detail-toc__link:is(:hover, :focus-visible) .detail-toc__label {
+      opacity: 1;
+      transform: translate(0, -50%);
+      visibility: visible;
+    }
+  }
+
+  @media (max-width: 47.999rem) {
+    .hero,
+    .page-intro,
+    .photo-index-header,
+    .about-intro {
+      padding-top: 40px;
+    }
+
+    .writing-home {
+      margin-top: 72px;
+    }
+
+    .project-home,
+    .photo-home,
+    .contact-section,
+    .page-intro + .archive-section,
+    .archive-section + .archive-section,
+    .about-sections {
+      margin-top: 64px;
+    }
+
+    .content-detail {
+      padding-top: 48px;
+    }
+
+    .content-detail__cover {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1;
+    }
+
+  }
+
+  @media (max-width: 47.999rem) {
+    :root {
+      --dock-icon-edge-gap: 18px;
+      --dock-item-gap: 18px;
+      --dock-middle-icon-gap: 20px;
+    }
+
+    .preferences-panel {
+      inset-inline-start: auto;
+      inset-inline-end: 0;
+      transform: none;
+      transform-origin: bottom right;
+    }
+
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .project-card__visual {
+      height: auto;
+      aspect-ratio: 312 / 193;
+    }
+
+    .about-intro {
+      display: block;
+    }
+
+    .about-intro__body {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .about-portrait {
+      width: 216px;
+      height: 244px;
+      margin-top: 8px;
+      transform: none;
+    }
+
+    .content-detail h1 {
+      font-size: 28px;
+      line-height: 36px;
+    }
+
+    .photo-lightbox__shell {
+      width: calc(100% - 48px);
+    }
+
+    .photo-lightbox__frame {
+      aspect-ratio: 432 / 268;
+    }
+
+    .photo-lightbox__facts {
+      width: 100%;
+      min-height: 162px;
+      align-content: center;
+      justify-content: flex-start;
+    }
+
+    .resume {
+      gap: 64px;
+    }
+
+    .resume__intro {
+      min-height: 0;
+    }
+
+    .resume__section:has(.resume-projects),
+    .resume__section:has(.resume-skills),
+    .resume-skills,
+    .resume-skills > section {
+      height: auto;
+      min-height: 0;
+      overflow: visible;
+    }
+  }
+
+  @media (max-width: 42.999rem) {
+    .photo-index-header {
+      padding-top: 48px;
+    }
+
+    .gallery-grid--desktop {
+      display: none;
+    }
+
+    .gallery-grid--mobile {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 80px;
+    }
+
+    .gallery-grid--mobile .gallery-column {
+      min-width: 0;
+      flex: 1 1 0;
+      gap: 12px;
+    }
+
+    .gallery-grid--mobile a.is-tall {
+      height: auto;
+      aspect-ratio: 186.6667 / 296;
+    }
+
+    .gallery-grid--mobile a.is-short {
+      height: auto;
+      aspect-ratio: 186.6667 / 134;
+    }
+
+    .content-detail h1 {
+      line-height: 40px;
+    }
+
+    .detail-facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 40px;
+    }
+  }
+
+  @media (min-width: 43rem) {
+    .detail-toc {
+      display: block;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .detail-toc {
+      width: var(--detail-toc-width);
+    }
+
+    .detail-toc__label {
+      display: block;
+    }
+  }
+}

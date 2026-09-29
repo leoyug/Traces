@@ -5,7 +5,6 @@ publishedAt: 2026-08-06
 tags: [设计工程, 方法]
 readingMinutes: 8
 featured: true
-relatedProjects: [workspace-structure-redesign]
 ---
 
 ## 先让问题变得可以讨论

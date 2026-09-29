@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Button from "../components/Button.astro";
 import Card from "../components/Card.astro";
 import ContentRow from "../components/ContentRow.astro";
+import ContactLinks from "../components/ContactLinks.astro";
 import DetailToc from "../components/DetailToc.astro";
 import DraggablePhotoStack from "../components/DraggablePhotoStack.astro";
 import PhotoFanStack from "../components/PhotoFanStack.astro";
@@ -12,9 +13,10 @@ import PlaySpinLoader from "../components/PlaySpinLoader.astro";
 import ProgressiveBlur from "../components/ProgressiveBlur.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import TextLink from "../components/TextLink.astro";
-import { galleryPhotos } from "../data/gallery";
+import { getGalleryPhotos } from "../lib/gallery";
 
 if (import.meta.env.PROD) return Astro.redirect("/");
+const galleryPhotos = await getGalleryPhotos();
 
 const colorGroups = [
   {
@@ -119,6 +121,7 @@ const fanPhotos = galleryPhotos.slice(0, 7).map((photo, index) => ({ photo, labe
     </section>
     <section><SectionHeading title="按钮" /><div class="component-row"><Button>主要按钮</Button><Button variant="secondary">次要按钮</Button><Button variant="ghost">文字按钮</Button><Button size="small">小按钮</Button></div></section>
     <section><SectionHeading title="文字链接" description="默认使用低对比下划线；悬停或键盘聚焦时在 300ms 内加深，以保留可点击提示。" /><div class="component-row"><TextLink href="/">查看项目</TextLink><TextLink href="/writing">阅读文章</TextLink></div></section>
+    <section><SectionHeading title="联系方式" description="首页与关于页共用的联系方式，真实地址从职业履历读取。" /><ContactLinks class="contact-links" /></section>
     <section><SectionHeading title="卡片" /><div class="project-grid"><Card><h3>标准卡片</h3><p>用于需要明确表面层级的内容。</p></Card><Card variant="quiet"><h3>安静卡片</h3><p>保留组件结构，但移除阴影和底色。</p></Card></div></section>
     <section><SectionHeading title="项目卡片" /><div class="project-grid"><ProjectCard title="复杂工作台的结构重构" summary="统一任务、资产与协作流，建立可扩展的页面骨架。" year="2026" status="已上线" accent="clay" /></div></section>
     <section><SectionHeading title="内容行" /><ContentRow title="把模糊需求变成可维护的界面" summary="行式索引优先于重卡片。" meta="2026.08.06" tags={["设计工程", "方法"]} /><ContentRow title="紧凑文章行" meta="2026.08.06" density="compact" stackOnMobile={false} /></section>

@@ -1,109 +1,67 @@
 # 不息 Traces
 
-“不息”是一份以长期记录为首要目标、兼顾职业展示的中文个人网站。文章、项目、摄影和职业信息使用同一套稳定的内容模型维护，目标是让内容能够持续积累，而不是成为一次性的作品集。
-
-当前版本：[`v0.1`](./docs/releases/v0.1.md)
-
-## 特点
-
-- Astro 6 + TypeScript，构建为纯静态网站。
-- 使用 Astro Content Collections 管理文章、项目、相册、照片和履历。
-- 响应式照片网格保留原始比例，并提供无 JavaScript 基础浏览。
-- URL 驱动的照片灯箱支持键盘、触摸、焦点管理和浏览器历史。
-- 本地照片处理生成 JPG/WebP 响应式资产与 Manifest。
-- 构建审计检查照片尺寸、缺失资产、孤立文件和敏感 EXIF。
-- 语义化结构、可见焦点、44px 最小交互区域，并尊重减弱动态效果偏好。
-
-## 技术栈
-
-- [Astro](https://astro.build/)
-- TypeScript
-- Astro Content Collections
-- Sharp
-- ExifTool
-- GSAP
-
-项目不依赖数据库、CMS、账户系统或服务端运行时。
+“不息”是 Leo 的中文个人网站，记录写作、项目、摄影与职业经历。网站使用 Astro 6、TypeScript 和 Content Collections，生成纯静态页面。
 
 ## 本地运行
 
-需要 Node.js 和 npm。
+需要 Node.js 和 npm：
 
 ```bash
-git clone https://github.com/leoyug/Traces.git
-cd Traces
 npm install
 npm run dev
 ```
 
-开发服务器启动后访问终端显示的本地地址。开发环境还提供 `/design-system`，用于检查设计变量和公共组件；该页面不会作为公开内容出现在生产版本中。
-
 常用命令：
 
 ```bash
-npm run dev             # 启动开发服务器
-npm run check           # Astro 类型检查 + 照片发布审计
-npm run build           # 完整检查并生成静态网站
-npm run preview         # 本地预览生产构建
-npm run photos:process  # 处理照片原件并更新发布资产
-npm run photos:audit    # 单独审计照片发布资产
+npm run check         # 内容类型检查和照片发布资产审计
+npm run build         # 生成字体子集、检查并构建静态网站
+npm run preview       # 本地预览构建产物
+npm run photos:audit  # 单独检查摄影图片尺寸、引用和敏感元数据
 ```
 
-`npm run build` 会自动根据 `src/` 中的文案重建寒蝉宋体的 WOFF2 子集。完整 OTF 仅放在 `scripts/fonts/source/` 作为构建源，不会被公开发布；新增文案或模块后不需要手动维护字符表。Compact Regular、Compact Bold 与仅供在线简历姓名使用的 Text Regular 都通过该流程生成。
+开发环境的 `/design-system` 展示正在使用的设计规则和组件；生产环境不公开该页面。`npm run build` 自动重新生成寒蝉宋体子集，完整 OTF 只保存在 `scripts/fonts/source/`，不会作为公开资源发布。
 
-生产构建输出到 `dist/`，可部署到支持静态站点的平台。
-
-## 内容结构
+## 代码结构
 
 ```text
 src/
-├── components/          # 全站公共组件与照片组件
-├── content/             # articles、projects、albums、photos、resume
-├── content.config.ts    # Content Collections 结构与引用规则
-├── data/                # 站点数据与照片资产 Manifest
-├── layouts/             # 页面骨架与全站元数据
-├── lib/                 # 内容和照片查询逻辑
-├── pages/               # Astro 路由
-└── styles/global.css    # 设计变量、基础样式与响应式规则
+├── components/            # 跨页面组件；photos/ 是摄影展示组件
+├── content/               # articles、projects、photos、resume
+├── content.config.ts      # 内容字段校验
+├── data/                  # 导航和项目展示用的临时数据
+├── layouts/               # 页面骨架与元数据
+├── lib/                   # 内容查询和摄影数据整理
+├── pages/                 # 路由与页面编排
+├── scripts/               # 页面交互脚本
+└── styles/
+    ├── global.css         # 字体、设计变量、基础规则和公共组件
+    ├── site.css           # 当前页面的专有样式
+    └── site-responsive.css # 对应的响应式规则
 
-private/photos/          # 本地照片原件；被 Git 忽略
-public/media/photos/     # 可公开发布的响应式照片资产
-scripts/photos/          # 照片处理与审计脚本
+public/assets/figma-v03/photos/ # 当前公开摄影图片
+scripts/photos/audit.ts         # 发布图片审计
 ```
 
-文章、项目、照片和相册使用文件名作为稳定短名。公开发布后，不应仅因标题变化而修改短名。
+文章、项目和照片的文件名是稳定短名。已公开的地址不要只因标题变化而修改；确需迁移时，应补上跳转。项目列表及其详情目前是展示稿，详情正文标明哪些事实仍待核实；正式案例需要替换为真实资料。旧的相册、标签和“加载更多”内容模型已移除。
 
-## 发布照片
+## 更新摄影内容
 
-照片原件只作为本地处理输入，不应进入 Git 或公开构建。
+摄影页直接展示单张照片，点击后打开灯箱，再次点击关闭。照片描述和图片实际尺寸会显示在灯箱中；拍摄日期、地点和相机参数只有核实后才填写。每张照片有独立地址 `/photos/<短名>/`。
 
-1. 将原件放入 `private/photos/`。
-2. 在 `src/content/photos/` 新增照片内容文件，填写 `sourceFile`、准确的 `alt`、日期、标签和允许公开的地点信息。
-3. 如需归入相册，在 `src/content/albums/` 更新相册内容和照片引用。
-4. 运行 `npm run photos:process`，生成限制尺寸、清除敏感元数据的 JPG/WebP 资产。
-5. 运行 `npm run build`，确认内容校验和照片审计全部通过。
-6. 人工检查图片、替代文本、公开元数据和移动端灯箱后再提交发布资产。
+1. 自行备份照片原件；不要把原件、精确坐标、设备序列号或第三方隐私放进公开目录。
+2. 准备适合网页发布、已清除敏感 EXIF 的图片，放入 `public/assets/figma-v03/photos/`。当前审计限制为最长边不超过 2400px、文件不超过 2MB。
+3. 在 `src/content/photos/` 为该图片添加同名 JSON，填写 `src`、准确的 `alt`、唯一的 `order`、`size`、`orientation` 和图片实际的 `width`、`height`。经过核实的拍摄参数可放在 `publicMetadata`。
+4. 运行 `npm run build`，再人工检查图片、替代文本、灯箱详情及移动端效果。
 
-处理脚本只将经过白名单选择的相机参数写入 Manifest；GPS、序列号、作者等敏感字段不得公开。完整流程与验收要求见[照片模块构建与上线指南](./docs/%E7%85%A7%E7%89%87%E6%A8%A1%E5%9D%97%E6%9E%84%E5%BB%BA%E4%B8%8E%E4%B8%8A%E7%BA%BF%E6%8C%87%E5%8D%97.md)。
+具体字段和检查要求见[照片发布指南](./docs/%E7%85%A7%E7%89%87%E6%A8%A1%E5%9D%97%E6%9E%84%E5%BB%BA%E4%B8%8E%E4%B8%8A%E7%BA%BF%E6%8C%87%E5%8D%97.md)。
 
-## 设计与实现原则
+## 设计和产品依据
 
-- 长期可维护优先于短期视觉炫技。
-- 稳定地址、无障碍和无 JavaScript 基础浏览属于内容完整性。
-- 内容事实与机器生成资产分离。
-- 隐私依靠不上传和构建审计，而不是依靠 `noindex`。
-- Afilmory 只作为照片处理与查看器状态的设计参考，不部署或嵌入其完整应用。
-
-## 项目文档
-
-- [V0.1 版本说明与后续计划](./docs/releases/v0.1.md)
-- [产品定位与约束](./PRODUCT.md)
-- [设计说明](./DESIGN.md)
+- [产品与信息架构](./%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99%E5%8A%9F%E8%83%BD%E6%96%B9%E6%A1%88.md)
 - [设计系统](./PERSONAL_SITES_DESIGN_SYSTEM.md)
 - [领域语言](./CONTEXT.md)
-- [产品与信息架构](./%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99%E5%8A%9F%E8%83%BD%E6%96%B9%E6%A1%88.md)
-- [Afilmory 选择性借鉴决策](./docs/adr/0001-selective-afilmory-adoption.md)
+- [当前产品约束](./PRODUCT.md)
+- [设计说明](./DESIGN.md)
 
-## 当前状态
-
-V0.1 已完成网站基础和 Astro 原生照片系统。仓库中的部分照片、文章、项目与职业信息仍用于设计验证，正式上线前需要替换或逐项核实。下一阶段重点是补充真实内容、压力测试照片流程并完成正式发布闭环。
+当前图片和部分文章、职业信息仍需作者逐项核实后才能作为正式内容对外发布。历史版本记录保留在 `docs/releases/`。

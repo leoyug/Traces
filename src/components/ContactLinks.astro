@@ -1,0 +1,18 @@
+---
+import { getEntry } from "astro:content";
+import TextLink from "./TextLink.astro";
+
+interface Props { class?: string; }
+const { class: className } = Astro.props;
+const resume = await getEntry("resume", "main");
+if (!resume) throw new Error("缺少 main 职业履历内容");
+const github = resume.data.links.find((link) => link.label === "GitHub")?.href;
+const x = resume.data.links.find((link) => link.label === "X/Twitter")?.href;
+---
+
+<nav class={className} aria-label="联系方式">
+  {github && <TextLink href={github} rel="me">GitHub</TextLink>}
+  <TextLink href={`mailto:${resume.data.email}`}>Email</TextLink>
+  {x && <TextLink href={x}>X/Twitter</TextLink>}
+  <TextLink href="/rss.xml">RSS</TextLink>
+</nav>

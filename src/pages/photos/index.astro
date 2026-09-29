@@ -1,8 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import FigmaGallery from "../../components/photos/FigmaGallery.astro";
+import PhotoGallery from "../../components/photos/PhotoGallery.astro";
+import { getGalleryPhotos } from "../../lib/gallery";
+
+const photos = await getGalleryPhotos();
 ---
 
 <BaseLayout title="摄影｜Leo" description="沿途看见的光。" robots="noindex,follow">
-  <FigmaGallery />
+  <PhotoGallery photos={photos} />
 </BaseLayout>

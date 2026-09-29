@@ -1,11 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ContactLinks from "../components/ContactLinks.astro";
 import ParticlePortrait from "../components/ParticlePortrait.astro";
 import TextLink from "../components/TextLink.astro";
-import { getEntry } from "astro:content";
-const resume = await getEntry("resume", "main");
-if (!resume) throw new Error("缺少 main 职业履历内容");
-const github = resume.data.links.find((link) => link.label === "GitHub")?.href ?? "https://github.com/leoyug";
 ---
 
 <BaseLayout title="关于｜Leo" description="产品设计师 Leo 的个人介绍。">
@@ -33,12 +30,7 @@ const github = resume.data.links.find((link) => link.label === "GitHub")?.href ?
         <li>👫🏻和万万一起去到别的地方，体验各种事物，拍美好的景物，吃好吃的美食</li>
       </ul></section>
     <section><h2>联系到我</h2>
-      <nav class="contact-links" aria-label="联系方式">
-        <TextLink href={github} rel="me">GitHub</TextLink>
-        <TextLink href={`mailto:${resume.data.email}`}>Email</TextLink>
-        <TextLink href="https://x.com/Incessant_Leo">X/Twitter</TextLink>
-        <TextLink href="/rss.xml">Xiaohongshu</TextLink>
-      </nav></section>
+      <ContactLinks class="contact-links" /></section>
     <section><h2>本站相关</h2>
       <nav class="contact-links" aria-label="本站相关">
         <TextLink href="/design-system">设计系统</TextLink>

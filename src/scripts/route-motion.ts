@@ -43,8 +43,10 @@ export function initRouteMotion() {
 
   const resetEntrance = () => {
     entrancePrepared = false;
-    gsap.killTweensOf(targets);
-    gsap.set(targets, { clearProps: entranceProps });
+    if (targets.length > 0) {
+      gsap.killTweensOf(targets);
+      gsap.set(targets, { clearProps: entranceProps });
+    }
   };
 
   const prepareEntrance = () => {
@@ -55,6 +57,7 @@ export function initRouteMotion() {
     if (!main) return;
 
     targets = getEntranceTargets(main);
+    if (targets.length === 0) return;
     const styles = getComputedStyle(document.documentElement);
     motion = {
       duration: parseFloat(styles.getPropertyValue("--duration-route-enter")) / 1000,

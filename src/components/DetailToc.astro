@@ -44,11 +44,13 @@ const items = headings.filter(({ depth }) => depth === 2 || depth === 3);
 </aside>
 
 <script>
-  const tocElements = document.querySelectorAll<HTMLElement>("[data-detail-toc]");
+  type TocRoot = HTMLElement & { detailTocCleanup?: () => void };
 
-  tocElements.forEach((toc) => {
+  const initializeDetailTocs = () => document.querySelectorAll<TocRoot>("[data-detail-toc]").forEach((toc) => {
     if (toc.dataset.initialized === "true") return;
     toc.dataset.initialized = "true";
+    const controller = new AbortController();
+    const signal = controller.signal;
 
     const links = Array.from(
       toc.querySelectorAll<HTMLAnchorElement>("[data-detail-toc-link]"),
@@ -61,7 +63,10 @@ const items = headings.filter(({ depth }) => depth === 2 || depth === 3);
       })
       .filter((entry): entry is { link: HTMLAnchorElement; heading: HTMLElement } => entry !== null);
 
-    if (entries.length === 0) return;
+    if (entries.length === 0) {
+      toc.detailTocCleanup = () => { controller.abort(); delete toc.dataset.initialized; };
+      return;
+    }
 
     let activeIndex = -1;
     let lockedIndex: number | null = null;
@@ -114,21 +119,32 @@ const items = headings.filter(({ depth }) => depth === 2 || depth === 3);
       link.addEventListener("click", () => {
         lockedIndex = index;
         setActive(index);
-      });
+      }, { signal });
     });
 
-    window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate, { passive: true });
-    window.addEventListener("wheel", releaseLock, { passive: true });
-    window.addEventListener("touchstart", releaseLock, { passive: true });
+    window.addEventListener("scroll", requestUpdate, { passive: true, signal });
+    window.addEventListener("resize", requestUpdate, { passive: true, signal });
+    window.addEventListener("wheel", releaseLock, { passive: true, signal });
+    window.addEventListener("touchstart", releaseLock, { passive: true, signal });
     window.addEventListener("pointerdown", (event) => {
       if (!toc.contains(event.target as Node)) releaseLock();
-    }, { passive: true });
+    }, { passive: true, signal });
     window.addEventListener("keydown", (event) => {
       if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) {
         releaseLock();
       }
-    });
+    }, { signal });
     update();
+    toc.detailTocCleanup = () => {
+      controller.abort();
+      cancelAnimationFrame(frame);
+      delete toc.dataset.initialized;
+    };
+  });
+
+  initializeDetailTocs();
+  document.addEventListener("astro:page-load", initializeDetailTocs);
+  document.addEventListener("astro:before-swap", () => {
+    document.querySelectorAll<TocRoot>("[data-detail-toc]").forEach((toc) => toc.detailTocCleanup?.());
   });
 </script>

@@ -1,6 +1,7 @@
 ---
 title: 内容发布系统
 description: 让编辑、设计与研发共享同一套发布语言和状态模型。
+draft: true
 publishedAt: 2025-11-12
 year: 2025
 status: launched

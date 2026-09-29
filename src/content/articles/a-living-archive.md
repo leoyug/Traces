@@ -5,7 +5,6 @@ publishedAt: 2026-07-18
 tags: [个人网站, 记录]
 readingMinutes: 6
 featured: true
-relatedProjects: [photo-archive-experiment]
 ---
 
 ## 稳定地址是一种承诺

@@ -37,13 +37,16 @@ const projects = defineCollection({
 });
 
 const photos = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/photos" }),
+  loader: glob({ pattern: "**/*.json", base: "./src/content/photos" }),
   schema: z.object({
-    ...publicationFields,
-    alt: z.string().default(""),
-    sourceFile: z.string().min(1).optional(),
-    albums: z.array(reference("albums")).default([]),
-    tags: z.array(z.string().min(1)).default([]),
+    src: z.string().startsWith("/"),
+    alt: z.string().min(1),
+    order: z.number().int().positive(),
+    size: z.enum(["tall", "short"]),
+    orientation: z.enum(["portrait", "landscape"]),
+    width: z.number().int().positive(),
+    height: z.number().int().positive(),
+    draft: z.boolean().default(false),
     publicMetadata: z.object({
       capturedAt: z.coerce.date().optional(),
       camera: z.string().optional(),
@@ -54,20 +57,6 @@ const photos = defineCollection({
       iso: z.number().int().positive().optional(),
       place: z.string().optional(),
     }).default({}),
-  }).superRefine((photo, context) => {
-    if (photo.draft) return;
-    if (!photo.alt) context.addIssue({ code: "custom", path: ["alt"], message: "正式发布的照片必须填写替代文本" });
-  }),
-});
-
-const albums = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/albums" }),
-  schema: z.object({
-    ...publicationFields,
-    dateRange: z.string().optional(),
-    places: z.array(z.string().min(1)).default([]),
-    photos: z.array(reference("photos")).default([]),
-    coverPhoto: reference("photos").optional(),
   }),
 });
 
@@ -109,4 +98,4 @@ const resume = defineCollection({
   }),
 });
 
-export const collections = { articles, projects, albums, photos, resume };
+export const collections = { articles, projects, photos, resume };

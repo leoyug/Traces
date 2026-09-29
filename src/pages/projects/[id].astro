@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import { getCollection, render } from "astro:content";
 import DetailToc from "../../components/DetailToc.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatDate, projectStatusLabels } from "../../lib/content";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects", ({ data }) => !data.draft);
@@ -13,6 +14,13 @@ const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 
 const projectCovers: Record<string, string> = {
+  "zhai-chang-xiang-app": "/assets/figma-v03/home/image-01.png",
+  "yiwo-admin": "/assets/figma-v03/home/image-10.png",
+  "inspiration-collection": "/assets/figma-v03/projects/archive/room-01.jpg",
+  "tutu-ip": "/assets/figma-v03/projects/archive/room-01.jpg",
+  "zhai-chang-xiang-website": "/assets/figma-v03/projects/archive/room-10.jpg",
+  "zhai-chang-xiang": "/assets/figma-v03/projects/archive/room-10.jpg",
+  "youxiang-app": "/assets/figma-v03/projects/archive/room-01.jpg",
   "workspace-structure-redesign": "/assets/figma-v03/projects/archive/room-10.jpg",
   "content-publishing-system": "/assets/figma-v03/projects/archive/room-07.jpg",
   "photo-archive-experiment": "/assets/figma-v03/projects/archive/room-01.jpg",
@@ -22,15 +30,15 @@ const cover = projectCovers[entry.id] ?? "/assets/figma-v03/project-detail/cover
 
 <BaseLayout title={`${entry.data.title}｜Leo`} description={entry.data.description} socialImage={cover}>
   <DetailToc headings={headings} ariaLabel="项目目录" backHref="/projects" backLabel="返回项目" />
-  <article class="v03-detail reading-column" data-detail-page="project">
-    <img class="v03-detail__cover" src={cover} alt="" transition:name="project-cover" />
+  <article class="content-detail reading-column" data-detail-page="project">
+    <img class="content-detail__cover" src={cover} alt="" transition:name="project-cover" />
     <header id="overview" data-route-enter>
       <h1>{entry.data.title}</h1>
       <dl class="detail-facts">
         <div><dt>年份</dt><dd>{entry.data.year}</dd></div>
         <div><dt>角色</dt><dd>{entry.data.role}</dd></div>
-        <div><dt>状态</dt><dd>已上线</dd></div>
-        <div><dt>范围</dt><dd>产品设计</dd></div>
+        <div><dt>状态</dt><dd>{projectStatusLabels[entry.data.status]}</dd></div>
+        <div><dt>日期</dt><dd>{formatDate(entry.data.publishedAt)}</dd></div>
       </dl>
     </header>
     <div class="article__body" id="content" data-route-enter-body><Content /></div>

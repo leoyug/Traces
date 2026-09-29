@@ -1,6 +1,7 @@
 ---
 title: 复杂工作台的结构重构
 description: 在六周内统一任务、资产与协作流，建立可扩展的页面骨架。
+draft: true
 publishedAt: 2026-06-20
 year: 2026
 status: launched

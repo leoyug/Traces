@@ -1,17 +1,17 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContentRow from "../components/ContentRow.astro";
+import ContactLinks from "../components/ContactLinks.astro";
 import DraggablePhotoStack from "../components/DraggablePhotoStack.astro";
 import PhotoFanStack from "../components/PhotoFanStack.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import TextLink from "../components/TextLink.astro";
-import { getCollection, getEntry } from "astro:content";
-import { galleryPhotos } from "../data/gallery";
+import { getCollection } from "astro:content";
+import { featuredProjectPreviews } from "../data/project-previews";
+import { getGalleryPhotos } from "../lib/gallery";
 import { formatDate } from "../lib/content";
 
-const resume = await getEntry("resume", "main");
-if (!resume) throw new Error("缺少 main 职业履历内容");
-const github = resume.data.links.find((link) => link.label === "GitHub")?.href ?? "https://github.com/leoyug";
+const galleryPhotos = await getGalleryPhotos();
 const recentArticles = (await getCollection("articles", ({ data }) => !data.draft))
   .sort((left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime())
   .slice(0, 4);
@@ -45,8 +45,7 @@ const recentPhotos = shuffle(galleryPhotos.filter((photo) => photo.orientation =
   <section class="home-section reading-column project-home">
     <div class="section-topline" data-route-enter><h2>精选项目</h2></div>
     <div class="project-grid" data-route-enter-group>
-      <ProjectCard title="宅畅想 App" summary="家装公司全链路解决方案" year="2026" status="已上线" accent="clay" image="/assets/figma-v03/home/image-01.png" href="/projects/workspace-structure-redesign" />
-      <ProjectCard title="亦我家装后台" summary="帮助企业更高效地管理资产与人员吧" year="2026" status="已上线" accent="sage" image="/assets/figma-v03/home/image-10.png" href="/projects/content-publishing-system" />
+      {featuredProjectPreviews.map((project) => <ProjectCard {...project} />)}
     </div>
   </section>
 
@@ -62,11 +61,6 @@ const recentPhotos = shuffle(galleryPhotos.filter((photo) => photo.orientation =
 
   <section class="home-section contact-section reading-column" aria-labelledby="contact-title" data-route-enter>
     <h2 id="contact-title">联系到我</h2>
-    <nav aria-label="联系方式">
-      <TextLink href={github} rel="me">GitHub</TextLink>
-      <TextLink href={`mailto:${resume.data.email}`}>Email</TextLink>
-      <TextLink href="https://x.com/Incessant_Leo">X/Twitter</TextLink>
-      <TextLink href="/rss.xml">Xiaohongshu</TextLink>
-    </nav>
+    <ContactLinks />
   </section>
 </BaseLayout>

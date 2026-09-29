@@ -6,9 +6,9 @@
 
 ## 项目介绍
 
-这是“不息”的中文个人网站初版：一份以长期记录为首要目标、兼顾职业展示的个人出版物。首版覆盖首页、项目、文章、相册、关于、文章详情、RSS、404，以及仅供开发环境查看的设计系统预览页。
+这是“不息”的中文个人网站初版：一份以长期记录为首要目标、兼顾职业展示的个人出版物。首版覆盖首页、项目、文章、摄影、关于、文章详情、RSS、404，以及仅供开发环境查看的设计系统预览页。
 
-技术栈为 Astro 6、TypeScript 和静态生成。内容使用 Astro Content Collections，并保持 `projects`、`articles`、`albums`、`photos`、`resume` 的领域边界。
+技术栈为 Astro 6、TypeScript 和静态生成。内容使用 Astro Content Collections，并保持 `projects`、`articles`、`photos`、`resume` 的领域边界。摄影页直接展示照片，不建立相册和照片标签。
 
 ## 前端目录结构
 
@@ -22,26 +22,26 @@ src/
 │   ├── SectionHeading.astro
 │   ├── SiteFooter.astro
 │   └── SiteHeader.astro
-├── content/           # 文章、项目、相册、照片与职业履历内容
+├── content/           # 文章、项目、照片与职业履历内容
 ├── content.config.ts  # Content Collections 结构校验与引用规则
 ├── data/site.ts       # 导航和非领域视觉占位数据
 ├── layouts/           # 页面骨架、元数据和全站结构
 ├── pages/             # 路由页面；只负责内容编排
-└── styles/global.css  # token、基础样式、组件样式和响应式规则
+└── styles/            # global.css 中的 token/公共规则，site.css 中的页面样式及响应式规则
 ```
 
 项目根目录中的 `PERSONAL_SITES_DESIGN_SYSTEM.md` 是设计依据，`个人网站功能方案.md` 是产品与信息架构依据，`CONTEXT.md` 定义稳定领域语言。修改内容模型或页面结构前必须先阅读相关文档。
 
 ## 设计系统架构
 
-设计变量集中在 `src/styles/global.css` 的 `@layer tokens` 中，页面不得自行复制固定色值、间距、圆角或阴影。
+设计变量集中在 `src/styles/global.css` 的 `@layer tokens` 中，公共基础样式也在该文件；页面与摄影等专有布局在 `src/styles/site.css`、`site-responsive.css`。页面不得自行复制固定色值、间距、圆角或阴影。
 
-- 色彩：暖白 canvas、纸张 surface、低对比 line、近黑 ink、暖橙棕 accent。
-- 排版：参考 Ian Neo 的克制层级，以系统 sans 统一界面、标题和正文；仅在少量个人批注中使用 script，mono 只用于真正的代码或等宽数据。
+- 色彩：暖白 canvas、纸张 surface、低对比 line、近黑 ink、克制的青绿色 accent。具体值以正在使用的 token 为准。
+- 排版：界面正文以系统 sans 为主；页面标题与少量展示文字使用寒蝉宋体，在线简历姓名使用 Text 子集；手写字体只用于少量个人痕迹，mono 用于等宽数据。
 - 间距：4px 基准，优先使用 `--space-*`。
 - 圆角：从 `--radius-xs` 到 `--radius-pill`，大容器避免滥用圆角。
 - 阴影：`hairline`、`card`、`float` 三级；普通内容列表和页面模块使用留白建立层级，不添加装饰性分割线。
-- 容器：阅读栏 592px，常规宽栏 768px；移动端默认 24px gutter。首页、导航、页脚和文章详情优先使用阅读栏，项目与相册等媒体展示页使用常规宽栏。
+- 容器：阅读栏 592px，常规宽栏 768px；移动端默认 24px gutter。首页、导航、页脚和文章详情优先使用阅读栏，项目与摄影等媒体展示页使用常规宽栏。
 - 响应式：移动优先；640px 调整内容行，768px 切换导航和主要网格。正文不因窄屏整体缩小。
 
 ### 字体子集
