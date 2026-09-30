@@ -37,6 +37,8 @@
     .detail-toc__back span,
     .detail-toc__top span {
       top: 50%;
+      left: calc(var(--space-5) + var(--space-1));
+      padding-inline: 0;
     }
 
     .detail-toc__label {

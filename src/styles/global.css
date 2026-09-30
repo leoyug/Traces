@@ -103,7 +103,7 @@
     --photo-tooltip-border-color: color-mix(in srgb, var(--color-line-subtle) 60%, transparent);
     --tooltip-padding-inline: .625rem;
     --tooltip-line-height: 1.25rem;
-    --shadow-hairline: 0 0 0 1px rgb(0 0 0 / 7%); --shadow-card: 0 1px 2px rgb(0 0 0 / 6%), 0 4px 14px rgb(0 0 0 / 8%); --shadow-float: 0 8px 28px rgb(0 0 0 / 14%); --shadow-photo-stack: 0 2px 2px rgb(0 0 0 / 6%), 0 4px 7px rgb(0 0 0 / 10%); --shadow-photo-stack-active: 0 2px 3px rgb(0 0 0 / 9%), 0 6px 10px rgb(0 0 0 / 14%);
+    --shadow-hairline: 0 0 0 1px rgb(0 0 0 / 7%); --shadow-card: 0 1px 2px rgb(0 0 0 / 6%), 0 4px 14px rgb(0 0 0 / 8%); --shadow-float: 0 8px 28px rgb(0 0 0 / 14%); --shadow-photo-stack: 0 2px 3px rgb(0 0 0 / 5%), 0 5px 11px rgb(0 0 0 / 8%); --shadow-photo-stack-active: 0 2px 3px rgb(0 0 0 / 9%), 0 6px 10px rgb(0 0 0 / 14%);
     --content-reading: 37rem; --content-wide: 75rem; --content-showcase: 75rem; --gutter: 1.5rem;
     --duration-micro: 80ms; --duration-quick: 150ms; --duration-fast: 250ms; --duration-photo-fan: 420ms; --duration-label-character: 300ms; --duration-text-link: 600ms; --duration-very-slow: 500ms; --duration-highlight-draw: 600ms; --duration-highlight-glint: 200ms; --delay-highlight-glint-first: 420ms; --delay-highlight-glint-second: 480ms; --delay-highlight-glint-third: 540ms; --delay-highlight-glint-fourth: 600ms; --ease-smooth-out: cubic-bezier(.22, 1, .36, 1); --ease-highlight-draw: ease-in-out;
     --dropdown-open-dur: 250ms; --dropdown-close-dur: 150ms; --dropdown-pre-scale: .97; --dropdown-closing-scale: .99; --dropdown-ease: cubic-bezier(.22, 1, .36, 1);
@@ -167,7 +167,7 @@
     --shadow-hairline: 0 0 0 1px rgb(255 255 255 / 7%);
     --shadow-card: 0 1px 2px rgb(0 0 0 / 18%), 0 4px 14px rgb(0 0 0 / 16%);
     --shadow-float: 0 8px 28px rgb(0 0 0 / 36%);
-    --shadow-photo-stack: 0 2px 2px rgb(0 0 0 / 15%), 0 4px 7px rgb(0 0 0 / 18%);
+    --shadow-photo-stack: 0 2px 3px rgb(0 0 0 / 13%), 0 5px 11px rgb(0 0 0 / 15%);
     --shadow-photo-stack-active: 0 2px 3px rgb(0 0 0 / 18%), 0 6px 10px rgb(0 0 0 / 27%);
   }
 }

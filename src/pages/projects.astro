@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { archiveProjectPreviews, featuredProjectPreviews } from "../data/project-previews";
+import { projectStackStyle } from "../lib/project-stack";
 
 const archiveAsset = (name: string) => `/assets/figma-v03/projects/archive/${name}`;
 ---
@@ -23,7 +24,7 @@ const archiveAsset = (name: string) => `/assets/figma-v03/projects/archive/${nam
       {archiveProjectPreviews.map((project) =>
         <a class="project-archive-row" href={project.href} data-project-transition data-project-source={project.source}>
           <span class="project-archive-row__thumb" aria-hidden="true">
-            {project.images.map((image) => <img src={archiveAsset(image)} alt="" loading="lazy" />)}
+            {project.images.map((image, index) => <img src={archiveAsset(image)} alt="" loading="lazy" style={projectStackStyle(project.source, index)} />)}
           </span>
           <span class="project-archive-row__copy"><strong>{project.title}</strong><small>{project.summary}</small></span>
           <time>{project.year}</time>
@@ -74,12 +75,9 @@ const archiveAsset = (name: string) => `/assets/figma-v03/projects/archive/${nam
     };
 
     const finishProjectTransition = () => {
-      const list = document.querySelector("[data-project-archive-list]");
-      if (!list) return;
-
-      // Keep the source marked for the return snapshot, then restore the idle stack.
+      // Let the shared cover finish before the live stack settles back to rest.
       requestAnimationFrame(() => {
-        list.querySelectorAll(".is-transitioning").forEach((row) => row.classList.remove("is-transitioning"));
+        document.querySelectorAll("[data-project-archive-list] .is-transitioning").forEach((row) => row.classList.remove("is-transitioning"));
         document.querySelectorAll(".featured-projects .project-card.is-transitioning").forEach((card) => card.classList.remove("is-transitioning"));
         sessionStorage.removeItem("project-transition-source");
       });
@@ -88,22 +86,34 @@ const archiveAsset = (name: string) => `/assets/figma-v03/projects/archive/${nam
     initializeProjectTransitions();
     document.addEventListener("astro:page-load", () => {
       initializeProjectTransitions();
-      finishProjectTransition();
+      const list = document.querySelector("[data-project-archive-list]");
+      if (list && !document.querySelector(".project-archive-row.is-transitioning, .featured-projects .project-card.is-transitioning")) {
+        sessionStorage.removeItem("project-transition-source");
+      }
     });
     document.addEventListener("astro:before-swap", (event) => {
+      const list = event.newDocument.querySelector("[data-project-archive-list]");
+      if (!list) return;
+
       const source = sessionStorage.getItem("project-transition-source");
-      if (!source) return;
+      const returningFromDetail = /^\/projects\/[^/]+\/?$/.test(event.from.pathname)
+        && event.navigationType === "traverse" && event.direction === "back";
+      if (!source || !returningFromDetail) {
+        sessionStorage.removeItem("project-transition-source");
+        return;
+      }
 
       if (source.startsWith("featured:")) {
         const href = source.slice("featured:".length);
         const card = Array.from(event.newDocument.querySelectorAll<HTMLElement>(".featured-projects .project-card"))
           .find((item) => item.querySelector<HTMLAnchorElement>("a[href]")?.getAttribute("href") === href);
         card?.classList.add("is-transitioning");
-        return;
+      } else {
+        const selector = `[data-project-source="${CSS.escape(source)}"]`;
+        list.querySelector(selector)?.classList.add("is-transitioning");
       }
 
-      const selector = `[data-project-source="${CSS.escape(source)}"]`;
-      event.newDocument.querySelector(selector)?.classList.add("is-transitioning");
+      void event.viewTransition.finished.then(finishProjectTransition, finishProjectTransition);
     });
   </script>
 </BaseLayout>

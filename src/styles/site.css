@@ -67,9 +67,8 @@
 
   html[data-detail-transition="close"]::view-transition-new(root) {
     z-index: 0;
-    animation: none;
-    opacity: .7;
-    filter: blur(var(--blur-detail-background));
+    animation: detail-list-return var(--duration-detail-mask) ease-out both;
+    animation-delay: calc(var(--duration-detail-exit) + var(--duration-detail-route) - var(--duration-detail-mask));
   }
 
   html[data-detail-transition="open"]::view-transition-group(project-cover),
@@ -91,6 +90,16 @@
   html[data-detail-transition="close"]::view-transition-old(project-cover) {
     animation: none;
     opacity: 1;
+  }
+
+  html[data-detail-transition="close"]::view-transition-old(project-cover) {
+    animation: detail-backdrop-fade-out var(--duration-detail-mask) ease-out both;
+    animation-delay: calc(var(--duration-detail-exit) + var(--duration-detail-route) - var(--duration-detail-mask));
+  }
+
+  html[data-detail-transition="close"]::view-transition-new(project-cover) {
+    animation: project-cover-fade-in var(--duration-detail-mask) ease-out both;
+    animation-delay: calc(var(--duration-detail-exit) + var(--duration-detail-route) - var(--duration-detail-mask));
   }
 
   html[data-detail-transition]::view-transition-group(detail-title),
@@ -163,6 +172,11 @@
     }
   }
 
+  @keyframes detail-list-return {
+    from { opacity: .7; filter: blur(var(--blur-detail-background)); }
+    to { opacity: 1; filter: blur(0); }
+  }
+
   @keyframes detail-page-enter {
     from { opacity: 0; }
   }
@@ -181,6 +195,11 @@
 
   @keyframes detail-backdrop-fade-out {
     to { opacity: 0; }
+  }
+
+  @keyframes project-cover-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   @keyframes theme-circle-blur-reveal {
@@ -290,6 +309,19 @@
     html[data-detail-transition="close"]::view-transition-old(detail-copy-3) {
       animation: none;
     }
+
+    html[data-detail-transition="close"]::view-transition-new(root) {
+      opacity: 1;
+      filter: none;
+    }
+
+    html[data-detail-transition="close"]::view-transition-old(project-cover),
+    html[data-detail-transition="close"]::view-transition-new(project-cover) {
+      animation: none;
+    }
+
+    html[data-detail-transition="close"]::view-transition-old(project-cover) { opacity: 0; }
+    html[data-detail-transition="close"]::view-transition-new(project-cover) { opacity: 1; }
 
     html[data-theme-transition="circle-blur"]::view-transition-old(root),
     html[data-theme-transition="circle-blur"]::view-transition-new(root) {
@@ -765,24 +797,21 @@
     object-fit: cover;
     box-shadow: var(--shadow-photo-stack);
     transform-origin: center;
+    transform: translate(var(--stack-rest-x), var(--stack-rest-y)) rotate(var(--stack-rest-rotate));
     transition: transform var(--duration-fast) var(--ease-smooth-out), box-shadow var(--duration-fast) var(--ease-smooth-out);
   }
 
-  .project-archive-row__thumb img:nth-child(1) { z-index: 1; transform: rotate(-5deg) translate(-2px, -2px); }
-  .project-archive-row__thumb img:nth-child(2) { z-index: 2; transform: rotate(4deg) translate(2px, 1px); }
-  .project-archive-row__thumb img:nth-child(3) { z-index: 3; transform: rotate(-1deg); }
+  .project-archive-row__thumb img:nth-child(1) { z-index: 1; }
+  .project-archive-row__thumb img:nth-child(2) { z-index: 2; }
+  .project-archive-row__thumb img:nth-child(3) { z-index: 3; }
 
-  .project-archive-row:is(:focus-visible, .is-transitioning) .project-archive-row__thumb img:nth-child(1) {
-    transform: translate(-12px, -3px) rotate(-9deg);
-  }
-
-  .project-archive-row:is(:focus-visible, .is-transitioning) .project-archive-row__thumb img:nth-child(2) {
-    transform: translate(12px, 2px) rotate(8deg);
+  .project-archive-row:is(:focus-visible, .is-transitioning) .project-archive-row__thumb img {
+    transform: translate(var(--stack-open-x), var(--stack-open-y)) rotate(var(--stack-open-rotate));
   }
 
   .project-archive-row:is(:focus-visible, .is-transitioning) .project-archive-row__thumb img:nth-child(3) {
     box-shadow: 0 8px 20px rgb(0 0 0 / 28%);
-    transform: translateY(-2px) rotate(0) scale(1.08);
+    transform: translate(var(--stack-open-x), var(--stack-open-y)) rotate(var(--stack-open-rotate)) scale(1.08);
   }
 
   .project-archive-row.is-transitioning .project-archive-row__thumb img:nth-child(3) {
@@ -799,17 +828,13 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .project-archive-row:hover .project-archive-row__thumb img:nth-child(1) {
-      transform: translate(-12px, -3px) rotate(-9deg);
-    }
-
-    .project-archive-row:hover .project-archive-row__thumb img:nth-child(2) {
-      transform: translate(12px, 2px) rotate(8deg);
+    .project-archive-row:hover .project-archive-row__thumb img {
+      transform: translate(var(--stack-open-x), var(--stack-open-y)) rotate(var(--stack-open-rotate));
     }
 
     .project-archive-row:hover .project-archive-row__thumb img:nth-child(3) {
       box-shadow: 0 8px 20px rgb(0 0 0 / 28%);
-      transform: translateY(-2px) rotate(0) scale(1.08);
+      transform: translate(var(--stack-open-x), var(--stack-open-y)) rotate(var(--stack-open-rotate)) scale(1.08);
     }
 
     .project-archive-list:has(.project-archive-row:hover) .project-archive-row:not(:hover) {
@@ -829,17 +854,9 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .project-archive-row:is(:hover, :focus-visible, .is-transitioning) .project-archive-row__thumb img:nth-child(1) {
-      transform: rotate(-5deg) translate(-2px, -2px);
-    }
-
-    .project-archive-row:is(:hover, :focus-visible, .is-transitioning) .project-archive-row__thumb img:nth-child(2) {
-      transform: rotate(4deg) translate(2px, 1px);
-    }
-
-    .project-archive-row:is(:hover, :focus-visible, .is-transitioning) .project-archive-row__thumb img:nth-child(3) {
+    .project-archive-row:is(:hover, :focus-visible, .is-transitioning) .project-archive-row__thumb img:nth-child(-n+3) {
       box-shadow: var(--shadow-photo-stack);
-      transform: rotate(-1deg);
+      transform: translate(var(--stack-rest-x), var(--stack-rest-y)) rotate(var(--stack-rest-rotate));
     }
 
     ::view-transition-group(project-cover) {
