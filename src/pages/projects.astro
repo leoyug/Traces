@@ -39,8 +39,10 @@ const archiveAsset = (name: string) => `/assets/figma-v03/projects/archive/${nam
         if (link.dataset.transitionReady === "true") return;
         link.dataset.transitionReady = "true";
 
-        const markAsSource = () => {
+        const markAsSource = (event: MouseEvent | PointerEvent) => {
+          if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
           links.forEach((item) => item.classList.remove("is-transitioning"));
+          featuredLinks.forEach((item) => item.classList.remove("is-transitioning"));
           link.classList.add("is-transitioning");
           const source = link.dataset.projectSource;
           if (source) sessionStorage.setItem("project-transition-source", source);
@@ -54,9 +56,16 @@ const archiveAsset = (name: string) => `/assets/figma-v03/projects/archive/${nam
         if (link.dataset.transitionReady === "true") return;
         link.dataset.transitionReady = "true";
 
-        const clearSource = () => {
+        const clearSource = (event: MouseEvent | PointerEvent) => {
+          if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          const anchor = (event.target as Element).closest<HTMLAnchorElement>("a[href]");
+          if (!anchor || !link.contains(anchor)) return;
+
           links.forEach((item) => item.classList.remove("is-transitioning"));
-          sessionStorage.removeItem("project-transition-source");
+          featuredLinks.forEach((item) => item.classList.remove("is-transitioning"));
+          link.classList.add("is-transitioning");
+          const href = anchor.getAttribute("href");
+          if (href) sessionStorage.setItem("project-transition-source", `featured:${href}`);
         };
 
         link.addEventListener("pointerdown", clearSource, { passive: true });
@@ -71,6 +80,7 @@ const archiveAsset = (name: string) => `/assets/figma-v03/projects/archive/${nam
       // Keep the source marked for the return snapshot, then restore the idle stack.
       requestAnimationFrame(() => {
         list.querySelectorAll(".is-transitioning").forEach((row) => row.classList.remove("is-transitioning"));
+        document.querySelectorAll(".featured-projects .project-card.is-transitioning").forEach((card) => card.classList.remove("is-transitioning"));
         sessionStorage.removeItem("project-transition-source");
       });
     };
@@ -83,6 +93,14 @@ const archiveAsset = (name: string) => `/assets/figma-v03/projects/archive/${nam
     document.addEventListener("astro:before-swap", (event) => {
       const source = sessionStorage.getItem("project-transition-source");
       if (!source) return;
+
+      if (source.startsWith("featured:")) {
+        const href = source.slice("featured:".length);
+        const card = Array.from(event.newDocument.querySelectorAll<HTMLElement>(".featured-projects .project-card"))
+          .find((item) => item.querySelector<HTMLAnchorElement>("a[href]")?.getAttribute("href") === href);
+        card?.classList.add("is-transitioning");
+        return;
+      }
 
       const selector = `[data-project-source="${CSS.escape(source)}"]`;
       event.newDocument.querySelector(selector)?.classList.add("is-transitioning");

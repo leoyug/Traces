@@ -1,41 +1,41 @@
 import gsap from "gsap";
 import { playInterfaceSound } from "./sound";
 
-type GalleryPhoto = {
+type Photo = {
   slug: string;
   src: string;
   alt: string;
   facts: Array<[string, string]>;
 };
 
-const initializePhotoGalleries = () => {
+const initializePhotosPages = () => {
   document
-    .querySelectorAll<HTMLElement>("[data-photo-gallery]")
-    .forEach((gallery) => {
-      if (gallery.dataset.ready === "true") return;
-      gallery.dataset.ready = "true";
+    .querySelectorAll<HTMLElement>("[data-photos-page]")
+    .forEach((photosPage) => {
+      if (photosPage.dataset.ready === "true") return;
+      photosPage.dataset.ready = "true";
 
-      const data = gallery.querySelector<HTMLScriptElement>(
-        "[data-gallery-data]",
+      const data = photosPage.querySelector<HTMLScriptElement>(
+        "[data-photos-data]",
       );
-      const photos = JSON.parse(data?.textContent ?? "[]") as GalleryPhoto[];
-      const dialog = gallery.querySelector<HTMLDialogElement>(
+      const photos = JSON.parse(data?.textContent ?? "[]") as Photo[];
+      const dialog = photosPage.querySelector<HTMLDialogElement>(
         "[data-photo-lightbox]",
       );
-      const image = gallery.querySelector<HTMLImageElement>(
+      const image = photosPage.querySelector<HTMLImageElement>(
         "[data-photo-lightbox-image]",
       );
-      const facts = gallery.querySelector<HTMLDListElement>(
+      const facts = photosPage.querySelector<HTMLDListElement>(
         ".photo-lightbox__facts",
       );
-      const stage = gallery.querySelector<HTMLElement>(
+      const stage = photosPage.querySelector<HTMLElement>(
         ".photo-lightbox__stage",
       );
-      const frame = gallery.querySelector<HTMLElement>(
+      const frame = photosPage.querySelector<HTMLElement>(
         ".photo-lightbox__frame",
       );
       const links = [
-        ...gallery.querySelectorAll<HTMLAnchorElement>("[data-gallery-photo]"),
+        ...photosPage.querySelectorAll<HTMLAnchorElement>("[data-photo-link]"),
       ];
       const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
       let transitionAnimation: ReturnType<typeof gsap.timeline> | null = null;
@@ -330,7 +330,7 @@ const initializePhotoGalleries = () => {
       };
 
       const requestClose = () => {
-        // Keep the gallery document in place when dismissing the overlay. A
+        // Keep the photo page in place when dismissing the overlay. A
         // history back() here asks Astro's client router to replace the whole
         // page, which causes a visible flash before the next photo can open.
         playInterfaceSound("droplet", 0.45);
@@ -396,7 +396,7 @@ const initializePhotoGalleries = () => {
       addEventListener("popstate", handlePopstate);
       document.addEventListener("astro:before-swap", dispose, { once: true });
 
-      const initialSlug = gallery.dataset.initialSlug;
+      const initialSlug = photosPage.dataset.initialSlug;
       const initialIndex = initialSlug
         ? photos.findIndex((photo) => photo.slug === initialSlug)
         : -1;
@@ -405,5 +405,5 @@ const initializePhotoGalleries = () => {
     });
 };
 
-initializePhotoGalleries();
-document.addEventListener("astro:page-load", initializePhotoGalleries);
+initializePhotosPages();
+document.addEventListener("astro:page-load", initializePhotosPages);

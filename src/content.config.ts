@@ -57,7 +57,13 @@ const photos = defineCollection({
       iso: z.number().int().positive().optional(),
       place: z.string().optional(),
     }).default({}),
-  }),
+  }).refine(
+    (photo) => photo.size === (photo.orientation === "portrait" ? "tall" : "short"),
+    { message: "Portrait photos require tall; landscape photos require short", path: ["size"] },
+  ).refine(
+    (photo) => photo.width !== photo.height && photo.orientation === (photo.height > photo.width ? "portrait" : "landscape"),
+    { message: "Orientation must match width and height; square photos are unsupported", path: ["orientation"] },
+  ),
 });
 
 const resume = defineCollection({

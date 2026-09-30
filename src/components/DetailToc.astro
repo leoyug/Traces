@@ -11,14 +11,15 @@ interface Props {
   className?: string;
   backHref?: string;
   backLabel?: string;
+  returnViaHistory?: boolean;
 }
 
-const { headings, ariaLabel, className = "", backHref = "/writing/", backLabel = "返回写作" } = Astro.props;
+const { headings, ariaLabel, className = "", backHref = "/writing/", backLabel = "返回写作", returnViaHistory = false } = Astro.props;
 const items = headings.filter(({ depth }) => depth === 2 || depth === 3);
 ---
 
 <aside class:list={["detail-toc", className]} data-detail-toc>
-  <a class="detail-toc__back" href={backHref} aria-label={backLabel}><img src="/assets/figma-v03/detail/back.svg" alt="" /><span>{backLabel}</span></a>
+  <a class="detail-toc__back" href={backHref} aria-label={backLabel} data-detail-history-back={returnViaHistory ? "" : undefined}><img src="/assets/figma-v03/detail/back.svg" alt="" /><span>{backLabel}</span></a>
   {items.length > 0 && (
     <nav aria-label={ariaLabel}>
       <ol class="detail-toc__list">
@@ -51,6 +52,34 @@ const items = headings.filter(({ depth }) => depth === 2 || depth === 3);
     toc.dataset.initialized = "true";
     const controller = new AbortController();
     const signal = controller.signal;
+
+    const historyBackLink = toc.querySelector<HTMLAnchorElement>("[data-detail-history-back]");
+    historyBackLink?.addEventListener("click", (event) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const stored = sessionStorage.getItem("detail-list-return");
+      if (!stored) return;
+
+      sessionStorage.removeItem("detail-list-return");
+      try {
+        const context = JSON.parse(stored) as { from: string; to: string; historyIndex: number };
+        const target = new URL(context.to);
+        const backPath = new URL(historyBackLink.href).pathname.replace(/\/+$/, "") || "/";
+        const currentPath = location.pathname.replace(/\/+$/, "") || "/";
+        if (
+          context.from === backPath &&
+          target.origin === location.origin &&
+          target.pathname.replace(/\/+$/, "") === currentPath &&
+          target.search === location.search &&
+          Number.isInteger(context.historyIndex) &&
+          history.state?.index === context.historyIndex + 1
+        ) {
+          event.preventDefault();
+          history.back();
+        }
+      } catch {
+        // The href remains a usable fallback if stored navigation state is stale.
+      }
+    }, { signal });
 
     const links = Array.from(
       toc.querySelectorAll<HTMLAnchorElement>("[data-detail-toc-link]"),

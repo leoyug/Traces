@@ -4,7 +4,6 @@ import ProgressiveBlur from "./ProgressiveBlur.astro";
 const currentPath = Astro.url.pathname;
 const isCurrent = (href: string) => {
   if (href === "/") return currentPath === "/";
-  if (href === "/photos") return currentPath.startsWith("/photos") || currentPath.startsWith("/gallery");
   return currentPath.startsWith(href);
 };
 ---

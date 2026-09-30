@@ -1,7 +1,7 @@
 import { getCollection } from "astro:content";
 import { formatDate } from "./content";
 
-export interface GalleryPhoto {
+export interface Photo {
   slug: string;
   src: string;
   alt: string;
@@ -12,7 +12,7 @@ export interface GalleryPhoto {
   facts: Array<[label: string, value: string]>;
 }
 
-export async function getGalleryPhotos(): Promise<GalleryPhoto[]> {
+export async function getPhotos(): Promise<Photo[]> {
   const entries = (
     await getCollection("photos", ({ data }) => !data.draft)
   ).sort((left, right) => left.data.order - right.data.order);
@@ -24,7 +24,7 @@ export async function getGalleryPhotos(): Promise<GalleryPhoto[]> {
       throw new Error(`照片展示顺序重复：${data.order}`);
     orders.add(data.order);
 
-    const facts: GalleryPhoto["facts"] = [["画面", data.alt]];
+    const facts: Photo["facts"] = [["画面", data.alt]];
     const metadata = data.publicMetadata;
     if (metadata.capturedAt)
       facts.push(["拍摄", formatDate(metadata.capturedAt, "long")]);

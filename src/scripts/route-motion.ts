@@ -51,7 +51,7 @@ export function initRouteMotion() {
 
   const prepareEntrance = () => {
     resetEntrance();
-    if (reducedMotion.matches) return;
+    if (reducedMotion.matches || document.documentElement.dataset.detailTransition) return;
 
     const main = document.querySelector<HTMLElement>("[data-route-main]");
     if (!main) return;

@@ -8,20 +8,20 @@ import ProjectCard from "../components/ProjectCard.astro";
 import TextLink from "../components/TextLink.astro";
 import { getCollection } from "astro:content";
 import { featuredProjectPreviews } from "../data/project-previews";
-import { getGalleryPhotos } from "../lib/gallery";
+import { getPhotos } from "../lib/photos";
 import { formatDate } from "../lib/content";
 
-const galleryPhotos = await getGalleryPhotos();
+const photos = await getPhotos();
 const recentArticles = (await getCollection("articles", ({ data }) => !data.draft))
   .sort((left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime())
   .slice(0, 4);
 const homeFanPhotoLabels = ["夜行", "栈桥", "帐篷", "散步", "晚风", "树影", "远望"];
-const homeFanPhotos = galleryPhotos.slice(0, 7).map((photo, index) => ({
+const homeFanPhotos = photos.slice(0, 7).map((photo, index) => ({
   photo,
   label: homeFanPhotoLabels[index],
 }));
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
-const recentPhotos = shuffle(galleryPhotos.filter((photo) => photo.orientation === "portrait")).slice(0, 6);
+const recentPhotos = shuffle(photos.filter((photo) => photo.orientation === "portrait")).slice(0, 6);
 ---
 
 <BaseLayout>

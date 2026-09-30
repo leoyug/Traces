@@ -21,6 +21,7 @@ const {
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : null;
+const isDetailRoute = /^\/(?:projects|writing)\/[^/]+\/?$/.test(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -56,7 +57,8 @@ const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : nul
     <ClientRouter fallback="animate" />
     <title>{title}</title>
   </head>
-  <body>
+  <body class:list={{ "body--detail-route": isDetailRoute }}>
+    {isDetailRoute && <div class="detail-route-backdrop" aria-hidden="true"></div>}
     <!-- THESIS: 中性纸色背景中的一条安静出版栏，把工作、写作与摄影放在同一条长期记录里。 OWN-WORLD: 中性纸色画布、592px 内容栏、手写标记、灰阶文字与原比例摄影。 STORY: 访客先认识 Leo，再依次进入文章、项目与照片，距视口底部 24px 的胶囊导航持续提供方向。 FIRST VIEWPORT: 签名与三行介绍从 48px 开始，正文在首屏直接给出项目、写作和摄影入口。 FORM: 可切换的亮色个人出版物。 -->
     <a class="skip-link" href="#main">跳到主要内容</a>
     <SiteHeader />
@@ -67,9 +69,11 @@ const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : nul
     <script>
       import { initRouteMotion } from "../scripts/route-motion";
       import { initSmoothCorners } from "../scripts/smooth-corners";
+      import { initDetailRouteTransitions } from "../scripts/detail-route-transitions";
 
       initRouteMotion();
       initSmoothCorners();
+      initDetailRouteTransitions();
     </script>
   </body>
 </html>

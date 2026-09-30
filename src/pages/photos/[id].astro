@@ -1,16 +1,16 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PhotoGallery from "../../components/photos/PhotoGallery.astro";
-import { getGalleryPhotos, type GalleryPhoto } from "../../lib/gallery";
+import PhotosPage from "../../components/photos/PhotosPage.astro";
+import { getPhotos, type Photo } from "../../lib/photos";
 
 export async function getStaticPaths() {
-  const photos = await getGalleryPhotos();
+  const photos = await getPhotos();
   return photos.map((photo) => ({ params: { id: photo.slug }, props: { photo, photos } }));
 }
-interface Props { photo: GalleryPhoto; photos: GalleryPhoto[] }
+interface Props { photo: Photo; photos: Photo[] }
 const { photo, photos } = Astro.props;
 ---
 
 <BaseLayout title={`摄影｜Leo`} description={photo.alt} socialImage={photo.src} robots="noindex,follow">
-  <PhotoGallery photos={photos} initialSlug={photo.slug} />
+  <PhotosPage photos={photos} initialSlug={photo.slug} />
 </BaseLayout>

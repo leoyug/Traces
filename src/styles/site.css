@@ -8,12 +8,134 @@
     display: none;
   }
 
+  html[data-astro-transition] {
+    scroll-behavior: auto;
+  }
+
   ::view-transition-old(root) {
     animation: route-page-out 220ms ease-out both;
   }
 
   ::view-transition-new(root) {
     animation: route-page-in 420ms var(--ease-smooth-out) both;
+  }
+
+  html[data-detail-transition="open"]::view-transition-old(root) {
+    z-index: 0;
+    animation: detail-list-recede var(--duration-detail-route) ease-out both;
+  }
+
+  html[data-detail-transition="open"]::view-transition-new(detail-backdrop) {
+    z-index: 2;
+    animation: detail-backdrop-fade-out var(--duration-detail-mask) ease-out both;
+  }
+
+  html[data-detail-transition="open"]::view-transition-new(root) {
+    z-index: 1;
+    animation: detail-page-enter var(--duration-detail-route) var(--ease-smooth-out) both;
+  }
+
+  html[data-detail-transition="open"] {
+    --detail-content-start: 0ms;
+  }
+
+  html[data-detail-transition="open"][data-detail-transition-kind="projects"] {
+    --detail-content-start: var(--duration-detail-route);
+  }
+
+  html[data-detail-transition="open"][data-detail-transition-kind="projects"]::view-transition-new(root) {
+    animation-delay: var(--duration-detail-route);
+  }
+
+  html[data-detail-transition="open"][data-detail-transition-kind="projects"]::view-transition-new(detail-backdrop) {
+    animation-delay: var(--duration-detail-route);
+  }
+
+  html[data-detail-transition="close"]::view-transition-old(root) {
+    z-index: 2;
+    animation: detail-page-exit var(--duration-detail-exit) ease-out both;
+  }
+
+  html[data-detail-transition="close"]::view-transition-old(detail-backdrop) {
+    z-index: 1;
+    animation: detail-backdrop-fade-out var(--duration-detail-mask) ease-out both;
+  }
+
+  html[data-detail-transition="close"][data-detail-transition-kind="projects"]::view-transition-old(detail-backdrop) {
+    animation-delay: calc(var(--duration-detail-exit) + var(--duration-detail-route) - var(--duration-detail-mask));
+  }
+
+  html[data-detail-transition="close"]::view-transition-new(root) {
+    z-index: 0;
+    animation: none;
+    opacity: .7;
+    filter: blur(var(--blur-detail-background));
+  }
+
+  html[data-detail-transition="open"]::view-transition-group(project-cover),
+  html[data-detail-transition="close"]::view-transition-group(project-cover) {
+    z-index: 4;
+  }
+
+  html[data-detail-transition="close"]::view-transition-group(project-cover) {
+    animation-delay: var(--duration-detail-exit);
+  }
+
+  html[data-detail-transition="open"]::view-transition-old(project-cover),
+  html[data-detail-transition="close"]::view-transition-new(project-cover) {
+    animation: none;
+    opacity: 0;
+  }
+
+  html[data-detail-transition="open"]::view-transition-new(project-cover),
+  html[data-detail-transition="close"]::view-transition-old(project-cover) {
+    animation: none;
+    opacity: 1;
+  }
+
+  html[data-detail-transition]::view-transition-group(detail-title),
+  html[data-detail-transition]::view-transition-group(detail-facts),
+  html[data-detail-transition]::view-transition-group(detail-copy-1),
+  html[data-detail-transition]::view-transition-group(detail-copy-2),
+  html[data-detail-transition]::view-transition-group(detail-copy-3) {
+    z-index: 3;
+    animation: none;
+  }
+
+  html[data-detail-transition="open"]::view-transition-new(detail-title),
+  html[data-detail-transition="open"]::view-transition-new(detail-facts),
+  html[data-detail-transition="open"]::view-transition-new(detail-copy-1),
+  html[data-detail-transition="open"]::view-transition-new(detail-copy-2),
+  html[data-detail-transition="open"]::view-transition-new(detail-copy-3) {
+    animation: detail-content-enter var(--duration-detail-content) var(--ease-smooth-out) both;
+  }
+
+  html[data-detail-transition="open"]::view-transition-new(detail-title) {
+    animation-delay: var(--detail-content-start);
+  }
+
+  html[data-detail-transition="open"]::view-transition-new(detail-facts) {
+    animation-delay: calc(var(--detail-content-start) + var(--duration-detail-stagger));
+  }
+
+  html[data-detail-transition="open"]::view-transition-new(detail-copy-1) {
+    animation-delay: calc(var(--detail-content-start) + var(--duration-detail-stagger) + var(--duration-detail-stagger));
+  }
+
+  html[data-detail-transition="open"]::view-transition-new(detail-copy-2) {
+    animation-delay: calc(var(--detail-content-start) + var(--duration-detail-stagger) + var(--duration-detail-stagger) + var(--duration-detail-stagger));
+  }
+
+  html[data-detail-transition="open"]::view-transition-new(detail-copy-3) {
+    animation-delay: calc(var(--detail-content-start) + var(--duration-detail-stagger) + var(--duration-detail-stagger) + var(--duration-detail-stagger) + var(--duration-detail-stagger));
+  }
+
+  html[data-detail-transition="close"]::view-transition-old(detail-title),
+  html[data-detail-transition="close"]::view-transition-old(detail-facts),
+  html[data-detail-transition="close"]::view-transition-old(detail-copy-1),
+  html[data-detail-transition="close"]::view-transition-old(detail-copy-2),
+  html[data-detail-transition="close"]::view-transition-old(detail-copy-3) {
+    animation: detail-content-exit var(--duration-detail-exit) ease-out both;
   }
 
   html[data-theme-transition="circle-blur"]::view-transition-old(root) {
@@ -32,6 +154,33 @@
 
   @keyframes route-page-in {
     from { opacity: 0; }
+  }
+
+  @keyframes detail-list-recede {
+    to {
+      opacity: 0;
+      filter: blur(var(--blur-detail-background));
+    }
+  }
+
+  @keyframes detail-page-enter {
+    from { opacity: 0; }
+  }
+
+  @keyframes detail-page-exit {
+    to { opacity: 0; }
+  }
+
+  @keyframes detail-content-enter {
+    from { opacity: 0; transform: translateY(var(--distance-detail-content)); }
+  }
+
+  @keyframes detail-content-exit {
+    to { opacity: 0; }
+  }
+
+  @keyframes detail-backdrop-fade-out {
+    to { opacity: 0; }
   }
 
   @keyframes theme-circle-blur-reveal {
@@ -54,6 +203,25 @@
     font-size: 14px;
     line-height: 24px;
   }
+
+  body.body--detail-route {
+    isolation: isolate;
+  }
+
+  .detail-route-backdrop {
+    position: fixed;
+    z-index: -1;
+    inset: 0;
+    background: var(--color-canvas);
+    pointer-events: none;
+    view-transition-name: detail-backdrop;
+  }
+
+  .content-detail > header h1 { view-transition-name: detail-title; }
+  .content-detail > header .detail-facts { view-transition-name: detail-facts; }
+  .content-detail > .article__body > :nth-child(1) { view-transition-name: detail-copy-1; }
+  .content-detail > .article__body > :nth-child(2) { view-transition-name: detail-copy-2; }
+  .content-detail > .article__body > :nth-child(3) { view-transition-name: detail-copy-3; }
 
   .page-main {
     flex: 1 0 auto;
@@ -104,7 +272,22 @@
 
   @media (prefers-reduced-motion: reduce) {
     ::view-transition-old(root),
-    ::view-transition-new(root) {
+    ::view-transition-new(root),
+    html[data-detail-transition]::view-transition-old(root),
+    html[data-detail-transition]::view-transition-new(root),
+    html[data-detail-transition="open"][data-detail-transition-kind="projects"]::view-transition-new(root),
+    html[data-detail-transition="open"]::view-transition-new(detail-backdrop),
+    html[data-detail-transition="close"]::view-transition-old(detail-backdrop),
+    html[data-detail-transition="open"]::view-transition-new(detail-title),
+    html[data-detail-transition="open"]::view-transition-new(detail-facts),
+    html[data-detail-transition="open"]::view-transition-new(detail-copy-1),
+    html[data-detail-transition="open"]::view-transition-new(detail-copy-2),
+    html[data-detail-transition="open"]::view-transition-new(detail-copy-3),
+    html[data-detail-transition="close"]::view-transition-old(detail-title),
+    html[data-detail-transition="close"]::view-transition-old(detail-facts),
+    html[data-detail-transition="close"]::view-transition-old(detail-copy-1),
+    html[data-detail-transition="close"]::view-transition-old(detail-copy-2),
+    html[data-detail-transition="close"]::view-transition-old(detail-copy-3) {
       animation: none;
     }
 
@@ -449,6 +632,11 @@
     object-fit: cover;
   }
 
+  .featured-projects .project-card__visual > img {
+    border: .5px solid var(--color-project-image-border);
+    border-radius: var(--radius-project-image);
+  }
+
   .project-card__body {
     gap: 8px;
   }
@@ -601,6 +789,10 @@
     view-transition-name: project-cover;
   }
 
+  .featured-projects .project-card.is-transitioning .project-card__visual > img {
+    view-transition-name: project-cover;
+  }
+
   .project-archive-list:has(.project-archive-row:focus-visible) .project-archive-row:not(:focus-visible) {
     opacity: .42;
     filter: blur(1px);
@@ -627,7 +819,7 @@
   }
 
   ::view-transition-group(project-cover) {
-    animation-duration: 420ms;
+    animation-duration: var(--duration-detail-route);
     animation-timing-function: var(--ease-smooth-out);
   }
 
@@ -701,34 +893,34 @@
     line-height: 24px;
   }
 
-  .gallery-grid {
+  .photos-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
     margin-top: 80px;
   }
 
-  .gallery-grid--mobile {
+  .photos-grid--mobile {
     display: none;
   }
 
-  .gallery-column {
+  .photos-column {
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
 
-  .gallery-grid a {
+  .photos-grid a {
     position: relative;
     display: block;
     overflow: hidden;
     border-radius: 2px;
   }
 
-  .gallery-grid a.is-tall { height: 296px; }
-  .gallery-grid a.is-short { height: 134px; }
+  .photos-grid a.is-tall { height: 296px; }
+  .photos-grid a.is-short { height: 134px; }
 
-  .gallery-grid .photo-hover-image {
+  .photos-grid .photo-hover-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -936,6 +1128,11 @@
 
   .detail-toc__back:focus-visible img,
   .detail-toc__top:focus-visible img {
+    filter: brightness(0);
+  }
+
+  :root[data-theme="dark"] .detail-toc__back:focus-visible img,
+  :root[data-theme="dark"] .detail-toc__top:focus-visible img {
     filter: brightness(0) invert(1);
   }
 
@@ -1011,6 +1208,11 @@
 
     .detail-toc__back:hover img,
     .detail-toc__top:hover img {
+      filter: brightness(0);
+    }
+
+    :root[data-theme="dark"] .detail-toc__back:hover img,
+    :root[data-theme="dark"] .detail-toc__top:hover img {
       filter: brightness(0) invert(1);
     }
 

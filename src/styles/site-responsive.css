@@ -168,29 +168,29 @@
       padding-top: 48px;
     }
 
-    .gallery-grid--desktop {
+    .photos-grid--desktop {
       display: none;
     }
 
-    .gallery-grid--mobile {
+    .photos-grid--mobile {
       display: flex;
       align-items: flex-start;
       gap: 12px;
       margin-top: 80px;
     }
 
-    .gallery-grid--mobile .gallery-column {
+    .photos-grid--mobile .photos-column {
       min-width: 0;
       flex: 1 1 0;
       gap: 12px;
     }
 
-    .gallery-grid--mobile a.is-tall {
+    .photos-grid--mobile a.is-tall {
       height: auto;
       aspect-ratio: 186.6667 / 296;
     }
 
-    .gallery-grid--mobile a.is-short {
+    .photos-grid--mobile a.is-short {
       height: auto;
       aspect-ratio: 186.6667 / 134;
     }

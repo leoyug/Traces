@@ -39,7 +39,8 @@ src/
     ├── site.css           # 当前页面的专有样式
     └── site-responsive.css # 对应的响应式规则
 
-public/assets/figma-v03/photos/ # 当前公开摄影图片
+public/assets/figma-v03/photos/ # 现有摄影图片
+public/media/photos/           # 新增照片的网页发布资产
 scripts/photos/audit.ts         # 发布图片审计
 ```
 
@@ -50,8 +51,8 @@ scripts/photos/audit.ts         # 发布图片审计
 摄影页直接展示单张照片，点击后打开灯箱，再次点击关闭。照片描述和图片实际尺寸会显示在灯箱中；拍摄日期、地点和相机参数只有核实后才填写。每张照片有独立地址 `/photos/<短名>/`。
 
 1. 自行备份照片原件；不要把原件、精确坐标、设备序列号或第三方隐私放进公开目录。
-2. 准备适合网页发布、已清除敏感 EXIF 的图片，放入 `public/assets/figma-v03/photos/`。当前审计限制为最长边不超过 2400px、文件不超过 2MB。
-3. 在 `src/content/photos/` 为该图片添加同名 JSON，填写 `src`、准确的 `alt`、唯一的 `order`、`size`、`orientation` 和图片实际的 `width`、`height`。经过核实的拍摄参数可放在 `publicMetadata`。
+2. 从原件生成适合网页发布、已清除敏感 EXIF 的图片，新照片放入 `public/media/photos/`；`public/assets/figma-v03/photos/` 留给现有图片。当前审计限制为最长边不超过 2400px、文件不超过 2MB。`public/` 中的图片不会在 Astro 构建时自动压缩。
+3. 在 `src/content/photos/` 为该图片添加同名 JSON，填写 `src`、准确的 `alt`、唯一的 `order`、`orientation` 和图片实际的 `width`、`height`；竖图的 `size` 为 `tall`，横图为 `short`。经过核实的拍摄参数可放在 `publicMetadata`。
 4. 运行 `npm run build`，再人工检查图片、替代文本、灯箱详情及移动端效果。
 
 具体字段和检查要求见[照片发布指南](./docs/%E7%85%A7%E7%89%87%E6%A8%A1%E5%9D%97%E6%9E%84%E5%BB%BA%E4%B8%8E%E4%B8%8A%E7%BA%BF%E6%8C%87%E5%8D%97.md)。

@@ -1,38 +1,45 @@
 ---
-import type { GalleryPhoto } from "../../lib/gallery";
+import type { Photo } from "../../lib/photos";
 import PlaySpinLoader from "../PlaySpinLoader.astro";
 import PhotoCornerMarks from "./PhotoCornerMarks.astro";
 
 interface Props {
-  photos: GalleryPhoto[];
+  photos: Photo[];
   initialSlug?: string;
 }
 
-const { photos: galleryPhotos, initialSlug } = Astro.props;
-if (galleryPhotos.length === 0) throw new Error("摄影页面需要至少一张已发布的照片");
-const initialPhoto = galleryPhotos.find((photo) => photo.slug === initialSlug) ?? galleryPhotos[0];
-const serialized = JSON.stringify(galleryPhotos).replaceAll("<", "\\u003c");
-const desktopColumns = [galleryPhotos.slice(0, 5), galleryPhotos.slice(5, 10), galleryPhotos.slice(10)];
-const mobileColumnIndexes = [
-  [0, 1, 10, 3, 4],
-  [5, 6, 11, 2, 7, 8, 13],
-];
-const mobileColumns = mobileColumnIndexes.map((indexes) => indexes.map((index) => galleryPhotos[index]).filter((photo): photo is GalleryPhoto => Boolean(photo)));
-const placed = new Set(mobileColumnIndexes.flat());
-galleryPhotos.forEach((photo, index) => {
-  if (!placed.has(index)) mobileColumns[index % 2].push(photo);
-});
+const { photos, initialSlug } = Astro.props;
+if (photos.length === 0) throw new Error("摄影页面需要至少一张已发布的照片");
+const initialPhoto = photos.find((photo) => photo.slug === initialSlug) ?? photos[0];
+const serialized = JSON.stringify(photos).replaceAll("<", "\\u003c");
+// Match the fixed tile heights and gap in site.css; mobile keeps the same two ratios.
+const tileHeights = { tall: 296, short: 134 } as const;
+const tileGap = 12;
+const balanceColumns = (count: number) => {
+  const columns = Array.from({ length: count }, () => [] as Photo[]);
+  const heights = Array<number>(count).fill(0);
+
+  for (const photo of photos) {
+    const shortest = heights.indexOf(Math.min(...heights));
+    heights[shortest] += tileHeights[photo.size] + (columns[shortest].length ? tileGap : 0);
+    columns[shortest].push(photo);
+  }
+
+  return columns;
+};
+const desktopColumns = balanceColumns(3);
+const mobileColumns = balanceColumns(2);
 ---
 
-<div class="photo-gallery" data-photo-gallery data-initial-slug={initialSlug}>
+<div class="photos-page" data-photos-page data-initial-slug={initialSlug}>
   <header class="photo-index-header reading-column"><h1>摄影</h1><p>关于时光、地点、所见事物的存档。</p></header>
-  <section class="gallery-grid gallery-grid--desktop reading-column" aria-label="摄影作品">
+  <section class="photos-grid photos-grid--desktop reading-column" aria-label="摄影作品">
     {desktopColumns.map((column) => (
-      <div class="gallery-column">
+      <div class="photos-column">
         {column.map((photo) => {
-          const index = galleryPhotos.indexOf(photo);
+          const index = photos.indexOf(photo);
           return (
-            <a class:list={[`is-${photo.size}`, "photo-hover-target", index % 4 < 2 ? "turn-left" : "turn-right"]} href={`/photos/${photo.slug}/`} data-gallery-photo data-photo-index={index}>
+            <a class:list={[`is-${photo.size}`, "photo-hover-target", index % 4 < 2 ? "turn-left" : "turn-right"]} href={`/photos/${photo.slug}/`} data-photo-link data-photo-index={index}>
               <img class="photo-hover-image" src={photo.src} alt={photo.alt} loading={index < 6 ? "eager" : "lazy"} />
               <PhotoCornerMarks />
             </a>
@@ -41,13 +48,13 @@ galleryPhotos.forEach((photo, index) => {
       </div>
     ))}
   </section>
-  <section class="gallery-grid gallery-grid--mobile reading-column" aria-label="摄影作品">
+  <section class="photos-grid photos-grid--mobile reading-column" aria-label="摄影作品">
     {mobileColumns.map((column) => (
-      <div class="gallery-column">
+      <div class="photos-column">
         {column.map((photo) => {
-          const index = galleryPhotos.indexOf(photo);
+          const index = photos.indexOf(photo);
           return (
-            <a class:list={[`is-${photo.size}`, "photo-hover-target", index % 4 < 2 ? "turn-left" : "turn-right"]} href={`/photos/${photo.slug}/`} data-gallery-photo data-photo-index={index}>
+            <a class:list={[`is-${photo.size}`, "photo-hover-target", index % 4 < 2 ? "turn-left" : "turn-right"]} href={`/photos/${photo.slug}/`} data-photo-link data-photo-index={index}>
               <img class="photo-hover-image" src={photo.src} alt={photo.alt} loading={index < 6 ? "eager" : "lazy"} />
               <PhotoCornerMarks />
             </a>
@@ -79,9 +86,9 @@ galleryPhotos.forEach((photo, index) => {
       </dl>
     </div>
   </dialog>
-  <script is:inline type="application/json" data-gallery-data set:html={serialized}></script>
+  <script is:inline type="application/json" data-photos-data set:html={serialized}></script>
 </div>
 
 <script>
-  import "../../scripts/gallery-lightbox";
+  import "../../scripts/photos-lightbox";
 </script>

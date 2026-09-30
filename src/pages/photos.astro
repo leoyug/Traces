@@ -1,0 +1,11 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PhotosPage from "../components/photos/PhotosPage.astro";
+import { getPhotos } from "../lib/photos";
+
+const photos = await getPhotos();
+---
+
+<BaseLayout title="摄影｜Leo" description="沿途看见的光。" robots="noindex,follow">
+  <PhotosPage photos={photos} />
+</BaseLayout>

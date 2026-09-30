@@ -1,4 +1,4 @@
-@layer reset, tokens, base, components, pages, responsive, site, site-responsive;
+@layer reset, tokens, base, components, pages, responsive, astro, site, site-responsive;
 
 @import "./site.css";
 
@@ -67,6 +67,7 @@
     /* Boundaries: structural separation without competing with content. */
     --color-line: #dedddb;
     --color-line-subtle: color-mix(in srgb, var(--color-line) 55%, var(--color-surface));
+    --color-project-image-border: rgb(128 128 128 / 20%);
     --color-leader: #e2e1df;
     --color-contact-underline: rgb(77 77 77 / 25%);
     --color-contact-underline-active: var(--color-ink);
@@ -91,6 +92,7 @@
     --tracking-body: 0; --tracking-title: -.015em; --tracking-display: -.025em;
     --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-12: 3rem; --space-16: 4rem; --space-20: 5rem; --space-24: 6rem; --space-32: 8rem;
     --radius-xs: .25rem; --radius-sm: .5rem; --radius-md: .75rem; --radius-lg: 1rem; --radius-xl: 1.5rem; --radius-pill: 9999px;
+    --radius-project-image: .375rem;
     --corner-smoothing: .6;
     --radius-photo-tooltip: .625rem;
     --tooltip-padding-block: .3125rem;
@@ -113,6 +115,7 @@
     --dock-bottom-gap: 24px; --dock-reserve: calc(var(--dock-height) + var(--dock-bottom-gap) + var(--space-8) + env(safe-area-inset-bottom, 0px));
     --lightbox-backdrop-duration: 400ms; --lightbox-photo-duration: 560ms; --lightbox-fact-duration: 180ms; --lightbox-close-duration: 400ms;
     --theme-transition-duration: 700ms; --theme-transition-blur: 8px;
+    --duration-detail-route: 560ms; --duration-detail-content: 420ms; --duration-detail-exit: 180ms; --duration-detail-stagger: 70ms; --duration-detail-mask: 180ms; --distance-detail-content: 8px; --blur-detail-background: 8px;
     --duration-route-enter: 840ms;
     --preferences-enter-distance: 8px;
     --duration-route-stagger: 70ms;
@@ -233,6 +236,7 @@
   .project-card { display: grid; gap: .75rem; color: var(--color-ink); text-decoration: none; }
   .project-card__visual { height: 12.0625rem; display: grid; place-items: center; overflow: hidden; padding: .6875rem; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-surface-2); }
   .project-card__visual > img { width: 100%; height: 100%; border-radius: var(--radius-md); object-fit: cover; }
+  .featured-projects .project-card__visual > img { border: .5px solid var(--color-project-image-border); border-radius: var(--radius-project-image); }
   .project-card__visual.tone-sage > img { width: 100%; height: 100%; object-fit: cover; }
   .project-card__preview { width: 72%; aspect-ratio: 1.46; display: grid; grid-template-rows: .9rem 1fr; overflow: hidden; border: 1px solid var(--color-line); border-radius: var(--radius-xs); background: var(--color-surface); box-shadow: var(--shadow-card); }
   .project-card__chrome { border-bottom: 1px solid var(--color-line); background: var(--color-surface-2); }

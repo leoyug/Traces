@@ -13,10 +13,10 @@ import PlaySpinLoader from "../components/PlaySpinLoader.astro";
 import ProgressiveBlur from "../components/ProgressiveBlur.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import TextLink from "../components/TextLink.astro";
-import { getGalleryPhotos } from "../lib/gallery";
+import { getPhotos } from "../lib/photos";
 
 if (import.meta.env.PROD) return Astro.redirect("/");
-const galleryPhotos = await getGalleryPhotos();
+const photos = await getPhotos();
 
 const colorGroups = [
   {
@@ -75,7 +75,7 @@ const tocHeadings = [
   { depth: 2, slug: "toc-demo-reflection", text: "结果与反思" },
 ];
 const fanPhotoLabels = ["夜行", "栈桥", "帐篷", "散步", "晚风", "树影", "远望"];
-const fanPhotos = galleryPhotos.slice(0, 7).map((photo, index) => ({ photo, label: fanPhotoLabels[index] }));
+const fanPhotos = photos.slice(0, 7).map((photo, index) => ({ photo, label: fanPhotoLabels[index] }));
 ---
 
 <BaseLayout title="设计系统预览（开发环境）｜Rush Leo">
@@ -128,7 +128,7 @@ const fanPhotos = galleryPhotos.slice(0, 7).map((photo, index) => ({ photo, labe
     <section><SectionHeading title="详情目录" description="文章与项目详情页共用；宽屏显示标题，中等宽度只保留章节刻度。" /><div class="toc-demo"><DetailToc headings={tocHeadings} ariaLabel="详情目录示例" className="detail-toc--demo" /></div></section>
     <section><SectionHeading title="粒子头像" description="关于页的单次聚合焦点；精细指针可产生局部弹性扰动，减少动态时回退为静态图像。" /><ParticlePortrait src="/assets/figma-v03/about/portrait-particles.webp" alt="Leo 的像素风肖像" /></section>
     <section><SectionHeading title="图片加载" description="Play Spin 点阵只用于大图产生可感知等待时；快速命中缓存时不会闪现。" /><div class="loader-demo" data-image-loading="true"><PlaySpinLoader /></div></section>
-    <section><SectionHeading title="可拖拽照片" description="桌面端可在容器内拖拽照片，松手立即停止；移动端保留构图且关闭拖拽。" /><DraggablePhotoStack photos={galleryPhotos.slice(0, 6)} /></section>
+    <section><SectionHeading title="可拖拽照片" description="桌面端可在容器内拖拽照片，松手立即停止；移动端保留构图且关闭拖拽。" /><DraggablePhotoStack photos={photos.slice(0, 6)} /></section>
     <section><SectionHeading title="扇形照片" description="靠近照片时整体展开；指向单张时转正上移并显示标签，按住会轻微缩小。" /><PhotoFanStack photos={fanPhotos} /></section>
     <section><SectionHeading title="表单" /><form class="form-demo"><div class="field"><label for="demo-name">姓名</label><input id="demo-name" class="input" placeholder="怎么称呼你？" /></div><div class="field"><label for="demo-note">留言</label><textarea id="demo-note" class="textarea" rows="4" placeholder="写点什么……"></textarea></div><Button type="submit">发送留言</Button></form></section>
     <section>
