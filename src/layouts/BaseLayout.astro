@@ -34,7 +34,7 @@ const isDetailRoute = /^\/(?:projects|writing)\/[^/]+\/?$/.test(Astro.url.pathna
     <meta name="theme-color" content="#fbfaf9" />
     <script is:inline>
       const storedTheme = localStorage.getItem("incessant-theme");
-      const themePreference = storedTheme === "dark" || storedTheme === "system" ? storedTheme : "light";
+      const themePreference = storedTheme === "dark" || storedTheme === "light" ? storedTheme : "system";
       document.documentElement.dataset.themePreference = themePreference;
       document.documentElement.dataset.theme = themePreference === "system" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : themePreference;
     </script>

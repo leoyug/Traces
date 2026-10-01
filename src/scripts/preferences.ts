@@ -116,7 +116,7 @@ const transitionTheme = (preference: ThemePreference, origin: HTMLElement) => {
 const initializePreferences = () => {
   const savedTheme = localStorage.getItem(storageKey);
   const preference: ThemePreference =
-    savedTheme === "dark" || savedTheme === "system" ? savedTheme : "light";
+    savedTheme === "dark" || savedTheme === "light" ? savedTheme : "system";
   applyTheme(preference);
   syncSoundControls(initializeSound());
 };

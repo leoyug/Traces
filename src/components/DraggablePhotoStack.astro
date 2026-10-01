@@ -147,9 +147,11 @@ const layouts = [
     aspect-ratio: 841 / 558;
     overflow: hidden;
     isolation: isolate;
-    border: 1px solid var(--color-line);
+    border: 1px solid var(--color-photo-board-border);
     border-radius: var(--radius-xl);
-    background: var(--color-surface-felt);
+    background-color: var(--color-surface-felt);
+    background-image: radial-gradient(circle, var(--color-photo-board-dot) 0.8px, transparent 1.25px);
+    background-size: 18px 18px;
   }
 
   .photo-drag-stack__card {

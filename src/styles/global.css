@@ -53,6 +53,8 @@
     --color-surface: #fff;
     --color-surface-2: #f2f1ef;
     --color-surface-felt: #ededeb;
+    --color-photo-board-dot: #cfcecb;
+    --color-photo-board-border: var(--color-line);
     --color-photo-paper: #fff;
 
     /* Content: hierarchy for readable, non-interactive information. */
@@ -137,7 +139,9 @@
     --color-canvas: #191918;
     --color-surface: #13120f;
     --color-surface-2: #232323;
-    --color-surface-felt: #232727;
+    --color-surface-felt: #1b1b1b;
+    --color-photo-board-dot: #323232;
+    --color-photo-board-border: #2e2e2e;
     --color-photo-paper: #fff;
 
     --color-ink: #fafafa;
