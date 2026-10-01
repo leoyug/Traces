@@ -1,9 +1,10 @@
 {
-  "src": "/assets/figma-v03/photos/photo-04.jpg",
+  "src": "/media/photos/light-04/src.jpg",
   "alt": "街道上散步的人与白色小狗",
   "order": 4,
   "size": "short",
   "orientation": "landscape",
   "width": 1800,
-  "height": 1200
+  "height": 1200,
+  "draft": false
 }

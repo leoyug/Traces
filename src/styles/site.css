@@ -587,17 +587,7 @@
 
   .section-topline {
     height: 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  .section-topline::after {
-    content: "";
-    height: 0.5px;
-    flex: 1 1 auto;
-    background: var(--color-leader);
+    margin-bottom: 20px;
   }
 
   .section-topline h2,
@@ -684,10 +674,6 @@
     color: var(--color-faint);
     font-size: 14px;
     line-height: 18px;
-  }
-
-  .contact-section h2 {
-    margin-bottom: 24px;
   }
 
   .contact-section nav,
@@ -1057,7 +1043,7 @@
 
   .about-sections section {
     display: grid;
-    gap: 24px;
+    gap: 20px;
   }
 
   .about-sections h2 {
@@ -1332,7 +1318,7 @@
 
   .content-detail .article__body h2 {
     margin-top: 64px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     font-size: 20px;
     line-height: 28px;
   }
@@ -1629,21 +1615,6 @@
     line-height: 24px;
   }
 
-  .about-sections section > h2,
-  .resume__section > h2 {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .about-sections section > h2::after,
-  .resume__section > h2::after {
-    height: .5px;
-    flex: 1 1 auto;
-    background: var(--color-leader);
-    content: "";
-  }
-
   .writing-year .section-topline h2 {
     font-family: var(--font-heading);
   }
@@ -1696,7 +1667,7 @@
   }
 
   .resume__section > h2 {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     font-size: 16px;
     line-height: 24px;
   }

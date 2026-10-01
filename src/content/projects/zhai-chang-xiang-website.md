@@ -1,4 +1,5 @@
 ---
+draft: false
 title: 「宅畅想」官网
 description: 介绍宅畅想并帮助访客理解产品与服务的网站。
 publishedAt: 2026-09-30
@@ -7,6 +8,8 @@ status: archive
 role: 待确认
 order: 5
 accent: sage
+cover: /media/projects/zhai-chang-xiang-website/cover.jpg
+archiveImages: [/media/projects/zhai-chang-xiang-website/archiveImages/0.jpg, /media/projects/zhai-chang-xiang-website/archiveImages/1.jpg, /media/projects/zhai-chang-xiang-website/archiveImages/2.jpg]
 ---
 
 以下内容依据现有项目名称与简介整理，是待核对的展示文案；具体职责、上线时间与项目结果应以实际资料为准。

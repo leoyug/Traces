@@ -10,6 +10,8 @@ featured: false
 order: 3
 accent: blue
 relatedArticles: [a-living-archive]
+cover: /media/projects/photo-archive-experiment/cover.jpg
+archiveImages: []
 ---
 
 ## 实验范围

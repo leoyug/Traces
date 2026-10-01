@@ -14,7 +14,7 @@ const { title, summary, year, status, accent, href = "/projects", image } = Astr
 const linkLabel = ["查看项目", title, year, status].filter(Boolean).join("，");
 ---
 
-<article class="project-card">
+<article class="project-card" data-list-sound>
   <a class:list={["project-card__visual", `tone-${accent}`]} data-smooth-corners="surface" href={href} aria-label={linkLabel}>
     {image ? <img data-smooth-corners="clip" src={image} alt="" loading="lazy" /> : (
       <span class="project-card__preview">

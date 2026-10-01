@@ -9,6 +9,8 @@ role: 产品设计师
 featured: true
 order: 2
 accent: sage
+cover: /media/projects/content-publishing-system/cover.jpg
+archiveImages: []
 ---
 
 ## 核心问题

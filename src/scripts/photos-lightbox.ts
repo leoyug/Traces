@@ -202,7 +202,7 @@ const initializePhotosPages = () => {
         if (!dialog.open) dialog.showModal();
         document.documentElement.classList.add("has-photo-lightbox");
         dialog.focus();
-        if (push) playInterfaceSound("loading", 0.5);
+        if (push) playInterfaceSound("loading", 0.8);
         requestAnimationFrame(() => {
           fitPhotoFrame(sourceRatio);
           dialog.classList.add("is-opening");
@@ -280,6 +280,7 @@ const initializePhotosPages = () => {
       const closePhoto = (historyMode: CloseHistoryMode) => {
         if (!dialog?.open || !frame || !image || isClosing) return;
         isClosing = true;
+        playInterfaceSound("loading", 0.8);
 
         const sourceLink = getClosingSource();
         const sourceImage =
@@ -333,7 +334,6 @@ const initializePhotosPages = () => {
         // Keep the photo page in place when dismissing the overlay. A
         // history back() here asks Astro's client router to replace the whole
         // page, which causes a visible flash before the next photo can open.
-        playInterfaceSound("droplet", 0.45);
         closePhoto("replace");
       };
 

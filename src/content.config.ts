@@ -31,6 +31,8 @@ const projects = defineCollection({
     featured: z.boolean().default(false),
     order: z.number().int().nonnegative().default(0),
     accent: z.enum(["clay", "sage", "blue"]),
+    cover: z.string().startsWith("/").optional(),
+    archiveImages: z.array(z.string().startsWith("/")).default([]),
     privacyNote: z.string().optional(),
     relatedArticles: z.array(reference("articles")).default([]),
   }),

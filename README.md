@@ -15,12 +15,25 @@ npm run dev
 
 ```bash
 npm run check         # 内容类型检查和照片发布资产审计
-npm run build         # 生成字体子集、检查并构建静态网站
+npm run build         # 准备照片、生成字体子集、检查并构建静态网站
 npm run preview       # 本地预览构建产物
+npm run photos:prepare # 更新照片尺寸并清除上传图片中的敏感元数据
 npm run photos:audit  # 单独检查摄影图片尺寸、引用和敏感元数据
 ```
 
 开发环境的 `/design-system` 展示正在使用的设计规则和组件；生产环境不公开该页面。`npm run build` 自动重新生成寒蝉宋体子集，完整 OTF 只保存在 `scripts/fonts/source/`，不会作为公开资源发布。
+
+## 可视化内容后台
+
+运行 `npm run dev` 后，打开终端显示的本地地址，再访问 `/keystatic`（通常是 `http://localhost:4321/keystatic`）。后台按“项目 / 写作 / 摄影”组织，直接在浏览器中编辑标题、正文、封面、照片和发布顺序。修改保存在本机仓库的内容文件与 `public/media/` 图片目录；只有检查、构建并正常发布仓库后，线上网站才会更新。后台仅在开发环境启用，不会被打包到静态网站。
+
+已有文件可以在本机的 `/content-import` 批量导入。先选择“项目 / 写作 / 摄影”，再拖入多个文件或选择一个文件夹；支持 Markdown、Word `.docx`、照片及照片 JSON。导入前会预览新建或关联的内容，只有勾选并确认后才写入文件。项目图片按同文件夹或项目短名匹配，文章插图按正文中的相对路径匹配，照片 JSON 按同名短名匹配图片；正文里明确写出的项目或文章链接也会自动建立关联。没有明确依据的内容关系不会猜测。新内容一律存为草稿，照片默认接在现有照片之后。导入后请在 Keystatic 中核对摘要、照片画面描述、项目职责及公开范围。
+
+新内容默认是草稿。完成内容后取消“草稿（不公开）”，设置发布日期并保存。项目勾选“首页及项目页精选”即可进入精选区；“展示顺序”数字越小越靠前。摄影的“展示顺序”从 1 开始，已发布照片不能使用重复数字。标题可改，首次发布后的“稳定短名（网址）”请保持不变。
+
+项目封面、档案叠放图片以及正文插图可直接在各自编辑页上传，文件保存在 `public/media/projects/`；文章插图保存在 `public/media/articles/`；摄影图片保存在 `public/media/photos/`。照片上传后，本地准备脚本会按需要缩至最长边 2400px、压到 2MB 内、转为 WebP 并移除 EXIF/XMP；图片尺寸和方向也会自动写回内容文件。保存后等页面刷新，再运行 `npm run build`，人工核对照片、替代文本与移动端效果。原件仍请自行备份，不要把原件或涉及他人隐私的照片放进公开目录。
+
+后台已将集合、字段和部分界面设为中文。Keystatic 自带的编辑器工具栏和少数按钮仍可能显示英文或不自然的译文。
 
 ## 代码结构
 
@@ -29,7 +42,7 @@ src/
 ├── components/            # 跨页面组件；photos/ 是摄影展示组件
 ├── content/               # articles、projects、photos、resume
 ├── content.config.ts      # 内容字段校验
-├── data/                  # 导航和项目展示用的临时数据
+├── data/                  # 导航和非领域视觉数据
 ├── layouts/               # 页面骨架与元数据
 ├── lib/                   # 内容查询和摄影数据整理
 ├── pages/                 # 路由与页面编排
@@ -39,8 +52,10 @@ src/
     ├── site.css           # 当前页面的专有样式
     └── site-responsive.css # 对应的响应式规则
 
-public/assets/figma-v03/photos/ # 现有摄影图片
-public/media/photos/           # 新增照片的网页发布资产
+public/media/projects/          # 项目封面和档案图片
+public/media/articles/          # 文章插图
+public/media/photos/            # 摄影网页发布资产
+scripts/photos/prepare.mjs      # 新照片压缩和元数据清理
 scripts/photos/audit.ts         # 发布图片审计
 ```
 
@@ -51,8 +66,8 @@ scripts/photos/audit.ts         # 发布图片审计
 摄影页直接展示单张照片，点击后打开灯箱，再次点击关闭。照片描述和图片实际尺寸会显示在灯箱中；拍摄日期、地点和相机参数只有核实后才填写。每张照片有独立地址 `/photos/<短名>/`。
 
 1. 自行备份照片原件；不要把原件、精确坐标、设备序列号或第三方隐私放进公开目录。
-2. 从原件生成适合网页发布、已清除敏感 EXIF 的图片，新照片放入 `public/media/photos/`；`public/assets/figma-v03/photos/` 留给现有图片。当前审计限制为最长边不超过 2400px、文件不超过 2MB。`public/` 中的图片不会在 Astro 构建时自动压缩。
-3. 在 `src/content/photos/` 为该图片添加同名 JSON，填写 `src`、准确的 `alt`、唯一的 `order`、`orientation` 和图片实际的 `width`、`height`；竖图的 `size` 为 `tall`，横图为 `short`。经过核实的拍摄参数可放在 `publicMetadata`。
+2. 在 Keystatic 的“摄影”中新建照片、上传图片、填写准确的画面描述与唯一的展示顺序。上传图片保存在 `public/media/photos/`，脚本会准备可公开的图片并填写尺寸和方向。当前限制为最长边不超过 2400px、文件不超过 2MB。
+3. 拍摄日期、地点与器材信息只有核实且适合公开时才填写。取消草稿状态后保存。
 4. 运行 `npm run build`，再人工检查图片、替代文本、灯箱详情及移动端效果。
 
 具体字段和检查要求见[照片发布指南](./docs/%E7%85%A7%E7%89%87%E6%A8%A1%E5%9D%97%E6%9E%84%E5%BB%BA%E4%B8%8E%E4%B8%8A%E7%BA%BF%E6%8C%87%E5%8D%97.md)。

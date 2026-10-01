@@ -1,9 +1,10 @@
 {
-  "src": "/assets/figma-v03/photos/photo-09.jpg",
+  "src": "/media/photos/light-09/src.jpg",
   "alt": "镜子前拿着相机合影的两个人",
   "order": 9,
   "size": "tall",
   "orientation": "portrait",
   "width": 1200,
-  "height": 1800
+  "height": 1800,
+  "draft": false
 }

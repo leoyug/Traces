@@ -1,9 +1,10 @@
 {
-  "src": "/assets/figma-v03/photos/photo-10.jpg",
+  "src": "/media/photos/light-10/src.jpg",
   "alt": "夕阳穿过树梢与云层",
   "order": 10,
   "size": "tall",
   "orientation": "portrait",
   "width": 1200,
-  "height": 1800
+  "height": 1800,
+  "draft": false
 }

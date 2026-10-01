@@ -11,6 +11,8 @@ order: 1
 accent: clay
 privacyNote: 案例中的公司标识、业务名称与部分数据经过抽象处理。
 relatedArticles: [clarity-before-components]
+cover: /media/projects/workspace-structure-redesign/cover.jpg
+archiveImages: []
 ---
 
 ## 背景与约束

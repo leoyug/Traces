@@ -40,11 +40,12 @@ async function auditPhotos() {
 
   for (const name of records) {
     const photo = JSON.parse(await readFile(path.join(contentRoot, name), "utf8")) as PhotoRecord;
-    if (photo.draft) continue;
-    published++;
-    if (!photo.alt?.trim()) errors.push(`${name}: 缺少替代文本`);
-    if (!Number.isInteger(photo.order) || photo.order < 1 || orders.has(photo.order)) errors.push(`${name}: 展示顺序无效或重复`);
-    orders.add(photo.order);
+    if (!photo.draft) {
+      published++;
+      if (!photo.alt?.trim()) errors.push(`${name}: 缺少替代文本`);
+      if (!Number.isInteger(photo.order) || photo.order < 1 || orders.has(photo.order)) errors.push(`${name}: 展示顺序无效或重复`);
+      orders.add(photo.order);
+    }
     if (!photo.src?.startsWith("/")) {
       errors.push(`${name}: 资产路径必须以 / 开头`);
       continue;
@@ -78,7 +79,7 @@ async function auditPhotos() {
 
   await exiftool.end();
   if (errors.length) throw new Error(`照片审计失败：\n- ${errors.join("\n- ")}`);
-  console.log(`照片审计通过：${published} 张照片，${referenced.size} 个发布资产。`);
+  console.log(`照片审计通过：${published} 张已发布照片，${referenced.size} 个照片资产。`);
 }
 
 auditPhotos().catch((error) => {

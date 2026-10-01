@@ -1,10 +1,19 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import { archiveProjectPreviews, featuredProjectPreviews } from "../data/project-previews";
 import { projectStackStyle } from "../lib/project-stack";
+import { getProjects, projectPreview } from "../lib/projects";
 
-const archiveAsset = (name: string) => `/assets/figma-v03/projects/archive/${name}`;
+const projects = await getProjects();
+const featuredProjectPreviews = projects.filter((project) => project.data.featured).map(projectPreview);
+const archiveProjectPreviews = projects.map((project) => ({
+  source: project.id,
+  title: project.data.title,
+  summary: project.data.description,
+  year: String(project.data.year),
+  images: Array.from({ length: 3 }, (_, index) => project.data.archiveImages[index] ?? project.data.cover ?? "/assets/figma-v03/project-detail/cover.png"),
+  href: `/projects/${project.id}`,
+}));
 ---
 
 <BaseLayout title="项目｜Leo" description="产品设计项目档案。">
@@ -22,9 +31,9 @@ const archiveAsset = (name: string) => `/assets/figma-v03/projects/archive/${nam
     <div class="section-topline" data-route-enter><h2 id="archive-title">全部项目</h2></div>
     <div class="project-archive-list" data-project-archive-list data-route-enter-group>
       {archiveProjectPreviews.map((project) =>
-        <a class="project-archive-row" href={project.href} data-project-transition data-project-source={project.source}>
+        <a class="project-archive-row" href={project.href} data-list-sound data-project-transition data-project-source={project.source}>
           <span class="project-archive-row__thumb" aria-hidden="true">
-            {project.images.map((image, index) => <img src={archiveAsset(image)} alt="" loading="lazy" style={projectStackStyle(project.source, index)} />)}
+            {project.images.map((image, index) => <img src={image} alt="" loading="lazy" style={projectStackStyle(project.source, index)} />)}
           </span>
           <span class="project-archive-row__copy"><strong>{project.title}</strong><small>{project.summary}</small></span>
           <time>{project.year}</time>

@@ -1,4 +1,5 @@
 ---
+draft: false
 title: 小狗钱钱
 description: 一份写下想实现的生活的梦想清单。
 publishedAt: 2026-04-26

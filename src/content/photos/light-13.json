@@ -1,9 +1,10 @@
 {
-  "src": "/assets/figma-v03/photos/photo-13.jpg",
+  "src": "/media/photos/light-13/src.jpg",
   "alt": "蓝天下屋檐与云层",
   "order": 13,
   "size": "short",
   "orientation": "landscape",
   "width": 1800,
-  "height": 1200
+  "height": 1200,
+  "draft": false
 }

@@ -1,4 +1,5 @@
 ---
+draft: false
 title: 灵感集
 description: 更好地展示与整理收藏内容。
 publishedAt: 2026-09-30
@@ -7,6 +8,8 @@ status: archive
 role: 待确认
 order: 3
 accent: blue
+cover: /media/projects/inspiration-collection/cover.jpg
+archiveImages: [/media/projects/inspiration-collection/archiveImages/0.jpg, /media/projects/inspiration-collection/archiveImages/1.jpg, /media/projects/inspiration-collection/archiveImages/2.jpg]
 ---
 
 以下内容依据现有项目名称与简介整理，是待核对的展示文案；具体职责、上线时间与项目结果应以实际资料为准。

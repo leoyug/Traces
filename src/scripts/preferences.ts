@@ -166,7 +166,7 @@ const closePreferences = (restoreFocus = false) => {
   );
   toggle?.setAttribute("aria-expanded", "false");
   if (restoreFocus) toggle?.focus();
-  playInterfaceSound("droplet", 0.45);
+  playInterfaceSound("close", 0.55);
 };
 
 const themeWindow = window as Window & {
@@ -194,13 +194,13 @@ if (!themeWindow.__incessantThemeToggleInitialized) {
       const isOpen = toggle.getAttribute("aria-expanded") === "true";
       toggle.setAttribute("aria-expanded", String(!isOpen));
       setPreferencesPanelOpen(panel, !isOpen);
-      playInterfaceSound(isOpen ? "droplet" : "bloom", isOpen ? 0.45 : 0.5);
+      playInterfaceSound(isOpen ? "close" : "open", isOpen ? 0.55 : 0.6);
       return;
     }
 
     if (themeOption) {
       const preference = themeOption.dataset.themeValue as ThemePreference;
-      playInterfaceSound("toggle", 0.6);
+      playInterfaceSound("toggle", 0.7);
       transitionTheme(preference, themeOption);
       return;
     }
@@ -226,7 +226,7 @@ if (!themeWindow.__incessantThemeToggleInitialized) {
           option.classList.toggle("is-selected", selected);
         });
       if (group === "language" && !wasSelected)
-        playInterfaceSound("toggle", 0.6);
+        playInterfaceSound("toggle", 0.7);
       return;
     }
 
@@ -274,7 +274,7 @@ if (!themeWindow.__incessantThemeToggleInitialized) {
     const path = location.pathname.endsWith("/")
       ? location.pathname
       : `${location.pathname}/`;
-    if (topLevelPaths.has(path)) playInterfaceSound("ready", 0.45);
+    if (topLevelPaths.has(path)) playInterfaceSound("navigate", 0.55);
   });
 }
 

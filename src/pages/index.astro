@@ -7,7 +7,7 @@ import PhotoFanStack from "../components/PhotoFanStack.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import TextLink from "../components/TextLink.astro";
 import { getCollection } from "astro:content";
-import { featuredProjectPreviews } from "../data/project-previews";
+import { getProjects, projectPreview } from "../lib/projects";
 import { getPhotos } from "../lib/photos";
 import { formatDate } from "../lib/content";
 
@@ -15,6 +15,7 @@ const photos = await getPhotos();
 const recentArticles = (await getCollection("articles", ({ data }) => !data.draft))
   .sort((left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime())
   .slice(0, 4);
+const featuredProjectPreviews = (await getProjects()).filter((project) => project.data.featured).map(projectPreview);
 const homeFanPhotoLabels = ["夜行", "栈桥", "帐篷", "散步", "晚风", "树影", "远望"];
 const homeFanPhotos = photos.slice(0, 7).map((photo, index) => ({
   photo,
@@ -60,7 +61,7 @@ const recentPhotos = shuffle(photos.filter((photo) => photo.orientation === "por
   </section>
 
   <section class="home-section contact-section reading-column" aria-labelledby="contact-title" data-route-enter>
-    <h2 id="contact-title">联系到我</h2>
+    <div class="section-topline"><h2 id="contact-title">联系到我</h2></div>
     <ContactLinks />
   </section>
 </BaseLayout>

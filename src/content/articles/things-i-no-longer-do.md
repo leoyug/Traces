@@ -1,4 +1,5 @@
 ---
+draft: false
 title: 我不再做的事
 description: 一份持续更新的「不再做」清单。
 publishedAt: 2025-08-11

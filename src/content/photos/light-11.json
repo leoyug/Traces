@@ -1,9 +1,10 @@
 {
-  "src": "/assets/figma-v03/photos/photo-11.jpg",
+  "src": "/media/photos/light-11/src.jpg",
   "alt": "夜晚树林中的灯光装置",
   "order": 11,
   "size": "short",
   "orientation": "landscape",
   "width": 1800,
-  "height": 1200
+  "height": 1200,
+  "draft": false
 }

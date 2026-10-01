@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>批量导入内容｜不息</title>
+    <link rel="stylesheet" href="/src/styles/global.css" />
+    <link rel="stylesheet" href="/src/admin/content-import.css" />
+  </head>
+  <body class="import-app">
+    <main class="import-main">
+      <header class="import-header">
+        <div>
+          <p class="import-eyebrow">不息 / 本机内容管理</p>
+          <h1>批量导入内容</h1>
+          <p>把已有文件拖进来，先检查自动匹配结果，再一次导入为草稿。</p>
+        </div>
+        <a class="import-back" href="/keystatic">返回编辑后台 ↗</a>
+      </header>
+
+      <fieldset class="import-category">
+        <legend>先选择这批文件的内容分类</legend>
+        <label><input type="radio" name="category" value="project" />项目</label>
+        <label><input type="radio" name="category" value="article" />写作</label>
+        <label><input type="radio" name="category" value="photo" />摄影</label>
+      </fieldset>
+
+      <section class="import-drop" id="drop-zone" aria-label="上传内容文件">
+        <div class="import-drop-icon" aria-hidden="true">↑</div>
+        <h2>拖放文件或文件夹到这里</h2>
+        <p>项目和写作支持 Markdown、Word 文稿及相关图片；摄影支持照片和已有 JSON。文件夹与同名短名会用于匹配。</p>
+        <div class="import-actions">
+          <button id="choose-files" class="import-button import-button--primary" type="button">选择文件</button>
+          <button id="choose-folder" class="import-button" type="button">选择文件夹</button>
+          <input id="pick-files" type="file" multiple accept=".md,.mdx,.docx,.json,.jpg,.jpeg,.png,.webp,.avif" hidden />
+          <input id="pick-folder" type="file" webkitdirectory multiple hidden />
+        </div>
+        <p class="import-tip">每次最多 100 个文件、总计 80 MB。照片原件会在导入时压缩并清除敏感元数据。</p>
+      </section>
+
+      <section id="preview" class="import-preview" hidden aria-live="polite">
+        <div class="import-preview-head">
+          <div>
+            <p class="import-eyebrow">导入预览</p>
+            <h2 id="preview-title">匹配结果</h2>
+          </div>
+          <button id="reset" class="import-text-button" type="button">重新选择</button>
+        </div>
+        <p id="preview-intro" class="import-preview-intro"></p>
+        <div id="item-list" class="import-item-list"></div>
+        <div class="import-submit">
+          <p>导入后均为草稿。请在编辑后台核对照片描述、项目信息及关联，再决定是否发布。</p>
+          <button id="commit" class="import-button import-button--primary" type="button">导入选中内容</button>
+        </div>
+      </section>
+      <p id="status" class="import-status" role="status" aria-live="polite"></p>
+    </main>
+    <script type="module" src="/src/admin/content-import.js"></script>
+  </body>
+</html>

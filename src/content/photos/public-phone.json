@@ -1,9 +1,10 @@
 {
-  "src": "/assets/figma-v03/photos/photo-08.jpg",
+  "src": "/media/photos/public-phone/src.jpg",
   "alt": "街边冰淇淋店与经过的路人",
   "order": 8,
   "size": "short",
   "orientation": "landscape",
   "width": 1800,
-  "height": 1200
+  "height": 1200,
+  "draft": false
 }

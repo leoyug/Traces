@@ -12,7 +12,7 @@ interface Props {
 const { title, summary, meta, href = "#", tags = [], density = "default", stackOnMobile = true, thumbnail } = Astro.props;
 ---
 
-<a class:list={["content-row", { "content-row--compact": density === "compact", "content-row--stack-mobile": stackOnMobile }]} href={href}>
+<a class:list={["content-row", { "content-row--compact": density === "compact", "content-row--stack-mobile": stackOnMobile }]} href={href} data-list-sound>
   {thumbnail && <img class="content-row__thumb" src={thumbnail} alt="" loading="lazy" />}
   <span class="content-row__body">
     <strong>{title}</strong>

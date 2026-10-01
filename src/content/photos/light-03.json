@@ -1,9 +1,10 @@
 {
-  "src": "/assets/figma-v03/photos/photo-03.jpg",
+  "src": "/media/photos/light-03/src.jpg",
   "alt": "暮色草地上的帐篷与行人",
   "order": 3,
   "size": "short",
   "orientation": "landscape",
   "width": 1800,
-  "height": 1200
+  "height": 1200,
+  "draft": false
 }
