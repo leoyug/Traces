@@ -9,6 +9,7 @@ role: 待确认
 featured: true
 order: 1
 accent: clay
+label: 已完成
 cover: /media/projects/zhai-chang-xiang-app/cover.png
 archiveImages: []
 ---

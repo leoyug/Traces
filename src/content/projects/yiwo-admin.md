@@ -9,6 +9,7 @@ role: 待确认
 featured: true
 order: 2
 accent: sage
+label: 进行中
 cover: /media/projects/yiwo-admin/cover.png
 archiveImages: [/media/projects/yiwo-admin/archiveImages/0.jpg, /media/projects/yiwo-admin/archiveImages/1.jpg, /media/projects/yiwo-admin/archiveImages/2.jpg]
 ---

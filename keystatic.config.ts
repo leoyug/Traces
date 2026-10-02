@@ -51,6 +51,7 @@ export default config({
           { label: "鼠尾草绿", value: "sage" },
           { label: "浅蓝", value: "blue" },
         ], defaultValue: "clay" }),
+        label: fields.text({ label: "卡片状态", description: "悬停精选卡片时显示在图片上方，例如「已完成」或「进行中」。" }),
         cover: fields.image({ label: "项目封面", directory: "public/media/projects", publicPath: "/media/projects/" }),
         archiveImages: fields.array(fields.image({ label: "档案叠放图片", directory: "public/media/projects", publicPath: "/media/projects/" }), { label: "档案叠放图片（最多选三张）" }),
         privacyNote: fields.text({ label: "匿名化说明", multiline: true }),

@@ -106,9 +106,19 @@
       grid-template-columns: 1fr;
     }
 
-    .project-card__visual {
+    .project-card__media {
+      top: 40px;
+      right: calc(56px * 100cqi / var(--content-reading));
+      left: calc(56px * 100cqi / var(--content-reading));
+    }
+
+    .project-card__label {
+      top: 40px;
+    }
+
+    .project-card__shot {
       height: auto;
-      aspect-ratio: 312 / 193;
+      aspect-ratio: 1.85;
     }
 
     .about-intro {

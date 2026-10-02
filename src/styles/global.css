@@ -70,6 +70,13 @@
     --color-line: #dedddb;
     --color-line-subtle: color-mix(in srgb, var(--color-line) 55%, var(--color-surface));
     --color-project-image-border: rgb(128 128 128 / 20%);
+    --color-project-frame: #1c1c1c;
+    --color-project-frame-hover: #2e2e2e;
+    --color-project-media-border: #111;
+    --color-project-label: #808080;
+    --color-project-label-active: var(--color-on-dark);
+    --color-status-done: #34c759;
+    --color-status-progress: #f5c451;
     --color-leader: #e2e1df;
     --color-contact-underline: rgb(77 77 77 / 25%);
     --color-contact-underline-active: var(--color-ink);
@@ -94,7 +101,7 @@
     --tracking-body: 0; --tracking-title: -.015em; --tracking-display: -.025em;
     --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-12: 3rem; --space-16: 4rem; --space-20: 5rem; --space-24: 6rem; --space-32: 8rem;
     --radius-xs: .25rem; --radius-sm: .5rem; --radius-md: .75rem; --radius-lg: 1rem; --radius-xl: 1.5rem; --radius-pill: 9999px;
-    --radius-project-image: .375rem;
+    --radius-project-image: calc(var(--radius-md) - var(--space-1));
     --corner-smoothing: .6;
     --radius-photo-tooltip: .625rem;
     --tooltip-padding-block: .3125rem;
@@ -153,6 +160,11 @@
     --color-on-dark: #fafafa;
 
     --color-line: #343331;
+    --color-project-frame: #2a2a2a;
+    --color-project-frame-hover: #3a3a3a;
+    --color-project-media-border: #111;
+    --color-project-label: var(--color-faint);
+    --color-project-label-active: var(--color-ink);
     --color-line-subtle: color-mix(in srgb, var(--color-line) 55%, var(--color-surface));
     --color-leader: #353231;
     --color-contact-underline: rgb(208 206 203 / 20%);
@@ -238,10 +250,71 @@
   .section-topline h2, .contact-section h2, .about-sections h2 { color: var(--color-muted); font-size: var(--text-body); font-weight: var(--weight-regular); line-height: 1.25rem; }
   .project-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
   .project-card { display: grid; gap: .75rem; color: var(--color-ink); text-decoration: none; }
-  .project-card__visual { height: 12.0625rem; display: grid; place-items: center; overflow: hidden; padding: .6875rem; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-surface-2); }
-  .project-card__visual > img { width: 100%; height: 100%; border-radius: var(--radius-md); object-fit: cover; }
-  .featured-projects .project-card__visual > img { border: .5px solid var(--color-project-image-border); border-radius: var(--radius-project-image); }
-  .project-card__visual.tone-sage > img { width: 100%; height: 100%; object-fit: cover; }
+  .project-card__shot { --project-shot-radius: var(--radius-lg); position: relative; display: block; height: 12.0625rem; color: inherit; text-decoration: none; container-type: inline-size; }
+  .project-card__shot::before { content: ""; position: absolute; z-index: 1; inset: 0; box-sizing: border-box; border: 1px solid var(--color-line); border-radius: var(--project-shot-radius); pointer-events: none; }
+  .project-card__visual { position: absolute; inset: 7px; display: block; overflow: hidden; border: 1px solid var(--color-line); border-radius: calc(var(--project-shot-radius) - 7px); background: var(--color-project-frame); text-decoration: none; transition: background var(--duration-fast) var(--ease-smooth-out); }
+  .project-card__media { position: absolute; top: 36px; right: 24px; bottom: 0; left: 24px; overflow: hidden; border: 1px solid var(--color-project-media-border); border-radius: var(--radius-xs) var(--radius-xs) 0 0; transition: transform var(--duration-fast) var(--ease-smooth-out); }
+  .project-card__media > img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; }
+  .project-card__label {
+    --glass-blur: 16px;
+    --glass-saturate: 140%;
+    --glass-tint: 28 28 30;
+    --glass-border: rgb(255 255 255 / 0.22);
+    --glass-radius: 999px;
+    --glass-highlight: rgb(255 255 255 / 0.55);
+    --glass-inner-shadow: rgb(0 0 0 / 0.28);
+    --glass-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+    position: absolute;
+    z-index: 2;
+    isolation: isolate;
+    top: 36px;
+    left: 50%;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0.2em 0.6em;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--glass-radius);
+    background: rgb(var(--glass-tint) / 0.72);
+    box-shadow:
+      var(--glass-shadow),
+      inset 0 1px 0 var(--glass-highlight),
+      inset 0 -6px 12px var(--glass-inner-shadow),
+      inset 1px 1px 0.5px rgb(255 255 255 / 0.45),
+      inset -1px -1px 0.5px rgb(255 255 255 / 0.16);
+    color: var(--color-project-label-active);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 8px));
+    mask-image: linear-gradient(to bottom, #000 0 45%, transparent 100%);
+    mask-size: 100% 220%;
+    mask-repeat: no-repeat;
+    mask-position: center 100%;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0 45%, transparent 100%);
+    -webkit-mask-size: 100% 220%;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center 100%;
+    transition: opacity var(--duration-fast) var(--ease-smooth-out), transform var(--duration-fast) var(--ease-smooth-out), mask-position var(--duration-fast) var(--ease-smooth-out), -webkit-mask-position var(--duration-fast) var(--ease-smooth-out);
+  }
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .project-card__label {
+      background: linear-gradient(135deg, rgb(var(--glass-tint) / 0.55), rgb(var(--glass-tint) / 0.22));
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    }
+  }
+  .project-card__label::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; background: linear-gradient(158deg, var(--glass-highlight), transparent 42%); opacity: 0.45; }
+  .project-card__label-dot { width: 6px; height: 6px; flex: 0 0 auto; border-radius: var(--glass-radius); background: var(--color-project-status, currentColor); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-project-status, currentColor) 32%, transparent); }
+  .project-card__label[data-tone="done"] { --color-project-status: var(--color-status-done); }
+  .project-card__label[data-tone="active"] { --color-project-status: var(--color-status-progress); }
+  .project-card:is(:hover, :focus-within) .project-card__label { opacity: 1; transform: translate(-50%, -50%); mask-position: center 0; -webkit-mask-position: center 0; }
+  .project-card__media .project-card__preview { width: 100%; height: 100%; aspect-ratio: auto; border-radius: inherit; }
+  .project-card:is(:hover, :focus-within) .project-card__visual { background: var(--color-project-frame-hover); }
+  .project-card:is(:hover, :focus-within) .project-card__media { transform: translateY(8px); }
   .project-card__preview { width: 72%; aspect-ratio: 1.46; display: grid; grid-template-rows: .9rem 1fr; overflow: hidden; border: 1px solid var(--color-line); border-radius: var(--radius-xs); background: var(--color-surface); box-shadow: var(--shadow-card); }
   .project-card__chrome { border-bottom: 1px solid var(--color-line); background: var(--color-surface-2); }
   .project-card__screen { display: grid; grid-template-columns: 2.5fr 1fr; }
@@ -350,7 +423,7 @@
     .project-card__heading, .content-row--stack-mobile { align-items: flex-start; flex-direction: column; }
     .content-row--stack-mobile time { margin-inline-start: 0; }
     .content-row__thumb { width: 5rem; height: 3.5rem; }
-    .project-card__visual { height: auto; aspect-ratio: 1.96; }
+    .project-card__shot { height: auto; aspect-ratio: 1.96; }
     .about-intro { grid-template-columns: 1fr; }
     .about-portrait { width: 9rem; margin-top: 1rem; transform: rotate(5deg); }
     .timeline li { grid-template-columns: 1fr; gap: .25rem; }

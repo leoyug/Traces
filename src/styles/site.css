@@ -638,25 +638,8 @@
     gap: 16px;
   }
 
-  .project-card__visual {
-    height: 174px;
-    padding: 11px;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr);
-    border-radius: var(--radius-md);
-    text-decoration: none;
-  }
-
-  .project-card__visual > img {
-    min-width: 0;
-    min-height: 0;
-    border-radius: var(--radius-md);
-    object-fit: cover;
-  }
-
-  .featured-projects .project-card__visual > img {
-    border: .5px solid var(--color-project-image-border);
-    border-radius: var(--radius-project-image);
+  .project-card__shot {
+    height: 184px;
   }
 
   .project-card__body {
@@ -804,7 +787,7 @@
     view-transition-name: project-cover;
   }
 
-  .featured-projects .project-card.is-transitioning .project-card__visual > img {
+  .featured-projects .project-card.is-transitioning .project-card__media > img {
     view-transition-name: project-cover;
   }
 
@@ -1823,4 +1806,10 @@
   .smooth-corners__surface path { vector-effect: non-scaling-stroke; }
   .preferences-panel > .smooth-corners__surface,
   .corner-panel-demo > .smooth-corners__surface { fill: var(--color-surface); stroke: var(--color-line-subtle); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-card:is(:hover, :focus-within) .project-card__media {
+      transform: none;
+    }
+  }
 }
