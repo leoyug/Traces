@@ -1,0 +1,18 @@
+---
+interface Props {
+  selector?: string;
+}
+
+const { selector = '[data-detail-page="article"] .content-detail__cover, [data-detail-page="article"] .article__body img' } = Astro.props;
+---
+
+<dialog class="article-image-zoom" data-article-image-zoom data-image-selector={selector} aria-label="图片预览">
+  <div class="article-image-zoom__backdrop" aria-hidden="true"></div>
+  <button class="article-image-zoom__view" type="button" aria-label="缩小图片" autofocus>
+    <img alt="" draggable="false" />
+  </button>
+</dialog>
+
+<script>
+  import "../scripts/article-image-zoom";
+</script>

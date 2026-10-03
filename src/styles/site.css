@@ -71,6 +71,10 @@
     animation-delay: calc(var(--duration-detail-exit) + var(--duration-detail-route) - var(--duration-detail-mask));
   }
 
+  html[data-detail-transition="close"][data-detail-transition-kind="writing"]::view-transition-new(root) {
+    animation-delay: 0ms;
+  }
+
   html[data-detail-transition="open"]::view-transition-group(project-cover),
   html[data-detail-transition="close"]::view-transition-group(project-cover) {
     z-index: 4;
@@ -1094,8 +1098,11 @@
 
   .detail-toc__back,
   .detail-toc__top {
+    width: max-content;
     min-width: 44px;
     min-height: 44px;
+    margin-inline-start: calc(-1 * var(--space-3));
+    padding: var(--space-3);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1103,6 +1110,7 @@
     font-size: 14px;
     line-height: 20px;
     text-decoration: none;
+    cursor: pointer;
     transition: color var(--duration-quick) var(--ease-smooth-out);
   }
 
@@ -1110,6 +1118,7 @@
   .detail-toc__top img {
     width: 20px;
     height: 20px;
+    flex-shrink: 0;
     transition: filter var(--duration-quick) var(--ease-smooth-out);
   }
 
@@ -1192,6 +1201,42 @@
     transform: translateX(var(--space-2));
   }
 
+  .detail-toc--article .detail-toc__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .detail-toc--article .detail-toc__list::before,
+  .detail-toc--article .detail-toc__link::before {
+    display: none;
+  }
+
+  .detail-toc--article .detail-toc__link {
+    min-height: calc(var(--space-8) + var(--space-1));
+    padding-left: 0;
+  }
+
+  .detail-toc--article .detail-toc__link:is(.is-active, :focus-visible) {
+    color: var(--color-copy);
+  }
+
+  .detail-toc--article .detail-toc__label {
+    display: block;
+    max-width: none;
+    overflow: visible;
+    font-family: var(--font-heading);
+    font-size: var(--text-detail-toc);
+    line-height: 1.5rem;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    transform: none;
+  }
+
+  .detail-toc--article .detail-toc__link:is(.is-active, :focus-visible) .detail-toc__label {
+    transform: none;
+  }
+
   @media (hover: hover) and (pointer: fine) {
     .detail-toc__back:hover,
     .detail-toc__top:hover {
@@ -1212,6 +1257,10 @@
       color: var(--color-ink);
     }
 
+    .detail-toc--article .detail-toc__link:hover {
+      color: var(--color-copy);
+    }
+
     .detail-toc__link:hover::before {
       background: var(--color-ink);
       transform: translateY(-50%) scaleX(1);
@@ -1219,6 +1268,10 @@
 
     .detail-toc__link:hover .detail-toc__label {
       transform: translateX(var(--space-2));
+    }
+
+    .detail-toc--article .detail-toc__link:hover .detail-toc__label {
+      transform: none;
     }
   }
 
@@ -1233,6 +1286,15 @@
 
   .detail-toc--demo .detail-toc__label {
     display: block;
+  }
+
+  .detail-toc--article.detail-toc--demo .detail-toc__label {
+    position: static;
+    padding: 0;
+    background: none;
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
   }
 
   .content-detail {
@@ -1404,6 +1466,80 @@
 
   .has-photo-lightbox {
     overflow: hidden;
+  }
+
+  .has-article-image-zoom {
+    overflow: hidden;
+  }
+
+  .article-image-zoom-trigger {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    min-width: var(--dock-control-size);
+    min-height: var(--dock-control-size);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: zoom-in;
+    touch-action: manipulation;
+  }
+
+  .article-image-zoom-trigger img {
+    cursor: inherit;
+  }
+
+  .article-image-zoom {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: var(--gutter);
+    border: 0;
+    overflow: hidden;
+    background: transparent;
+    cursor: zoom-out;
+  }
+
+  .article-image-zoom::backdrop {
+    background: transparent;
+  }
+
+  .article-image-zoom__backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--color-article-image-backdrop);
+    -webkit-backdrop-filter: blur(var(--blur-article-image));
+    backdrop-filter: blur(var(--blur-article-image));
+    opacity: 0;
+  }
+
+  .article-image-zoom__view {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background: transparent;
+    transform-origin: top left;
+    cursor: zoom-out;
+    touch-action: manipulation;
+    will-change: transform;
+  }
+
+  .article-image-zoom__view img {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    pointer-events: none;
   }
 
   .photo-lightbox {

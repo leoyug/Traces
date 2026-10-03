@@ -136,6 +136,13 @@
     --dock-page-padding: calc(var(--space-16) + env(safe-area-inset-bottom, 0px));
     --dock-reserve: calc(var(--dock-backdrop-height) + var(--space-4));
     --detail-toc-width: 16.5rem; --detail-toc-label-width: 12.5rem;
+    --text-detail-toc: .9375rem;
+    --article-image-zoom-factor: 1.6;
+    --scale-article-image-press: .97;
+    --duration-article-image-open: 420ms;
+    --duration-article-image-close: 300ms;
+    --blur-article-image: var(--blur-detail-background);
+    --color-article-image-backdrop: color-mix(in srgb, var(--color-canvas) 12%, transparent);
   }
 
   :root[data-theme="dark"] {

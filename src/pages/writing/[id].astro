@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import DetailToc from "../../components/DetailToc.astro";
+import ArticleImageZoom from "../../components/ArticleImageZoom.astro";
 
 export async function getStaticPaths() {
   const articles = await getCollection("articles", ({ data }) => !data.draft);
@@ -15,7 +16,7 @@ const publishedDate = new Intl.DateTimeFormat("zh-CN", { year: "numeric", month:
 ---
 
 <BaseLayout title={`${entry.data.title}｜Leo`} description={entry.data.description} socialImage="/assets/figma-v03/article-detail/figma-cover.png">
-  <DetailToc headings={headings} ariaLabel="文章目录" backHref="/" backLabel="返回主页" returnViaHistory />
+  <DetailToc headings={headings} ariaLabel="文章目录" className="detail-toc--article" backHref="/" backLabel="返回主页" returnViaHistory />
   <article class="content-detail reading-column" data-detail-page="article">
     <img class="content-detail__cover" src="/assets/figma-v03/article-detail/figma-cover.png" alt="一台手绘的老式电脑，屏幕上有放射状线条" width="2250" height="1500" data-route-enter />
     <header id="overview" data-route-enter>
@@ -32,4 +33,5 @@ const publishedDate = new Intl.DateTimeFormat("zh-CN", { year: "numeric", month:
     <div class="article__body" id="content" data-route-enter-body><Content /></div>
     <span id="ending" class="detail-anchor" aria-hidden="true"></span>
   </article>
+  <ArticleImageZoom />
 </BaseLayout>

@@ -32,7 +32,6 @@ const items = headings.filter(({ depth }) => depth === 2 || depth === 3);
               aria-current={index === 0 ? "location" : undefined}
               data-detail-toc-link
               data-heading-id={item.slug}
-              title={item.text}
             >
               <span class="detail-toc__label">{item.text}</span>
             </a>
@@ -54,6 +53,28 @@ const items = headings.filter(({ depth }) => depth === 2 || depth === 3);
     const signal = controller.signal;
 
     const historyBackLink = toc.querySelector<HTMLAnchorElement>("[data-detail-history-back]");
+    if (historyBackLink && toc.classList.contains("detail-toc--article")) {
+      try {
+        const stored = sessionStorage.getItem("detail-list-return");
+        const context = stored ? JSON.parse(stored) as { from?: string; to?: string } : null;
+        const target = context?.to ? new URL(context.to) : null;
+        const currentPath = location.pathname.replace(/\/+$/, "") || "/";
+        if (
+          target?.origin === location.origin &&
+          (target.pathname.replace(/\/+$/, "") || "/") === currentPath &&
+          target.search === location.search &&
+          (context?.from === "/" || context?.from === "/writing")
+        ) {
+          const label = context.from === "/writing" ? "返回写作" : "返回主页";
+          historyBackLink.href = context.from;
+          historyBackLink.setAttribute("aria-label", label);
+          const text = historyBackLink.querySelector("span");
+          if (text) text.textContent = label;
+        }
+      } catch {
+        // Keep the rendered home link when stored navigation context is unavailable.
+      }
+    }
     historyBackLink?.addEventListener("click", (event) => {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const stored = sessionStorage.getItem("detail-list-return");
