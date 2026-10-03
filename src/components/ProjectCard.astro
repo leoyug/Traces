@@ -12,14 +12,13 @@ interface Props {
   image?: string;
 }
 const { title, summary, year, status, accent, label, href = "/projects", image } = Astro.props;
-const linkLabel = ["查看项目", title, year, status].filter(Boolean).join("，");
-const labelTone = label === "已完成" ? "done" : label === "进行中" ? "active" : undefined;
+const linkLabel = ["查看项目", title, label ?? status, year].filter(Boolean).join("，");
 ---
 
 <article class="project-card" data-list-sound>
   <a class="project-card__shot" href={href} aria-label={linkLabel}>
     <span class:list={["project-card__visual", `tone-${accent}`]}>
-      {label && <span class="project-card__label" data-tone={labelTone}><span class="project-card__label-dot" aria-hidden="true"></span>{label}</span>}
+      {label && <span class="project-card__attribute" aria-hidden="true"><span class="project-card__attribute-dot"></span>{label}</span>}
       <span class="project-card__media">
         {image ? <img src={image} alt="" loading="lazy" /> : (
           <span class="project-card__preview">

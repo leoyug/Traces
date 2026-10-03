@@ -284,11 +284,6 @@
     transform-origin: left center;
   }
 
-  .project-card:is(:hover, :focus-within) .text-link--reveal::after {
-    transform: scaleX(1);
-    transform-origin: left center;
-  }
-
   @media (prefers-reduced-motion: reduce) {
     ::view-transition-old(root),
     ::view-transition-new(root),
@@ -639,7 +634,7 @@
   }
 
   .project-card__shot {
-    height: 184px;
+    height: 180px;
   }
 
   .project-card__body {
@@ -727,11 +722,13 @@
   }
 
   .project-archive-list {
+    --project-archive-gap: calc(var(--space-4) + var(--space-3));
     display: grid;
-    gap: 28px;
+    gap: var(--project-archive-gap);
   }
 
   .project-archive-row {
+    position: relative;
     min-height: 64px;
     display: grid;
     grid-template-columns: 96px minmax(0, 1fr) auto;
@@ -741,6 +738,15 @@
     color: var(--color-ink);
     text-decoration: none;
     transition: opacity var(--duration-quick) var(--ease-smooth-out), filter var(--duration-quick) var(--ease-smooth-out);
+  }
+
+  .project-archive-row + .project-archive-row::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: calc(var(--project-archive-gap) / -2);
+    border-top: 1px solid var(--color-line-subtle);
+    pointer-events: none;
   }
 
   .project-archive-row__copy {
