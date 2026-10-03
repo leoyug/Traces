@@ -69,6 +69,7 @@ export default config({
       previewUrl: "/writing/{slug}",
       schema: {
         title,
+        subtitle: fields.text({ label: "副标题", description: "可选，显示在文章详情页标题下方；留空时不显示。" }),
         ...publication,
         tags: fields.array(fields.text({ label: "标签" }), { label: "标签" }),
         readingMinutes: fields.integer({ label: "预计阅读分钟", defaultValue: 3, validation: { isRequired: true, min: 1 } }),

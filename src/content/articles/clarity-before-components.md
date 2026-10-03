@@ -1,6 +1,7 @@
 ---
 draft: false
 title: 把模糊需求变成可维护的界面
+subtitle: 一套从问题定义、信息结构到组件边界的工作方法。
 description: 一套从问题定义、信息结构到组件边界的工作方法。
 publishedAt: 2026-08-06
 tags: [设计工程, 方法]

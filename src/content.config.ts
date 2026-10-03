@@ -14,6 +14,7 @@ const articles = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/articles" }),
   schema: z.object({
     ...publicationFields,
+    subtitle: z.string().trim().min(1).optional(),
     tags: z.array(z.string().min(1)).default([]),
     readingMinutes: z.number().int().positive(),
     featured: z.boolean().default(false),

@@ -1322,6 +1322,86 @@
     padding-inline-start: 24px;
   }
 
+  /* Article detail follows the Figma reading column; project details keep their own layout. */
+  .content-detail[data-detail-page="article"] .content-detail__cover {
+    height: auto;
+    aspect-ratio: 592 / 328;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+
+  .content-detail[data-detail-page="article"] > header {
+    margin-top: var(--space-8);
+  }
+
+  .content-detail[data-detail-page="article"] h1 {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: var(--weight-regular);
+    line-height: 3rem;
+    letter-spacing: 0;
+  }
+
+  .content-detail[data-detail-page="article"] .article-subtitle {
+    max-width: none;
+    margin-top: var(--space-6);
+    color: var(--color-copy);
+    font-family: var(--font-sans);
+    font-size: var(--text-lead);
+    font-style: normal;
+    font-weight: var(--weight-regular);
+    line-height: 1.75rem;
+  }
+
+  .content-detail[data-detail-page="article"] .detail-facts {
+    display: flex;
+    max-width: none;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    margin: var(--space-6) 0 0;
+    padding: 0 0 var(--space-6);
+    border: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-line) 50%, var(--color-canvas));
+    color: var(--color-faint);
+    font-size: var(--text-meta);
+    line-height: 1.125rem;
+  }
+
+  .content-detail[data-detail-page="article"] .detail-facts time {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .content-detail[data-detail-page="article"] .article__body {
+    margin-top: var(--space-8);
+    font-size: var(--text-body);
+    line-height: 1.5rem;
+  }
+
+  .content-detail[data-detail-page="article"] .article__body > * + * {
+    margin-top: var(--space-3);
+  }
+
+  .content-detail[data-detail-page="article"] .article__body p,
+  .content-detail[data-detail-page="article"] .article__body blockquote {
+    line-height: 1.5rem;
+  }
+
+  .content-detail[data-detail-page="article"] .article__body h2 {
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-6);
+    color: var(--color-ink);
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: var(--weight-regular);
+    line-height: 2.75rem;
+  }
+
+  .content-detail[data-detail-page="article"] .article__body > h2:first-child {
+    margin-top: 0;
+  }
+
   .has-photo-lightbox {
     overflow: hidden;
   }

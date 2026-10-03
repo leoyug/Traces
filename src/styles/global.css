@@ -1,9 +1,5 @@
 @layer reset, tokens, base, components, pages, responsive, astro, site, site-responsive;
 
-@import "./site.css";
-
-@import "./site-responsive.css";
-
 @font-face {
   font-family: "Geist Mono";
   src: url("/fonts/geist/GeistMono-Regular.woff2") format("woff2");
@@ -74,7 +70,7 @@
     --color-project-frame: #f5f4f2;
     --color-project-media-border: #fff;
     --color-project-attribute-bg: var(--color-surface);
-    --color-project-attribute-border: var(--color-line);
+    --color-project-attribute-border: rgb(36 36 36 / 10%);
     --color-project-attribute-text: var(--color-ink);
     --color-project-attribute-dot-clay: #00b89d;
     --color-project-attribute-dot-sage: #ffb000;
@@ -149,7 +145,7 @@
     --color-surface: #13120f;
     --color-surface-2: #232323;
     --color-surface-felt: #1b1b1b;
-    --color-photo-board-bg: #141414;
+    --color-photo-board-bg: var(--color-surface-felt);
     --color-photo-board-dot: #323232;
     --color-photo-board-border: #2e2e2e;
     --color-photo-paper: #fff;
@@ -165,8 +161,8 @@
     --color-line: #343331;
     --color-project-frame: #202020;
     --color-project-media-border: #111;
-    --color-project-attribute-bg: #343434;
-    --color-project-attribute-border: #575757;
+    --color-project-attribute-bg: #292929;
+    --color-project-attribute-border: rgb(255 255 255 / 12%);
     --color-project-attribute-text: #fafafa;
     --color-line-subtle: color-mix(in srgb, var(--color-line) 55%, var(--color-surface));
     --color-leader: #353231;

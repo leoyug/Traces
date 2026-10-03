@@ -3,6 +3,8 @@ import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
+import "../styles/site.css";
+import "../styles/site-responsive.css";
 
 interface Props {
   title?: string;
@@ -22,6 +24,7 @@ const {
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : null;
 const isDetailRoute = /^\/(?:projects|writing)\/[^/]+\/?$/.test(Astro.url.pathname);
+const isArticleDetail = /^\/writing\/[^/]+\/?$/.test(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -65,7 +68,7 @@ const isDetailRoute = /^\/(?:projects|writing)\/[^/]+\/?$/.test(Astro.url.pathna
     <main id="main" class:list={["page-main", { "page-main--wide": wide }]} data-route-main>
       <slot />
     </main>
-    <SiteFooter />
+    <SiteFooter articleDetail={isArticleDetail} />
     <script>
       import { initRouteMotion } from "../scripts/route-motion";
       import { initSmoothCorners } from "../scripts/smooth-corners";

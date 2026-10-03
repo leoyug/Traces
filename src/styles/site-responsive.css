@@ -86,6 +86,10 @@
       aspect-ratio: 1;
     }
 
+    .content-detail[data-detail-page="article"] .content-detail__cover {
+      aspect-ratio: 592 / 328;
+    }
+
   }
 
   @media (max-width: 47.999rem) {
@@ -208,6 +212,15 @@
     .detail-facts {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       margin-top: 40px;
+    }
+
+    .content-detail[data-detail-page="article"] h1 {
+      font-size: 2rem;
+      line-height: 2.5rem;
+    }
+
+    .content-detail[data-detail-page="article"] .detail-facts {
+      margin-top: var(--space-6);
     }
   }
 
