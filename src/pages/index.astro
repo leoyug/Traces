@@ -1,20 +1,24 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContentRow from "../components/ContentRow.astro";
-import ContactLinks from "../components/ContactLinks.astro";
 import DraggablePhotoStack from "../components/DraggablePhotoStack.astro";
 import PhotoFanStack from "../components/PhotoFanStack.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import TextLink from "../components/TextLink.astro";
-import { getCollection } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 import { getProjects, projectPreview } from "../lib/projects";
 import { getPhotos } from "../lib/photos";
 import { formatDate } from "../lib/content";
 
 const photos = await getPhotos();
+const resume = await getEntry("resume", "main");
+if (!resume) throw new Error("缺少 main 职业履历内容");
+const github = resume.data.links.find((link) => link.label === "GitHub")?.href;
+const x = resume.data.links.find((link) => link.label === "X/Twitter")?.href;
+const xiaohongshu = resume.data.links.find((link) => link.label === "小红书")?.href;
 const recentArticles = (await getCollection("articles", ({ data }) => !data.draft))
   .sort((left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime())
-  .slice(0, 4);
+  .slice(0, 3);
 const featuredProjectPreviews = (await getProjects()).filter((project) => project.data.featured).map(projectPreview);
 const homeFanPhotoLabels = ["夜行", "栈桥", "帐篷", "散步", "晚风", "树影", "远望"];
 const homeFanPhotos = photos.slice(0, 7).map((photo, index) => ({
@@ -31,8 +35,8 @@ const recentPhotos = shuffle(photos.filter((photo) => photo.orientation === "por
     <img class="hero__signature" src="/assets/figma/leo-mark.svg" alt="Leo" width="64" height="48" data-route-enter />
     <div class="hero__copy">
       <p data-route-enter>这里是 <TextLink href="/about">Leo</TextLink> 的数字花园。</p>
-      <p data-route-enter>可以在这里找到我正在折腾的<TextLink href="/projects">项目</TextLink>。</p>
-      <p data-route-enter>也可以探索我正在记录的<TextLink href="/writing">文字</TextLink>和<TextLink href="/photos">影像</TextLink>，关于生活、工作、兴趣和没想明白的问题。</p>
+      <p data-route-enter>在这里，你可以看到我正在折腾的<TextLink href="/projects">项目</TextLink>，也可以探索我记录的<TextLink href="/writing">文字</TextLink>与<TextLink href="/photos">影像</TextLink>—关于生活、工作、兴趣，以及那些尚未想明白的问题。</p>
+      <p data-route-enter>你可以在 {x && <TextLink href={x}>X</TextLink>}、{github && <TextLink href={github} rel="me">GitHub</TextLink>}、{xiaohongshu && <TextLink href={xiaohongshu}>小红书</TextLink>}上找到我，也可以<TextLink href={`mailto:${resume.data.email}`}>给我发邮件</TextLink>。</p>
     </div>
   </section>
 
@@ -60,8 +64,4 @@ const recentPhotos = shuffle(photos.filter((photo) => photo.orientation === "por
     </div>
   </section>
 
-  <section class="home-section contact-section reading-column" aria-labelledby="contact-title" data-route-enter>
-    <div class="section-topline"><h2 id="contact-title">联系到我</h2></div>
-    <ContactLinks />
-  </section>
 </BaseLayout>

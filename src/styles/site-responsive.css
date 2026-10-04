@@ -193,13 +193,14 @@
 
     .about-intro__body {
       grid-template-columns: 1fr;
-      gap: 24px;
+      gap: var(--space-6);
     }
 
     .about-portrait {
-      width: 216px;
-      height: 244px;
-      margin-top: 8px;
+      --portrait-width: min(var(--about-portrait-width), 100%);
+      --portrait-height: auto;
+      --portrait-ratio: var(--about-portrait-ratio);
+      margin-top: 0;
       transform: none;
     }
 
@@ -234,7 +235,7 @@
     .resume__section:has(.resume-projects),
     .resume__section:has(.resume-skills),
     .resume-skills,
-    .resume-skills > section {
+    .resume-skills__group {
       height: auto;
       min-height: 0;
       overflow: visible;

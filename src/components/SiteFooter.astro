@@ -1,11 +1,24 @@
 ---
-interface Props { articleDetail?: boolean; }
-const { articleDetail = false } = Astro.props;
+import TextLink from "./TextLink.astro";
+import { getEntry } from "astro:content";
+
+const resume = await getEntry("resume", "main");
+if (!resume) throw new Error("缺少 main 职业履历内容");
+const x = resume.data.links.find((link) => link.label === "X/Twitter")?.href;
+const github = resume.data.links.find((link) => link.label === "GitHub")?.href;
 ---
 
 <footer class="site-footer">
   <div class="site-footer__inner">
-    <p>{articleDetail ? "© 2026  步履不停" : "© 2026 Leo. -  步履不停"}</p>
-    <img src={articleDetail ? "/assets/figma-v03/article-detail/footer-logo.svg" : "/assets/figma/leo-mark.svg"} alt="" width="64" height="48" />
+    <nav class="site-footer__links" aria-label="页脚导航">
+      <div><TextLink href="/resume">简历</TextLink><TextLink href="/rss.xml">RSS</TextLink></div>
+      <div><TextLink href="/inspiration">灵感</TextLink>{x && <TextLink href={x}>X.com</TextLink>}</div>
+      <div><TextLink href="/experiments">试验</TextLink>{github && <TextLink href={github} rel="me">GitHub</TextLink>}</div>
+      <div><TextLink href="/thanks">致谢</TextLink><TextLink href={`mailto:${resume.data.email}`}>Email</TextLink></div>
+    </nav>
+    <div class="site-footer__brand">
+      <img src="/assets/figma/leo-mark.svg" alt="" width="64" height="48" />
+      <p>© 2026 Leo</p>
+    </div>
   </div>
 </footer>
