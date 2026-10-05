@@ -67,6 +67,9 @@
     --color-line: #dedddb;
     --color-footer-line: var(--color-line-subtle);
     --color-resume-card-line: var(--color-line);
+    --color-resume-card-dot: rgb(36 36 36 / 10%);
+    --color-resume-timeline-line: var(--color-line);
+    --color-article-divider: var(--color-line);
     --color-line-subtle: color-mix(in srgb, var(--color-line) 55%, var(--color-surface));
     --color-project-image-border: rgb(128 128 128 / 20%);
     --color-project-frame: #f5f4f2;
@@ -141,6 +144,11 @@
     --dock-reserve: calc(var(--dock-backdrop-height) + var(--space-4));
     --detail-toc-width: 16.5rem; --detail-toc-label-width: 12.5rem;
     --text-detail-toc: .9375rem;
+    --page-top-space: var(--space-20);
+    --text-article-title: 3rem;
+    --text-article-heading: 1.25rem;
+    --leading-article-title: 3.5rem;
+    --leading-article-body: 1.625rem;
     --article-image-zoom-factor: 1.6;
     --scale-article-image-press: .97;
     --duration-article-image-open: 420ms;
@@ -172,6 +180,9 @@
     --color-line: #343331;
     --color-footer-line: #232323;
     --color-resume-card-line: #232323;
+    --color-resume-card-dot: rgb(250 250 250 / 5.5%);
+    --color-resume-timeline-line: #282828;
+    --color-article-divider: #232323;
     --color-project-frame: #202020;
     --color-project-media-border: #111;
     --color-project-attribute-bg: #292929;

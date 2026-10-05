@@ -93,13 +93,14 @@
   @media (width < 720px) {
     .detail-toc--article:not(.detail-toc--demo) {
       display: block;
-      position: relative;
-      top: auto;
-      left: auto;
+      position: absolute;
+      top: var(--space-4);
+      left: 0;
+      right: 0;
       width: min(calc(100% - 2 * var(--gutter)), var(--content-reading));
       height: auto;
       margin-inline: auto;
-      padding-top: var(--space-4);
+      padding-top: 0;
     }
 
     .detail-toc--article:not(.detail-toc--demo) .detail-toc__back span {
@@ -124,11 +125,13 @@
   }
 
   @media (max-width: 47.999rem) {
+    :root { --gutter: var(--space-4); }
+
     .hero,
     .page-intro,
     .photo-index-header,
     .about-intro {
-      padding-top: 40px;
+      padding-top: var(--page-top-space);
     }
 
     .writing-home {
@@ -145,7 +148,7 @@
     }
 
     .content-detail {
-      padding-top: 48px;
+      padding-top: var(--page-top-space);
     }
 
     .content-detail__cover {
@@ -244,7 +247,7 @@
 
   @media (max-width: 42.999rem) {
     .photo-index-header {
-      padding-top: 48px;
+      padding-top: var(--page-top-space);
     }
 
     .photos-grid--desktop {
@@ -289,7 +292,7 @@
     }
 
     .content-detail[data-detail-page="article"] .detail-facts {
-      margin-top: var(--space-6);
+      margin-top: var(--space-4);
     }
   }
 

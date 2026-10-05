@@ -34,7 +34,7 @@ const github = data.links.find((link) => link.label === "GitHub")?.href;
       <ol class="resume-timeline">
         {data.experience.map((item, index) => (
           <li>
-            {index < data.experience.length - 1 && <img class="resume-timeline__line" src="/assets/figma-v03/resume/timeline-line.svg" alt="" width="1" height="136" />}
+            {index < data.experience.length - 1 && <span class="resume-timeline__line" aria-hidden="true"></span>}
             <img class="resume-timeline__dot" src="/assets/figma-v03/resume/timeline-dot.svg" alt="" width="10" height="10" />
             <time>{item.period.replace("—", "-")}</time>
             <div class="resume-timeline__position">

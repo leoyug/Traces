@@ -2,14 +2,18 @@
 import TextLink from "./TextLink.astro";
 import { getEntry } from "astro:content";
 
+interface Props { variant?: "default" | "article"; }
+const { variant = "default" } = Astro.props;
+
 const resume = await getEntry("resume", "main");
 if (!resume) throw new Error("缺少 main 职业履历内容");
 const x = resume.data.links.find((link) => link.label === "X/Twitter")?.href;
 const github = resume.data.links.find((link) => link.label === "GitHub")?.href;
 ---
 
-<footer class="site-footer">
+<footer class:list={["site-footer", { "site-footer--article": variant === "article" }]}>
   <div class="site-footer__inner">
+    {variant === "article" ? <><p>© 2026 Leo</p><img src="/assets/figma-v03/article-detail/leo-mark.svg" alt="" width="64" height="48" /></> : <>
     <nav class="site-footer__links" aria-label="页脚导航">
       <div><TextLink href="/resume">简历</TextLink><TextLink href="/rss.xml">RSS</TextLink></div>
       <div><TextLink href="/inspiration">灵感</TextLink>{x && <TextLink href={x}>X.com</TextLink>}</div>
@@ -20,5 +24,6 @@ const github = resume.data.links.find((link) => link.label === "GitHub")?.href;
       <img src="/assets/figma/leo-mark.svg" alt="" width="64" height="48" />
       <p>© 2026 Leo</p>
     </div>
+    </>}
   </div>
 </footer>
