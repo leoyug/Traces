@@ -4,6 +4,7 @@ title: 灵感集
 description: 更好地展示与整理收藏内容。
 publishedAt: 2026-09-30
 year: 2026
+projectType: 网页
 status: archive
 role: 待确认
 order: 3

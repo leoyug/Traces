@@ -58,10 +58,10 @@ export function initRouteMotion() {
   const prepareEntrance = () => {
     resetEntrance();
     const { detailTransition, detailTransitionKind } = document.documentElement.dataset;
-    // Keep the project backdrop at its saved position while the cover shrinks.
-    // Writing returns retain their existing staggered entrance.
+    // Keep the restored list still while its shared cover or title returns.
     if (reducedMotion.matches || detailTransition === "open"
-      || (detailTransition === "close" && detailTransitionKind === "projects")) return;
+      || (detailTransition === "close" && (detailTransitionKind === "projects"
+        || document.documentElement.hasAttribute("data-writing-title-transition")))) return;
 
     const main = document.querySelector<HTMLElement>("[data-route-main]");
     if (!main) return;

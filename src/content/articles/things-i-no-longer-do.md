@@ -3,6 +3,7 @@ draft: false
 title: 我不再做的事
 description: 一份持续更新的「不再做」清单。
 publishedAt: 2025-08-11
+category: 记录
 tags: [记录, 自省]
 readingMinutes: 1
 featured: false

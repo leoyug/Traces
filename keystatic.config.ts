@@ -38,6 +38,9 @@ export default config({
         title,
         ...publication,
         year: fields.integer({ label: "项目年份", defaultValue: new Date().getFullYear(), validation: { isRequired: true, min: 2000, max: 2100 } }),
+        period: fields.text({ label: "项目时间", description: "例如 2022-2025；留空时使用项目年份。" }),
+        projectType: fields.text({ label: "项目类型", description: "例如 App、网页、App 和网页。" }),
+        website: fields.text({ label: "项目网址", description: "完整的 http 或 https 网址；留空时不显示。" }),
         status: fields.select({ label: "项目状态", options: [
           { label: "已上线", value: "launched" },
           { label: "实验", value: "experiment" },
@@ -72,6 +75,7 @@ export default config({
         subtitle: fields.text({ label: "副标题", description: "可选，显示在文章详情页标题下方；留空时不显示。" }),
         ...publication,
         tags: fields.array(fields.text({ label: "标签" }), { label: "标签" }),
+        category: fields.text({ label: "文章分类", description: "显示在详情页；旧文章未填写时沿用第一个标签。" }),
         readingMinutes: fields.integer({ label: "预计阅读分钟", defaultValue: 3, validation: { isRequired: true, min: 1 } }),
         featured: fields.checkbox({ label: "精选", defaultValue: false }),
         relatedProjects: fields.array(fields.relationship({ label: "相关项目", collection: "projects" }), { label: "相关项目" }),

@@ -3,6 +3,7 @@ draft: false
 title: 35岁精力管理
 description: 关于精力分配、明确优先级与执行清单的简短笔记。
 publishedAt: 2025-08-05
+category: 生活
 tags: [生活, 自省]
 readingMinutes: 2
 featured: false

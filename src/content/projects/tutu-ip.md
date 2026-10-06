@@ -4,6 +4,7 @@ title: 途途 IP
 description: 围绕 TUTU 形象设计的一系列周边。
 publishedAt: 2026-09-30
 year: 2026
+projectType: IP 设计
 status: archive
 role: 待确认
 order: 4

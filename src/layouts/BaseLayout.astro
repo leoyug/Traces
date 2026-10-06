@@ -67,7 +67,7 @@ const isDetailRoute = /^\/(?:projects|writing)\/[^/]+\/?$/.test(Astro.url.pathna
     <main id="main" class:list={["page-main", { "page-main--wide": wide }]} data-route-main>
       <slot />
     </main>
-    <SiteFooter variant={isDetailRoute ? "detail" : "default"} />
+    <SiteFooter />
     <script>
       import { initRouteMotion } from "../scripts/route-motion";
       import { initSmoothCorners } from "../scripts/smooth-corners";

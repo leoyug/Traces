@@ -4,7 +4,7 @@ import { getCollection, render } from "astro:content";
 import DetailToc from "../../components/DetailToc.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ArticleImageZoom from "../../components/ArticleImageZoom.astro";
-import { formatDate, projectStatusLabels } from "../../lib/content";
+import TextLink from "../../components/TextLink.astro";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects", ({ data }) => !data.draft);
@@ -24,13 +24,9 @@ const cover = entry.data.cover ?? "/assets/figma-v03/project-detail/cover.png";
     <header id="overview" data-route-enter>
       <h1>{entry.data.title}</h1>
       <p class="detail-facts" aria-label="项目信息">
-        <span>年份 <span class="detail-facts__number">{entry.data.year}</span></span>
-        <span aria-hidden="true">·</span>
-        <span>角色 {entry.data.role}</span>
-        <span aria-hidden="true">·</span>
-        <span>状态 {projectStatusLabels[entry.data.status]}</span>
-        <span aria-hidden="true">·</span>
-        <span>日期 <time datetime={entry.data.publishedAt.toISOString().slice(0, 10)}>{formatDate(entry.data.publishedAt)}</time></span>
+        <span class="detail-facts__number" aria-label="项目时间">{entry.data.period ?? entry.data.year}</span>
+        {entry.data.projectType && <><span aria-hidden="true">·</span><span aria-label="项目类型">{entry.data.projectType}</span></>}
+        {entry.data.website && <><span aria-hidden="true">·</span><TextLink href={entry.data.website}>{entry.data.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}</TextLink></>}
       </p>
     </header>
     <div class="article__body" id="content" data-route-enter-body><Content /></div>

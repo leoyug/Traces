@@ -4,6 +4,7 @@ title: 「宅畅想」官网
 description: 介绍宅畅想并帮助访客理解产品与服务的网站。
 publishedAt: 2026-09-30
 year: 2025
+projectType: 网页
 status: archive
 role: 待确认
 order: 5

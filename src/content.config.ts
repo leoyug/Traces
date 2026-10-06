@@ -10,11 +10,17 @@ const publicationFields = {
   draft: z.boolean().default(false),
 };
 
+const optionalText = z.preprocess(
+  (value) => typeof value === "string" && !value.trim() ? undefined : value,
+  z.string().trim().min(1).optional(),
+);
+
 const articles = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/articles" }),
   schema: z.object({
     ...publicationFields,
     subtitle: z.string().trim().min(1).optional(),
+    category: optionalText,
     tags: z.array(z.string().min(1)).default([]),
     readingMinutes: z.number().int().positive(),
     featured: z.boolean().default(false),
@@ -27,6 +33,12 @@ const projects = defineCollection({
   schema: z.object({
     ...publicationFields,
     year: z.number().int().min(2000).max(2100),
+    period: optionalText,
+    projectType: optionalText,
+    website: z.preprocess(
+      (value) => typeof value === "string" ? value.trim() || undefined : value,
+      z.url({ protocol: /^https?$/, error: "项目网址须使用有效的 http 或 https 网址" }).optional(),
+    ),
     status: z.enum(["launched", "experiment", "archive"]),
     role: z.string().min(1),
     featured: z.boolean().default(false),

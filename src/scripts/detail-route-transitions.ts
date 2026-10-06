@@ -1,4 +1,8 @@
 const returnContextKey = "detail-list-return";
+const writingSourceKey = "writing-title-return";
+interface WritingSource { from: string; to: string; scrollX: number; scrollY: number; }
+const writingRow = (root: Document, href: string) => Array.from(root.querySelectorAll<HTMLAnchorElement>("a.content-row[href]"))
+  .find((row) => new URL(row.getAttribute("href")!, location.origin).pathname.replace(/\/+$/, "") === new URL(href).pathname.replace(/\/+$/, ""));
 
 const normalizedPath = (path: string) => path.replace(/\/+$/, "") || "/";
 const listKind = (path: string) => {
@@ -12,6 +16,14 @@ const detailKind = (path: string) => {
 
 export function initDetailRouteTransitions() {
   document.addEventListener("astro:before-preparation", (event) => {
+    document.querySelectorAll(".content-row.is-writing-transition").forEach((row) => row.classList.remove("is-writing-transition"));
+    if (detailKind(event.to.pathname) === "/writing" && ["/", "/writing"].includes(normalizedPath(event.from.pathname))) {
+      const row = writingRow(document, event.to.href);
+      if (row) {
+        row.classList.add("is-writing-transition");
+        sessionStorage.setItem(writingSourceKey, JSON.stringify({ from: event.from.href, to: event.to.href, scrollX: window.scrollX, scrollY: window.scrollY }));
+      }
+    }
     if (!detailKind(event.to.pathname)) return;
 
     const load = event.loader;
@@ -62,10 +74,40 @@ export function initDetailRouteTransitions() {
     if (toDetail && (fromList === toDetail || opensDetailFromHome)) {
       event.newDocument.documentElement.dataset.detailTransition = "open";
       event.newDocument.documentElement.dataset.detailTransitionKind = toDetail.slice(1);
-    } else if (fromDetail && (fromDetail === toList || (fromDetail === "/projects" && normalizedPath(event.to.pathname) === "/")) && event.navigationType === "traverse" && event.direction === "back") {
+    } else if (fromDetail && (fromDetail === toList || normalizedPath(event.to.pathname) === "/") && event.navigationType === "traverse" && event.direction === "back") {
       event.newDocument.documentElement.dataset.detailTransition = "close";
       event.newDocument.documentElement.dataset.detailTransitionKind = fromDetail.slice(1);
     }
+
+    if (toDetail === "/writing" && document.querySelector(".is-writing-transition")) {
+      event.newDocument.documentElement.dataset.writingTitleTransition = "";
+    } else if (fromDetail === "/writing" && event.newDocument.documentElement.dataset.detailTransition === "close") {
+      let source: WritingSource | null = null;
+      try { source = JSON.parse(sessionStorage.getItem(writingSourceKey) ?? "null"); } catch { /* Ignore stale navigation data. */ }
+      const samePage = (left: string, right: URL) => {
+        try {
+          const url = new URL(left);
+          return url.origin === right.origin && normalizedPath(url.pathname) === normalizedPath(right.pathname) && url.search === right.search;
+        } catch { return false; }
+      };
+      if (source && samePage(source.from, event.to) && samePage(source.to, event.from)
+        && Number.isFinite(source.scrollX) && Number.isFinite(source.scrollY)) {
+        const row = writingRow(event.newDocument, event.from.href);
+        if (row) {
+          row.classList.add("is-writing-transition");
+          event.newDocument.documentElement.dataset.writingTitleTransition = "";
+          const { scrollX, scrollY } = source;
+          document.addEventListener("astro:after-swap", () => {
+            window.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });
+          }, { once: true });
+        }
+      }
+    }
+    const finish = () => {
+      document.querySelectorAll(".is-writing-transition").forEach((row) => row.classList.remove("is-writing-transition"));
+      delete document.documentElement.dataset.writingTitleTransition;
+    };
+    void event.viewTransition.finished.then(finish, finish);
   });
 
   const clearStaleReturn = () => {

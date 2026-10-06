@@ -4,6 +4,8 @@ title: 宅畅想 App
 description: 家装公司全链路解决方案。
 publishedAt: 2026-09-30
 year: 2026
+period: 2024-2026
+projectType: App
 status: archive
 role: 待确认
 featured: true
@@ -14,7 +16,7 @@ cover: /media/projects/zhai-chang-xiang-app/cover.png
 archiveImages: []
 ---
 
-以下内容依据现有项目名称与简介整理，是待核对的展示文案；具体职责、上线时间与项目结果应以实际资料为准。
+以下内容依据现有项目名称与简介整理，是待核对的展示文案；具体职责、上线时间与项目结果应以实际资料为准。项目时间为虚拟示例，待真实案例资料上传后替换。
 
 ## 项目概览
 

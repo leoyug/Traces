@@ -136,6 +136,49 @@
     animation: detail-content-exit var(--duration-detail-exit) ease-out both;
   }
 
+  .content-row.is-writing-transition .content-row__body > strong {
+    view-transition-name: detail-title;
+  }
+
+  html[data-writing-title-transition] {
+    overflow-anchor: none;
+  }
+
+  html[data-detail-transition][data-writing-title-transition]::view-transition-group(detail-title) {
+    z-index: 4;
+    /* Retain the browser's generated geometry keyframes in both directions. */
+    animation: revert;
+    animation-duration: var(--duration-detail-route);
+    animation-timing-function: var(--ease-smooth-out);
+  }
+
+  html[data-detail-transition][data-writing-title-transition]::view-transition-old(detail-title),
+  html[data-detail-transition][data-writing-title-transition]::view-transition-new(detail-title) {
+    mix-blend-mode: normal;
+  }
+
+  html[data-detail-transition][data-writing-title-transition]::view-transition-old(detail-title) {
+    animation: route-page-out var(--duration-micro) ease-out both;
+  }
+
+  html[data-detail-transition][data-writing-title-transition]::view-transition-new(detail-title) {
+    animation: route-page-in var(--duration-quick) var(--ease-smooth-out) both;
+    animation-delay: var(--duration-micro);
+  }
+
+  html[data-detail-transition="open"][data-detail-transition-kind="writing"]::view-transition-old(root),
+  html[data-detail-transition="close"][data-detail-transition-kind="writing"]::view-transition-old(root) {
+    animation-duration: var(--duration-quick);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html[data-detail-transition][data-writing-title-transition]::view-transition-group(detail-title),
+    html[data-detail-transition][data-writing-title-transition]::view-transition-old(detail-title),
+    html[data-detail-transition][data-writing-title-transition]::view-transition-new(detail-title) {
+      animation: none;
+    }
+  }
+
   html[data-theme-transition="circle-blur"]::view-transition-old(root) {
     animation: none;
     mix-blend-mode: normal;
@@ -263,7 +306,8 @@
     will-change: transform;
   }
 
-  .text-link--reveal:is(:hover, :focus-visible)::after {
+  .text-link--reveal:is(:hover, :focus-visible)::after,
+  .project-card:is(:hover, :focus-within) .project-card__heading .text-link--reveal::after {
     transform: scaleX(1);
     transform-origin: left center;
   }
@@ -469,12 +513,8 @@
   }
 
   .hero__copy {
-    gap: 8px;
+    gap: var(--space-2);
     color: var(--color-copy);
-  }
-
-  .hero__copy p {
-    line-height: 24px;
   }
 
   .hero__copy .text-link {
@@ -670,7 +710,6 @@
   .page-intro p {
     margin-top: 16px;
     color: var(--color-copy);
-    line-height: 24px;
   }
 
   .page-intro + .archive-section {
@@ -842,7 +881,6 @@
   .photo-index-header p {
     margin-top: 16px;
     color: var(--color-copy);
-    line-height: 24px;
   }
 
   .photos-grid {
@@ -963,11 +1001,9 @@
   .about-intro__copy,
   .about-sections p {
     color: var(--color-copy);
-    line-height: 24px;
   }
 
   .about-intro__copy p { margin: 0; }
-  .about-intro__copy p + p { margin-top: var(--space-3); }
 
   .about-portrait {
     --portrait-width: 100%;
@@ -1006,7 +1042,6 @@
   }
 
   .about-sections .contact-links,
-  .about-sections p,
   .plain-list {
     line-height: 20px;
   }
@@ -1423,18 +1458,6 @@
     margin-top: 0;
   }
 
-  .site-footer--detail .site-footer__inner {
-    padding-top: 0;
-    border-top: 0;
-    align-items: center;
-    flex-wrap: nowrap;
-  }
-
-  .site-footer--detail .site-footer__inner > p {
-    margin: 0;
-    font-size: var(--text-body);
-  }
-
   .has-photo-lightbox {
     overflow: hidden;
   }
@@ -1800,11 +1823,26 @@
 
   .resume__summary {
     color: var(--color-copy);
-    line-height: 24px;
   }
 
   .resume__summary p { margin: 0; }
-  .resume__summary p + p { margin-top: var(--space-3); }
+
+  .hero__copy p,
+  .page-intro p,
+  .photo-index-header p,
+  .about-intro__copy p,
+  .about-sections p,
+  .resume__summary p {
+    font-size: var(--text-body);
+    line-height: var(--leading-description);
+  }
+
+  .page-intro p + p,
+  .photo-index-header p + p,
+  .about-intro__copy p + p,
+  .resume__summary p + p {
+    margin-top: var(--space-2);
+  }
   .about-intro__copy .text-link,
   .resume__summary a { color: var(--color-link); }
 

@@ -13,6 +13,7 @@ interface Props { entry: CollectionEntry<"articles">; }
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 const publishedDate = new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "numeric", day: "numeric" }).format(entry.data.publishedAt);
+const category = entry.data.category ?? entry.data.tags[0];
 ---
 
 <BaseLayout title={`${entry.data.title}｜Leo`} description={entry.data.description} socialImage="/assets/figma-v03/article-detail/figma-cover.png">
@@ -24,8 +25,7 @@ const publishedDate = new Intl.DateTimeFormat("zh-CN", { year: "numeric", month:
       {entry.data.subtitle && <p class="article-subtitle">{entry.data.subtitle}</p>}
       <p class="detail-facts" aria-label="文章信息">
         <time datetime={entry.data.publishedAt.toISOString().slice(0, 10)}>{publishedDate}</time>
-        <span aria-hidden="true">·</span>
-        <span>{entry.data.tags[0]}</span>
+        {category && <><span aria-hidden="true">·</span><span aria-label="文章分类">{category}</span></>}
         <span aria-hidden="true">·</span>
         <span><span class="detail-facts__number">{entry.data.readingMinutes}</span> 分钟</span>
       </p>

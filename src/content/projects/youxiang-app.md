@@ -4,6 +4,7 @@ title: 游享 App
 description: 围绕旅行分享与路线发现的移动端产品。
 publishedAt: 2026-09-30
 year: 2020
+projectType: App
 status: archive
 role: 待确认
 order: 7

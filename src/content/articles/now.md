@@ -3,6 +3,7 @@ draft: false
 title: NOW
 description: 近期在读、在看、在玩与持续更新的生活记录。
 publishedAt: 2025-08-17
+category: 生活
 tags: [生活, 记录]
 readingMinutes: 5
 featured: false
