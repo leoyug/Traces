@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import { getCollection, render } from "astro:content";
 import DetailToc from "../../components/DetailToc.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ArticleImageZoom from "../../components/ArticleImageZoom.astro";
 import { formatDate, projectStatusLabels } from "../../lib/content";
 
 export async function getStaticPaths() {
@@ -17,19 +18,23 @@ const cover = entry.data.cover ?? "/assets/figma-v03/project-detail/cover.png";
 ---
 
 <BaseLayout title={`${entry.data.title}｜Leo`} description={entry.data.description} socialImage={cover}>
-  <DetailToc headings={headings} ariaLabel="项目目录" backHref="/projects" backLabel="返回项目" returnViaHistory />
+  <DetailToc headings={headings} ariaLabel="项目目录" className="detail-toc--reading" backHref="/projects" backLabel="返回项目" returnViaHistory />
   <article class="content-detail reading-column" data-detail-page="project">
-    <img class="content-detail__cover" src={cover} alt="" transition:name="project-cover" />
+    <img class="content-detail__cover" src={cover} alt={`${entry.data.title}项目封面`} transition:name="project-cover" data-route-enter />
     <header id="overview" data-route-enter>
       <h1>{entry.data.title}</h1>
-      <dl class="detail-facts">
-        <div><dt>年份</dt><dd>{entry.data.year}</dd></div>
-        <div><dt>角色</dt><dd>{entry.data.role}</dd></div>
-        <div><dt>状态</dt><dd>{projectStatusLabels[entry.data.status]}</dd></div>
-        <div><dt>日期</dt><dd>{formatDate(entry.data.publishedAt)}</dd></div>
-      </dl>
+      <p class="detail-facts" aria-label="项目信息">
+        <span>年份 <span class="detail-facts__number">{entry.data.year}</span></span>
+        <span aria-hidden="true">·</span>
+        <span>角色 {entry.data.role}</span>
+        <span aria-hidden="true">·</span>
+        <span>状态 {projectStatusLabels[entry.data.status]}</span>
+        <span aria-hidden="true">·</span>
+        <span>日期 <time datetime={entry.data.publishedAt.toISOString().slice(0, 10)}>{formatDate(entry.data.publishedAt)}</time></span>
+      </p>
     </header>
     <div class="article__body" id="content" data-route-enter-body><Content /></div>
     <span id="reflection" class="detail-anchor" aria-hidden="true"></span>
   </article>
+  <ArticleImageZoom />
 </BaseLayout>

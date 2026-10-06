@@ -2,7 +2,7 @@
 import TextLink from "./TextLink.astro";
 import { getEntry } from "astro:content";
 
-interface Props { variant?: "default" | "article"; }
+interface Props { variant?: "default" | "detail"; }
 const { variant = "default" } = Astro.props;
 
 const resume = await getEntry("resume", "main");
@@ -11,9 +11,9 @@ const x = resume.data.links.find((link) => link.label === "X/Twitter")?.href;
 const github = resume.data.links.find((link) => link.label === "GitHub")?.href;
 ---
 
-<footer class:list={["site-footer", { "site-footer--article": variant === "article" }]}>
+<footer class:list={["site-footer", { "site-footer--detail": variant === "detail" }]}>
   <div class="site-footer__inner">
-    {variant === "article" ? <><p>© 2026 Leo</p><img src="/assets/figma-v03/article-detail/leo-mark.svg" alt="" width="64" height="48" /></> : <>
+    {variant === "detail" ? <><p>© 2026 Leo</p><img src="/assets/figma-v03/article-detail/leo-mark.svg" alt="" width="64" height="48" /></> : <>
     <nav class="site-footer__links" aria-label="页脚导航">
       <div><TextLink href="/resume">简历</TextLink><TextLink href="/rss.xml">RSS</TextLink></div>
       <div><TextLink href="/inspiration">灵感</TextLink>{x && <TextLink href={x}>X.com</TextLink>}</div>

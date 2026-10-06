@@ -3,7 +3,7 @@ interface Props {
   selector?: string;
 }
 
-const { selector = '[data-detail-page="article"] .content-detail__cover, [data-detail-page="article"] .article__body img' } = Astro.props;
+const { selector = '[data-detail-page] .content-detail__cover, [data-detail-page] .article__body img' } = Astro.props;
 ---
 
 <dialog class="article-image-zoom" data-article-image-zoom data-image-selector={selector} aria-label="图片预览">

@@ -12,18 +12,18 @@ const detailKind = (path: string) => {
 
 export function initDetailRouteTransitions() {
   document.addEventListener("astro:before-preparation", (event) => {
-    if (detailKind(event.to.pathname) !== "/writing") return;
+    if (!detailKind(event.to.pathname)) return;
 
     const load = event.loader;
     event.loader = async () => {
       await load();
       if (event.signal.aborted || event.defaultPrevented) return;
 
-      const cover = event.newDocument.querySelector<HTMLImageElement>("[data-detail-page=\"article\"] .content-detail__cover");
+      const cover = event.newDocument.querySelector<HTMLImageElement>("[data-detail-page] .content-detail__cover");
       const src = cover?.getAttribute("src");
       if (!src) return;
 
-      // The transition snapshot must contain the decoded article cover.
+      // The transition snapshot must contain the decoded detail cover.
       const image = new Image();
       image.decoding = "async";
       image.fetchPriority = "high";
@@ -42,7 +42,7 @@ export function initDetailRouteTransitions() {
     const from = normalizedPath(location.pathname);
     const to = new URL(link.href);
     const targetKind = detailKind(to.pathname);
-    const entersDetail = targetKind === from || (from === "/" && targetKind === "/writing");
+    const entersDetail = targetKind === from || from === "/";
     if (to.origin !== location.origin || !targetKind || !entersDetail) return;
 
     sessionStorage.setItem(returnContextKey, JSON.stringify({
@@ -57,12 +57,12 @@ export function initDetailRouteTransitions() {
     const toList = listKind(event.to.pathname);
     const fromDetail = detailKind(event.from.pathname);
     const toDetail = detailKind(event.to.pathname);
-    const opensArticleFromHome = normalizedPath(event.from.pathname) === "/" && toDetail === "/writing";
+    const opensDetailFromHome = normalizedPath(event.from.pathname) === "/" && !!toDetail;
 
-    if (toDetail && (fromList === toDetail || opensArticleFromHome)) {
+    if (toDetail && (fromList === toDetail || opensDetailFromHome)) {
       event.newDocument.documentElement.dataset.detailTransition = "open";
       event.newDocument.documentElement.dataset.detailTransitionKind = toDetail.slice(1);
-    } else if (fromDetail && fromDetail === toList && event.navigationType === "traverse" && event.direction === "back") {
+    } else if (fromDetail && (fromDetail === toList || (fromDetail === "/projects" && normalizedPath(event.to.pathname) === "/")) && event.navigationType === "traverse" && event.direction === "back") {
       event.newDocument.documentElement.dataset.detailTransition = "close";
       event.newDocument.documentElement.dataset.detailTransitionKind = fromDetail.slice(1);
     }

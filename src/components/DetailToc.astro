@@ -53,19 +53,20 @@ const items = headings.filter(({ depth }) => depth === 2 || depth === 3);
     const signal = controller.signal;
 
     const historyBackLink = toc.querySelector<HTMLAnchorElement>("[data-detail-history-back]");
-    if (historyBackLink && toc.classList.contains("detail-toc--article")) {
+    if (historyBackLink) {
       try {
         const stored = sessionStorage.getItem("detail-list-return");
         const context = stored ? JSON.parse(stored) as { from?: string; to?: string } : null;
         const target = context?.to ? new URL(context.to) : null;
         const currentPath = location.pathname.replace(/\/+$/, "") || "/";
+        const listPath = currentPath.startsWith("/projects/") ? "/projects" : "/writing";
         if (
           target?.origin === location.origin &&
           (target.pathname.replace(/\/+$/, "") || "/") === currentPath &&
           target.search === location.search &&
-          (context?.from === "/" || context?.from === "/writing")
+          (context?.from === "/" || context?.from === listPath)
         ) {
-          const label = context.from === "/writing" ? "返回写作" : "返回主页";
+          const label = context.from === "/" ? "返回主页" : listPath === "/projects" ? "返回项目" : "返回写作";
           historyBackLink.href = context.from;
           historyBackLink.setAttribute("aria-label", label);
           const text = historyBackLink.querySelector("span");
@@ -86,16 +87,20 @@ const items = headings.filter(({ depth }) => depth === 2 || depth === 3);
         const target = new URL(context.to);
         const backPath = new URL(historyBackLink.href).pathname.replace(/\/+$/, "") || "/";
         const currentPath = location.pathname.replace(/\/+$/, "") || "/";
+        const isProjectDetail = currentPath.startsWith("/projects/");
         if (
           context.from === backPath &&
           target.origin === location.origin &&
           target.pathname.replace(/\/+$/, "") === currentPath &&
           target.search === location.search &&
           Number.isInteger(context.historyIndex) &&
-          history.state?.index === context.historyIndex + 1
+          Number.isInteger(history.state?.index) &&
+          (isProjectDetail ? history.state.index > context.historyIndex : history.state.index === context.historyIndex + 1)
         ) {
           event.preventDefault();
-          history.back();
+          // Project directory anchors may add entries before returning to the list.
+          if (isProjectDetail) history.go(context.historyIndex - history.state.index);
+          else history.back();
         }
       } catch {
         // The href remains a usable fallback if stored navigation state is stale.

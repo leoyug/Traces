@@ -41,11 +41,11 @@
   }
 
   @media (min-width: 60rem) and (max-width: 79.999rem) {
-    .detail-toc--article {
+    .detail-toc--reading {
       width: min(var(--detail-toc-width), calc((100vw - var(--content-reading)) / 2 - var(--space-12)));
     }
 
-    .detail-toc--article .detail-toc__label {
+    .detail-toc--reading .detail-toc__label {
       position: static;
       max-width: none;
       padding: 0;
@@ -58,13 +58,13 @@
       white-space: normal;
     }
 
-    .detail-toc--article .detail-toc__link:is(:hover, :focus-visible) .detail-toc__label {
+    .detail-toc--reading .detail-toc__link:is(:hover, :focus-visible) .detail-toc__label {
       transform: none;
     }
   }
 
   @media (max-width: 59.999rem) {
-    .detail-toc--article:not(.detail-toc--demo) nav {
+    .detail-toc--reading:not(.detail-toc--demo) nav {
       display: none;
     }
 
@@ -91,7 +91,7 @@
   }
 
   @media (width < 720px) {
-    .detail-toc--article:not(.detail-toc--demo) {
+    .detail-toc--reading:not(.detail-toc--demo) {
       display: block;
       position: absolute;
       top: var(--space-4);
@@ -103,7 +103,7 @@
       padding-top: 0;
     }
 
-    .detail-toc--article:not(.detail-toc--demo) .detail-toc__back span {
+    .detail-toc--reading:not(.detail-toc--demo) .detail-toc__back span {
       display: block;
       position: static;
       padding: 0;
@@ -115,11 +115,11 @@
       visibility: visible;
     }
 
-    .detail-toc--article:not(.detail-toc--demo) .detail-toc__back {
+    .detail-toc--reading:not(.detail-toc--demo) .detail-toc__back {
       gap: var(--space-2);
     }
 
-    .detail-toc--article:not(.detail-toc--demo) .detail-toc__top {
+    .detail-toc--reading:not(.detail-toc--demo) .detail-toc__top {
       display: none;
     }
   }
@@ -157,7 +157,7 @@
       aspect-ratio: 1;
     }
 
-    .content-detail[data-detail-page="article"] .content-detail__cover {
+    .content-detail[data-detail-page] .content-detail__cover {
       aspect-ratio: 592 / 328;
     }
 
@@ -205,11 +205,6 @@
       --portrait-ratio: var(--about-portrait-ratio);
       margin-top: 0;
       transform: none;
-    }
-
-    .content-detail h1 {
-      font-size: 28px;
-      line-height: 36px;
     }
 
     .photo-lightbox__shell {
@@ -277,21 +272,12 @@
       aspect-ratio: 186.6667 / 134;
     }
 
-    .content-detail h1 {
-      line-height: 40px;
-    }
-
     .detail-facts {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       margin-top: 40px;
     }
 
-    .content-detail[data-detail-page="article"] h1 {
-      font-size: 2rem;
-      line-height: 2.5rem;
-    }
-
-    .content-detail[data-detail-page="article"] .detail-facts {
+    .content-detail[data-detail-page] .detail-facts {
       margin-top: var(--space-4);
     }
   }

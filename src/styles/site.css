@@ -39,18 +39,6 @@
     --detail-content-start: 0ms;
   }
 
-  html[data-detail-transition="open"][data-detail-transition-kind="projects"] {
-    --detail-content-start: var(--duration-detail-route);
-  }
-
-  html[data-detail-transition="open"][data-detail-transition-kind="projects"]::view-transition-new(root) {
-    animation-delay: var(--duration-detail-route);
-  }
-
-  html[data-detail-transition="open"][data-detail-transition-kind="projects"]::view-transition-new(detail-backdrop) {
-    animation-delay: var(--duration-detail-route);
-  }
-
   html[data-detail-transition="close"]::view-transition-old(root) {
     z-index: 2;
     animation: detail-page-exit var(--duration-detail-exit) ease-out both;
@@ -61,18 +49,15 @@
     animation: detail-backdrop-fade-out var(--duration-detail-mask) ease-out both;
   }
 
-  html[data-detail-transition="close"][data-detail-transition-kind="projects"]::view-transition-old(detail-backdrop) {
-    animation-delay: calc(var(--duration-detail-exit) + var(--duration-detail-route) - var(--duration-detail-mask));
-  }
-
   html[data-detail-transition="close"]::view-transition-new(root) {
     z-index: 0;
-    animation: detail-list-return var(--duration-detail-mask) ease-out both;
-    animation-delay: calc(var(--duration-detail-exit) + var(--duration-detail-route) - var(--duration-detail-mask));
+    /* Detail lists animate their own items without a second root blur. */
+    animation: none;
   }
 
-  html[data-detail-transition="close"][data-detail-transition-kind="writing"]::view-transition-new(root) {
-    animation-delay: 0ms;
+  html[data-detail-transition="close"][data-detail-transition-kind="projects"] {
+    /* List entrance transforms must not move the restored scroll position. */
+    overflow-anchor: none;
   }
 
   html[data-detail-transition="open"]::view-transition-group(project-cover),
@@ -174,11 +159,6 @@
       opacity: 0;
       filter: blur(var(--blur-detail-background));
     }
-  }
-
-  @keyframes detail-list-return {
-    from { opacity: .7; filter: blur(var(--blur-detail-background)); }
-    to { opacity: 1; filter: blur(0); }
   }
 
   @keyframes detail-page-enter {
@@ -293,7 +273,6 @@
     ::view-transition-new(root),
     html[data-detail-transition]::view-transition-old(root),
     html[data-detail-transition]::view-transition-new(root),
-    html[data-detail-transition="open"][data-detail-transition-kind="projects"]::view-transition-new(root),
     html[data-detail-transition="open"]::view-transition-new(detail-backdrop),
     html[data-detail-transition="close"]::view-transition-old(detail-backdrop),
     html[data-detail-transition="open"]::view-transition-new(detail-title),
@@ -774,7 +753,7 @@
     view-transition-name: project-cover;
   }
 
-  .featured-projects .project-card.is-transitioning .project-card__media > img {
+  .project-card.is-transitioning .project-card__media > img {
     view-transition-name: project-cover;
   }
 
@@ -806,7 +785,7 @@
 
   ::view-transition-image-pair(project-cover) {
     overflow: clip;
-    border-radius: 2px;
+    border-radius: var(--radius-md);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1181,26 +1160,26 @@
     transform: translateX(var(--space-2));
   }
 
-  .detail-toc--article .detail-toc__list {
+  .detail-toc--reading .detail-toc__list {
     display: flex;
     flex-direction: column;
   }
 
-  .detail-toc--article .detail-toc__list::before,
-  .detail-toc--article .detail-toc__link::before {
+  .detail-toc--reading .detail-toc__list::before,
+  .detail-toc--reading .detail-toc__link::before {
     display: none;
   }
 
-  .detail-toc--article .detail-toc__link {
+  .detail-toc--reading .detail-toc__link {
     min-height: calc(var(--space-8) + var(--space-1));
     padding-left: 0;
   }
 
-  .detail-toc--article .detail-toc__link:is(.is-active, :focus-visible) {
+  .detail-toc--reading .detail-toc__link:is(.is-active, :focus-visible) {
     color: var(--color-copy);
   }
 
-  .detail-toc--article .detail-toc__label {
+  .detail-toc--reading .detail-toc__label {
     display: block;
     max-width: none;
     overflow: visible;
@@ -1213,7 +1192,7 @@
     transform: none;
   }
 
-  .detail-toc--article .detail-toc__link:is(.is-active, :focus-visible) .detail-toc__label {
+  .detail-toc--reading .detail-toc__link:is(.is-active, :focus-visible) .detail-toc__label {
     transform: none;
   }
 
@@ -1237,7 +1216,7 @@
       color: var(--color-ink);
     }
 
-    .detail-toc--article .detail-toc__link:hover {
+    .detail-toc--reading .detail-toc__link:hover {
       color: var(--color-copy);
     }
 
@@ -1250,7 +1229,7 @@
       transform: translateX(var(--space-2));
     }
 
-    .detail-toc--article .detail-toc__link:hover .detail-toc__label {
+    .detail-toc--reading .detail-toc__link:hover .detail-toc__label {
       transform: none;
     }
   }
@@ -1268,7 +1247,7 @@
     display: block;
   }
 
-  .detail-toc--article.detail-toc--demo .detail-toc__label {
+  .detail-toc--reading.detail-toc--demo .detail-toc__label {
     position: static;
     padding: 0;
     background: none;
@@ -1364,19 +1343,19 @@
     padding-inline-start: 24px;
   }
 
-  /* Article detail follows the Figma reading column; project details keep their own layout. */
-  .content-detail[data-detail-page="article"] .content-detail__cover {
+  /* Articles and projects share the same detail reading layout. */
+  .content-detail[data-detail-page] .content-detail__cover {
     height: auto;
     aspect-ratio: 592 / 328;
     object-fit: cover;
     border-radius: var(--radius-md);
   }
 
-  .content-detail[data-detail-page="article"] > header {
+  .content-detail[data-detail-page] > header {
     margin-top: var(--space-8);
   }
 
-  .content-detail[data-detail-page="article"] h1 {
+  .content-detail[data-detail-page] h1 {
     font-family: var(--font-heading);
     font-size: var(--text-article-title);
     font-weight: var(--weight-regular);
@@ -1384,7 +1363,7 @@
     letter-spacing: 0;
   }
 
-  .content-detail[data-detail-page="article"] .article-subtitle {
+  .content-detail[data-detail-page] .article-subtitle {
     max-width: none;
     margin-top: var(--space-4);
     color: var(--color-copy);
@@ -1395,7 +1374,7 @@
     line-height: 1.75rem;
   }
 
-  .content-detail[data-detail-page="article"] .detail-facts {
+  .content-detail[data-detail-page] .detail-facts {
     display: flex;
     max-width: none;
     flex-wrap: wrap;
@@ -1410,27 +1389,27 @@
     line-height: 1.125rem;
   }
 
-  .content-detail[data-detail-page="article"] .detail-facts :is(time, .detail-facts__number) {
+  .content-detail[data-detail-page] .detail-facts :is(time, .detail-facts__number) {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
   }
 
-  .content-detail[data-detail-page="article"] .article__body {
+  .content-detail[data-detail-page] .article__body {
     margin-top: var(--space-8);
     font-size: var(--text-body);
     line-height: var(--leading-article-body);
   }
 
-  .content-detail[data-detail-page="article"] .article__body > * + * {
+  .content-detail[data-detail-page] .article__body > * + * {
     margin-top: var(--space-2);
   }
 
-  .content-detail[data-detail-page="article"] .article__body p,
-  .content-detail[data-detail-page="article"] .article__body blockquote {
+  .content-detail[data-detail-page] .article__body p,
+  .content-detail[data-detail-page] .article__body blockquote {
     line-height: var(--leading-article-body);
   }
 
-  .content-detail[data-detail-page="article"] .article__body h2 {
+  .content-detail[data-detail-page] .article__body h2 {
     margin-top: var(--space-6);
     margin-bottom: var(--space-2);
     color: var(--color-ink);
@@ -1440,18 +1419,18 @@
     line-height: 1.75rem;
   }
 
-  .content-detail[data-detail-page="article"] .article__body > h2:first-child {
+  .content-detail[data-detail-page] .article__body > h2:first-child {
     margin-top: 0;
   }
 
-  .site-footer--article .site-footer__inner {
+  .site-footer--detail .site-footer__inner {
     padding-top: 0;
     border-top: 0;
     align-items: center;
     flex-wrap: nowrap;
   }
 
-  .site-footer--article .site-footer__inner > p {
+  .site-footer--detail .site-footer__inner > p {
     margin: 0;
     font-size: var(--text-body);
   }
@@ -2049,7 +2028,7 @@
   .corner-panel-demo > .smooth-corners__surface { fill: var(--color-surface); stroke: var(--color-line-subtle); }
 
   @media (prefers-reduced-motion: reduce) {
-    .project-card:is(:hover, :focus-within) .project-card__media {
+    .project-card:is(:hover, :focus-within, .is-transitioning) .project-card__media {
       transform: none;
     }
   }

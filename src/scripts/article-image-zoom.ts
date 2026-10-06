@@ -16,7 +16,10 @@ const initializeImageZoom = () => {
     const { signal } = controller;
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
     const styles = getComputedStyle(document.documentElement);
-    const seconds = (token: string) => parseFloat(styles.getPropertyValue(token)) / 1000;
+    const seconds = (token: string) => {
+      const value = styles.getPropertyValue(token).trim();
+      return parseFloat(value) / (value.endsWith("ms") ? 1000 : 1);
+    };
     const openDuration = seconds("--duration-article-image-open");
     const closeDuration = seconds("--duration-article-image-close");
     const pressDuration = seconds("--duration-micro");

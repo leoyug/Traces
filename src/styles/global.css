@@ -145,9 +145,9 @@
     --detail-toc-width: 16.5rem; --detail-toc-label-width: 12.5rem;
     --text-detail-toc: .9375rem;
     --page-top-space: var(--space-20);
-    --text-article-title: 3rem;
+    --text-article-title: clamp(2rem, calc(1rem + 2.5vw), 3rem);
     --text-article-heading: 1.25rem;
-    --leading-article-title: 3.5rem;
+    --leading-article-title: clamp(2.5rem, calc(1.5rem + 2.5vw), 3.5rem);
     --leading-article-body: 1.625rem;
     --article-image-zoom-factor: 1.6;
     --scale-article-image-press: .97;
@@ -279,11 +279,12 @@
   .project-card__attribute { position: absolute; z-index: 2; top: var(--space-2); left: 50%; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 4px 8px; border: 1px solid var(--color-project-attribute-border); border-radius: var(--radius-pill); background: var(--color-project-attribute-bg); color: var(--color-project-attribute-text); font-size: var(--text-meta); font-weight: var(--weight-medium); line-height: 1.125rem; white-space: nowrap; pointer-events: none; opacity: 0; transform: translate(-50%, -8px); transition: opacity var(--duration-project-attribute) var(--ease-smooth-out), transform var(--duration-project-attribute) var(--ease-smooth-out); }
   .project-card__attribute-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: var(--color-project-attribute-dot-clay); }
   .project-card__visual.tone-sage .project-card__attribute-dot { background: var(--color-project-attribute-dot-sage); }
-  .project-card:is(:hover, :focus-within) .project-card__attribute { opacity: 1; transform: translate(-50%, 0); }
+  .project-card:is(:hover, :focus-within, .is-transitioning) .project-card__attribute { opacity: 1; transform: translate(-50%, 0); }
   .project-card__media { position: absolute; top: var(--project-media-top); right: var(--project-media-inline); bottom: 0; left: var(--project-media-inline); overflow: hidden; border: 1px solid var(--color-project-media-border); border-bottom: 0; border-radius: var(--radius-project-card-media) var(--radius-project-card-media) 0 0; transition: transform var(--duration-fast) var(--ease-smooth-out); }
   .project-card__media > img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center; }
   .project-card__media .project-card__preview { width: 100%; height: 100%; aspect-ratio: auto; border-radius: inherit; }
   .project-card:is(:hover, :focus-within) .project-card__media { transform: translateY(12px); }
+  .project-card.is-transitioning .project-card__media { transform: var(--project-transition-media-transform, none); }
   .project-card__preview { width: 72%; aspect-ratio: 1.46; display: grid; grid-template-rows: .9rem 1fr; overflow: hidden; border: 1px solid var(--color-line); border-radius: var(--radius-xs); background: var(--color-surface); box-shadow: var(--shadow-card); }
   .project-card__chrome { border-bottom: 1px solid var(--color-line); background: var(--color-surface-2); }
   .project-card__screen { display: grid; grid-template-columns: 2.5fr 1fr; }

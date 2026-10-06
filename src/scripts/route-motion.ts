@@ -6,6 +6,11 @@ declare global {
   }
 }
 
+const durationInSeconds = (value: string) => {
+  const duration = value.trim();
+  return parseFloat(duration) / (duration.endsWith("ms") ? 1000 : 1);
+};
+
 const getEntranceTargets = (main: HTMLElement) => {
   const targets = Array.from(main.querySelectorAll<HTMLElement>("[data-route-enter]"));
   main.querySelectorAll<HTMLElement>("[data-route-enter-group]").forEach((group) => {
@@ -21,6 +26,7 @@ const getEntranceTargets = (main: HTMLElement) => {
     // Groups and individual items share one document-order sequence. Never
     // animate a parent and its child together (which would compound the blur).
     return [...new Set(targets)]
+      .filter((target) => !target.classList.contains("is-transitioning"))
       .filter((target) => !targets.some((other) => other !== target && other.contains(target)))
       .sort((left, right) => left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1);
   }
@@ -51,7 +57,11 @@ export function initRouteMotion() {
 
   const prepareEntrance = () => {
     resetEntrance();
-    if (reducedMotion.matches || document.documentElement.dataset.detailTransition) return;
+    const { detailTransition, detailTransitionKind } = document.documentElement.dataset;
+    // Keep the project backdrop at its saved position while the cover shrinks.
+    // Writing returns retain their existing staggered entrance.
+    if (reducedMotion.matches || detailTransition === "open"
+      || (detailTransition === "close" && detailTransitionKind === "projects")) return;
 
     const main = document.querySelector<HTMLElement>("[data-route-main]");
     if (!main) return;
@@ -60,9 +70,9 @@ export function initRouteMotion() {
     if (targets.length === 0) return;
     const styles = getComputedStyle(document.documentElement);
     motion = {
-      duration: parseFloat(styles.getPropertyValue("--duration-route-enter")) / 1000,
-      stagger: parseFloat(styles.getPropertyValue("--duration-route-stagger")) / 1000,
-      staggerMax: parseFloat(styles.getPropertyValue("--duration-route-stagger-max")) / 1000,
+      duration: durationInSeconds(styles.getPropertyValue("--duration-route-enter")),
+      stagger: durationInSeconds(styles.getPropertyValue("--duration-route-stagger")),
+      staggerMax: durationInSeconds(styles.getPropertyValue("--duration-route-stagger-max")),
       distance: parseFloat(styles.getPropertyValue("--distance-route-enter")),
       blur: parseFloat(styles.getPropertyValue("--blur-route-enter")),
     };

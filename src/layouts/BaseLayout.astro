@@ -24,7 +24,6 @@ const {
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const resolvedSocialImage = socialImage ? new URL(socialImage, Astro.site) : null;
 const isDetailRoute = /^\/(?:projects|writing)\/[^/]+\/?$/.test(Astro.url.pathname);
-const isArticleDetailRoute = /^\/writing\/[^/]+\/?$/.test(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -68,12 +67,13 @@ const isArticleDetailRoute = /^\/writing\/[^/]+\/?$/.test(Astro.url.pathname);
     <main id="main" class:list={["page-main", { "page-main--wide": wide }]} data-route-main>
       <slot />
     </main>
-    <SiteFooter variant={isArticleDetailRoute ? "article" : "default"} />
+    <SiteFooter variant={isDetailRoute ? "detail" : "default"} />
     <script>
       import { initRouteMotion } from "../scripts/route-motion";
       import { initSmoothCorners } from "../scripts/smooth-corners";
       import { initDetailRouteTransitions } from "../scripts/detail-route-transitions";
       import "../scripts/list-sounds";
+      import "../scripts/project-cover-transitions";
 
       initRouteMotion();
       initSmoothCorners();
