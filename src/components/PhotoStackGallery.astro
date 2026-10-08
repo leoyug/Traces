@@ -1,0 +1,145 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Button from "./Button.astro";
+import PlaySpinLoader from "./PlaySpinLoader.astro";
+import type { PhotoStackPhoto } from "../lib/photo-stack-types";
+
+interface Props extends HTMLAttributes<"span"> { photos: readonly PhotoStackPhoto[] }
+const { photos, class: className, ...attributes } = Astro.props;
+if (photos.length !== 6 || new Set(photos.map((photo) => photo.id)).size !== 6) {
+  throw new Error("PhotoStackGallery 需要六张不同的已发布照片");
+}
+const galleryId = `photo-stack-${crypto.randomUUID()}`;
+const rotations = [-4, 4, 3, -3, -5, 3];
+const serialized = JSON.stringify(photos).replaceAll("<", "\\u003c");
+---
+
+<span class:list={["photo-stack-gallery", className]} data-photo-stack-gallery {...attributes}>
+  <span class="photo-stack-gallery__trigger" tabindex="0" data-stack-trigger><slot /></span>
+  <button class="photo-stack-gallery__preview" type="button" aria-label="展开照片图库" data-stack-preview hidden>
+    {photos.slice(0, 3).map((photo, index) => <span class="photo-stack-gallery__compact" style={`--compact-index: ${index}`}><span class="photo-stack-gallery__frame"><img src={photo.stackSrc} alt="" width="74" height="99" decoding="async" draggable="false" /></span></span>)}
+  </button>
+  <template data-stack-template>
+    <dialog class="photo-stack-gallery__dialog" id={galleryId} aria-label="走走拍拍 · 照片图库" data-view="gallery">
+      <div class="photo-stack-gallery__surface" aria-hidden="true"></div>
+      <div class="photo-stack-gallery__stage" data-stack-stage>
+        {photos.map((photo, index) => <button class="photo-stack-gallery__card" type="button" aria-label={`查看照片：${photo.alt}`} data-stack-card={index} style={`--card-rotation: ${rotations[index]}deg`}><span class="photo-stack-gallery__frame"><img src={photo.previewSrc} alt={photo.alt} width="480" height="640" loading="lazy" decoding="async" draggable="false" /></span></button>)}
+      </div>
+      <div class="photo-stack-gallery__detail-backdrop" aria-hidden="true"></div>
+      <div class="photo-stack-gallery__detail" data-stack-detail hidden>
+        <figure class="photo-stack-gallery__detail-content">
+          <div class="photo-stack-gallery__detail-media" data-stack-media>
+            <div class="photo-stack-gallery__detail-photo"><img alt="" data-stack-image draggable="false" /></div>
+            <PlaySpinLoader deferred />
+          </div>
+          <figcaption class="photo-stack-gallery__caption" data-stack-caption></figcaption>
+          <p class="photo-stack-gallery__error" role="status" data-stack-error hidden>照片暂时无法加载，正在显示预览图。</p>
+        </figure>
+      </div>
+      <Button class="photo-stack-gallery__control" variant="primary">
+        <svg class="photo-stack-gallery__close-icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+        <span class="sr-only" data-stack-control-label>关闭照片图库</span>
+      </Button>
+    </dialog>
+  </template>
+  <script type="application/json" is:inline data-stack-data set:html={serialized}></script>
+</span>
+
+<script>
+  import "../scripts/photo-stack-gallery";
+</script>
+
+<style>
+  .photo-stack-gallery { position: relative; display: inline-block; }
+  .photo-stack-gallery__trigger { position: relative; display: inline-block; color: inherit; text-decoration: none; cursor: default; }
+  .photo-stack-gallery__trigger::before { content: ""; position: absolute; top: 50%; left: calc(-1 * var(--space-1)); right: calc(-1 * var(--space-1)); height: var(--dock-control-size); transform: translateY(-50%); }
+  .photo-stack-gallery__preview {
+    appearance: none;
+    position: absolute;
+    z-index: 2;
+    bottom: 100%;
+    left: 50%;
+    width: var(--inline-photo-stack-width);
+    height: var(--inline-photo-stack-height);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    visibility: hidden;
+    opacity: 0;
+    filter: blur(var(--space-1));
+    pointer-events: none;
+    transform: translateX(calc(-50% + var(--stack-offset, 0px))) scale(.96);
+    transform-origin: center bottom;
+    transition: opacity var(--duration-quick) var(--ease-smooth-out), transform var(--duration-quick) var(--ease-smooth-out), filter var(--duration-quick) var(--ease-smooth-out), visibility 0s var(--duration-quick);
+  }
+  .photo-stack-gallery__preview::after { content: ""; position: absolute; inset: 100% 0 auto; height: var(--space-3); }
+  .photo-stack-gallery[data-preview="true"] .photo-stack-gallery__preview { visibility: visible; opacity: 1; filter: none; pointer-events: auto; transform: translateX(calc(-50% + var(--stack-offset, 0px))); transition-duration: var(--duration-very-slow), var(--duration-very-slow), var(--duration-very-slow), 0s; transition-delay: 0s; }
+  .photo-stack-gallery[data-placement="below"] .photo-stack-gallery__preview { bottom: auto; top: 100%; transform-origin: center top; }
+  .photo-stack-gallery[data-placement="below"] .photo-stack-gallery__preview::after { top: calc(-1 * var(--space-3)); }
+  .photo-stack-gallery__dialog[data-moving="true"] .photo-stack-gallery__stage, .photo-stack-gallery__dialog[data-moving="true"] .photo-stack-gallery__detail { pointer-events: none; }
+  .photo-stack-gallery__compact { position: absolute; bottom: var(--space-2); left: 50%; width: var(--inline-photo-card-width); aspect-ratio: 3 / 4; transform: translateX(-50%); transition: transform var(--duration-quick) var(--ease-smooth-out); }
+  .photo-stack-gallery__compact:nth-child(1) { --compact-lift: calc(-1 * var(--space-2)); --card-rotation: -9deg; z-index: 1; }
+  .photo-stack-gallery__compact:nth-child(2) { --compact-lift: 0px; --card-rotation: 1deg; z-index: 3; }
+  .photo-stack-gallery__compact:nth-child(3) { --compact-lift: calc(-1 * var(--space-2)); --card-rotation: 9deg; z-index: 2; }
+  .photo-stack-gallery[data-preview="true"] .photo-stack-gallery__compact { transform: translate(calc(-50% + (var(--compact-index) - 1) * var(--inline-photo-card-spread)), var(--compact-lift)); transition-duration: var(--duration-very-slow); }
+  .photo-stack-gallery[data-preview="true"][data-fanned="true"] .photo-stack-gallery__compact { transform: translate(calc(-50% + (var(--compact-index) - 1) * var(--inline-photo-card-fan-spread)), calc(var(--compact-lift) - var(--space-1))); transition-duration: var(--duration-project-attribute); }
+  .photo-stack-gallery[data-fanned="true"] .photo-stack-gallery__compact:nth-child(1) { --card-rotation: -12deg; }
+  .photo-stack-gallery[data-fanned="true"] .photo-stack-gallery__compact:nth-child(2) { --card-rotation: 0deg; }
+  .photo-stack-gallery[data-fanned="true"] .photo-stack-gallery__compact:nth-child(3) { --card-rotation: 12deg; }
+  .photo-stack-gallery[data-returning="true"] .photo-stack-gallery__preview, .photo-stack-gallery[data-returning="true"] .photo-stack-gallery__compact, .photo-stack-gallery[data-returning="true"] .photo-stack-gallery__frame { transition: none; }
+  .photo-stack-gallery[data-returning="true"] .photo-stack-gallery__preview { visibility: hidden; opacity: 0; pointer-events: none; }
+  .photo-stack-gallery__frame, .photo-stack-gallery__detail-media { --photo-frame-width: var(--inline-photo-card-width); --photo-frame-height: calc(var(--photo-frame-width) * 4 / 3); border-radius: calc(min(var(--photo-frame-width), var(--photo-frame-height)) * var(--photo-stack-radius-ratio)); }
+  .photo-stack-gallery__frame { position: relative; display: block; width: 100%; height: 100%; overflow: clip; background: var(--color-surface-2); box-shadow: var(--shadow-float); transform: rotate(var(--card-rotation)); transition: transform var(--duration-project-attribute) var(--ease-smooth-out); }
+  .photo-stack-gallery__frame::after, .photo-stack-gallery__detail-media::after { content: ""; position: absolute; z-index: 2; inset: 0; border: var(--inline-photo-border) solid var(--color-photo-paper); border-radius: inherit; pointer-events: none; }
+  .photo-stack-gallery__frame img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; }
+  .photo-stack-gallery__dialog { position: fixed; inset: 0; width: 100%; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; overflow: hidden; color: var(--color-ink); background: transparent; isolation: isolate; }
+  .photo-stack-gallery__dialog::backdrop { background: transparent; }
+  .photo-stack-gallery__surface { position: absolute; inset: 0; background: var(--color-canvas); }
+  .photo-stack-gallery__stage { --gallery-card-width: max(var(--dock-control-size), min(31vw, calc((100dvh - var(--dock-reserve) - var(--space-8)) * .21))); position: absolute; inset: max(var(--space-6), env(safe-area-inset-top)) var(--space-5) var(--dock-reserve); max-width: var(--photo-stack-mobile-width); margin-inline: auto; }
+  .photo-stack-gallery__card { appearance: none; position: absolute; display: block; width: var(--gallery-card-width); aspect-ratio: 3 / 4; border: 0; padding: 0; background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .photo-stack-gallery__card .photo-stack-gallery__frame { --photo-frame-width: var(--gallery-card-width); transition: transform var(--duration-project-attribute) var(--ease-smooth-out); }
+  .photo-stack-gallery__card:nth-child(1) { top: 1%; left: 4%; }
+  .photo-stack-gallery__card:nth-child(2) { top: 6%; right: 3%; }
+  .photo-stack-gallery__card:nth-child(3) { top: 35%; left: 1%; }
+  .photo-stack-gallery__card:nth-child(4) { top: 40%; right: 4%; }
+  .photo-stack-gallery__card:nth-child(5) { bottom: 1%; left: 4%; }
+  .photo-stack-gallery__card:nth-child(6) { bottom: 0; right: 3%; }
+  .photo-stack-gallery__preview:focus-visible, .photo-stack-gallery__card:focus-visible { outline: 2px solid var(--color-accent); outline-offset: var(--space-2); border-radius: var(--radius-xl); }
+  .photo-stack-gallery__detail-backdrop { position: absolute; z-index: 1; inset: 0; background: var(--color-photo-stack-detail-backdrop); -webkit-backdrop-filter: blur(var(--blur-photo-stack-detail-backdrop)); backdrop-filter: blur(var(--blur-photo-stack-detail-backdrop)); opacity: 0; pointer-events: none; transition: opacity var(--duration-project-attribute) var(--ease-smooth-out); }
+  .photo-stack-gallery__dialog[data-view="detail"] .photo-stack-gallery__detail-backdrop { opacity: 1; pointer-events: auto; }
+  .photo-stack-gallery__detail { position: absolute; z-index: 2; inset: max(var(--space-5), env(safe-area-inset-top)) var(--space-5) var(--dock-reserve); }
+  .photo-stack-gallery__detail-content { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-6); margin: 0; }
+  .photo-stack-gallery__detail-media { --photo-frame-width: min(84vw, calc(62dvh * var(--photo-ratio, .75)), var(--photo-stack-detail-max)); --photo-frame-height: calc(var(--photo-frame-width) / var(--photo-ratio, .75)); position: relative; flex: 0 0 auto; width: var(--photo-frame-width); max-height: 62dvh; aspect-ratio: var(--photo-ratio, .75); overflow: clip; background: var(--color-surface-2); box-shadow: var(--shadow-float); }
+  .photo-stack-gallery__detail-photo { display: block; width: 100%; height: 100%; cursor: default; }
+  .photo-stack-gallery__detail-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .photo-stack-gallery__caption, .photo-stack-gallery__error { max-width: var(--container-reading); color: var(--color-muted); font-size: var(--text-body); line-height: var(--leading-description); white-space: normal; text-align: center; }
+  .photo-stack-gallery__caption { color: var(--color-copy); }
+  .photo-stack-gallery__error { margin: 0; }
+  .photo-stack-gallery__control { position: absolute; z-index: 4; left: 50%; bottom: max(var(--space-6), env(safe-area-inset-bottom)); width: var(--dock-height); height: var(--dock-height); min-height: var(--dock-height); padding: 0; transform: translateX(-50%); }
+  .photo-stack-gallery__control svg { width: var(--dock-icon-size); height: var(--dock-icon-size); }
+  .photo-stack-gallery__control path { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .photo-stack-gallery__dialog [hidden] { display: none !important; }
+  .photo-stack-gallery__traveler { position: fixed; z-index: 3; pointer-events: none; transform-origin: center; }
+  @media (hover: hover) and (pointer: fine) {
+    .photo-stack-gallery__control:hover { background: var(--color-photo-stack-control-hover); }
+    .photo-stack-gallery__card:hover .photo-stack-gallery__frame, .photo-stack-gallery__card:focus-visible .photo-stack-gallery__frame { transform: translateY(calc(-1 * var(--space-1))) rotate(var(--card-rotation)) scale(1.025); }
+  }
+  .photo-stack-gallery__control:focus-visible { background: var(--color-photo-stack-control-hover); }
+  .photo-stack-gallery__control:active { transform: translateX(-50%) scale(var(--photo-stack-press-scale)); }
+  .photo-stack-gallery__card:active .photo-stack-gallery__frame { transform: rotate(var(--card-rotation)) scale(var(--photo-stack-press-scale)); transition-duration: var(--duration-quick); }
+  @media (min-width: 700px) {
+    .photo-stack-gallery__stage { --gallery-card-width: max(var(--dock-control-size), min(14vw, var(--photo-stack-card-max), calc((100dvh - var(--dock-reserve) - var(--space-12)) * .28))); inset: max(var(--space-12), env(safe-area-inset-top)) var(--space-12) var(--dock-reserve); max-width: var(--photo-stack-desktop-width); }
+    .photo-stack-gallery__card:nth-child(1) { top: 6%; left: 3%; }
+    .photo-stack-gallery__card:nth-child(2) { top: 1%; left: calc(50% - var(--gallery-card-width) / 2); right: auto; }
+    .photo-stack-gallery__card:nth-child(3) { top: 8%; left: auto; right: 3%; }
+    .photo-stack-gallery__card:nth-child(4) { top: 52%; left: 17%; right: auto; }
+    .photo-stack-gallery__card:nth-child(5) { top: 58%; left: calc(50% - var(--gallery-card-width) / 2); bottom: auto; }
+    .photo-stack-gallery__card:nth-child(6) { top: 50%; right: 17%; bottom: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .photo-stack-gallery__preview, .photo-stack-gallery__compact, .photo-stack-gallery__frame, .photo-stack-gallery__detail-backdrop { transition: none !important; }
+    .photo-stack-gallery__card:hover .photo-stack-gallery__frame, .photo-stack-gallery__card:focus-visible .photo-stack-gallery__frame, .photo-stack-gallery__card:active .photo-stack-gallery__frame { transform: rotate(var(--card-rotation)); }
+    .photo-stack-gallery__control:active { transform: translateX(-50%); }
+  }
+</style>

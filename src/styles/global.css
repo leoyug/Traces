@@ -128,7 +128,8 @@
     --portrait-cursor-size: calc(var(--space-5) * 2);
     --portrait-cursor-wander: 14px;
     --color-portrait-cursor: #ed78ac;
-    --color-portrait-cursor-outline: none;
+    --color-portrait-cursor-outline: var(--color-photo-paper);
+    --portrait-cursor-outline-width: .5px;
     --color-highlight-wash: color-mix(in srgb, var(--color-ink) 10%, transparent);
     --color-selection-frame: #0d99ff;
     --color-selection-handle: #fff;
@@ -144,11 +145,22 @@
     --logo-preview-travel: var(--space-8);
     --logo-preview-rotation: 12deg;
     --delay-logo-preview: 40ms;
+    --cursor-figma: url("/assets/cursors/figma.svg") 4 3, default;
     --inline-photo-stack-width: calc(var(--space-16) * 2 + var(--space-6));
     --inline-photo-stack-height: calc(var(--space-16) * 2 + var(--space-4));
     --inline-photo-card-width: calc(var(--space-16) + var(--space-2) + var(--space-1) / 2);
     --inline-photo-card-spread: var(--space-5);
+    --inline-photo-card-fan-spread: calc(var(--space-6) + var(--space-1));
     --inline-photo-border: calc(var(--space-1) / 2);
+    --photo-stack-mobile-width: 32.5rem;
+    --photo-stack-desktop-width: 70rem;
+    --photo-stack-card-max: 13rem;
+    --photo-stack-detail-max: 42rem;
+    --photo-stack-radius-ratio: .16;
+    --photo-stack-press-scale: .97;
+    --color-photo-stack-detail-backdrop: color-mix(in srgb, var(--color-canvas) 75%, transparent);
+    --blur-photo-stack-detail-backdrop: var(--space-5);
+    --color-photo-stack-control-hover: color-mix(in srgb, var(--color-ink) 88%, var(--color-canvas));
     --color-wave-underline: #8585f5;
     --wave-underline-period: 12px;
     --wave-underline-height: var(--space-2);
@@ -196,6 +208,7 @@
     --portrait-theme-filter: none;
     --color-portrait-cursor: var(--color-photo-paper);
     --color-portrait-cursor-outline: rgb(36 36 36 / 55%);
+    --portrait-cursor-outline-width: .6px;
     /* Keep the original neutral-gray dark assistant palette. */
     --color-canvas: #191918;
     --color-surface: #13120f;
