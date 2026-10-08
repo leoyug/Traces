@@ -1,5 +1,6 @@
 ---
 import type { HTMLAttributes } from "astro/types";
+import ArrowUpRight from "./icons/ArrowUpRight.astro";
 
 interface Props extends HTMLAttributes<"a"> {
   href: string;
@@ -7,6 +8,11 @@ interface Props extends HTMLAttributes<"a"> {
 }
 
 const { href, underline = "fade", class: className, ...attributes } = Astro.props;
+const destination = new URL(href, Astro.url);
+const isExternal = destination.protocol === "mailto:" || (
+  ["http:", "https:"].includes(destination.protocol) &&
+  destination.origin !== Astro.url.origin && destination.origin !== Astro.site?.origin
+);
 ---
 
-<a href={href} class:list={["text-link", `text-link--${underline}`, className]} {...attributes}><slot /></a>
+<a href={href} class:list={["text-link", `text-link--${underline}`, { "text-link--external": isExternal }, className]} {...attributes}><slot />{isExternal && <span class="text-link__arrow" aria-hidden="true"><ArrowUpRight /></span>}</a>

@@ -61,6 +61,10 @@ src/
 5. `ContentRow` 是文章和项目索引的默认表达；只有内容需要独立表面层级、媒体裁切或复杂操作时才使用 `Card`。
 6. 页面内局部样式只允许描述该页面独有的组合关系，不能复制 Button、Card、Input、导航等公共样式。
 
+### 可复用效果名称
+
+- **虚线下划线组件**：`src/components/DashedUnderline.astro`（`DashedUnderline`）。用户说“使用虚线下划线组件”时，使用 `<DashedUnderline>文字</DashedUnderline>`。用于正文关键词的静态强调，保留原字号与换行；文字使用 `--color-link`（与 GitHub 等文字链接一致），下划线使用 `--color-muted`，随亮暗主题映射。默认不添加链接或动效；`effect="selection"` 启用 Figma 风格的蓝色选中框与四角手柄：固定尺寸、立即显隐，悬停时隐藏虚线并使用黑色白边 Figma 光标；支持键盘聚焦和减少动态效果。`effect="pixel-person"` 在文字上方显示亮暗模式像素小人，悬停或键盘聚焦时从文字位置上移并淡入，离开时下移并淡出；显示时播放、隐藏时暂停，减少动态效果下静态显示，并沿用 Figma 光标与稳定悬停区。可通过 `class` 和标准 span 属性扩展。示例见 `/design-system`。
+
 ## 后续开发注意事项
 
 - 保持语义化标题层级、44px 最小交互区域、可见焦点和键盘完整可达。

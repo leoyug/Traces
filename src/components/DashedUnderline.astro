@@ -1,0 +1,85 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import PixelPersonPreview from "./PixelPersonPreview.astro";
+
+interface Props extends HTMLAttributes<"span"> {
+  effect?: "none" | "selection" | "pixel-person";
+}
+
+const { class: className, effect = "none", ...attributes } = Astro.props;
+const hasEffect = effect !== "none";
+---
+
+<span class:list={["dashed-underline", { "dashed-underline--interactive": hasEffect, "dashed-underline--selection": effect === "selection", "dashed-underline--pixel-person": effect === "pixel-person" }, className]} tabindex={hasEffect ? 0 : undefined} {...attributes}><slot />{effect === "selection" && <span class="dashed-underline__frame" aria-hidden="true"><i></i><i></i><i></i><i></i></span>}{effect === "pixel-person" && <PixelPersonPreview />}</span>
+
+<style>
+  .dashed-underline {
+    color: var(--color-link);
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+    text-decoration-color: var(--color-muted);
+    text-decoration-thickness: 1px;
+    text-underline-offset: var(--space-1);
+    text-decoration-skip-ink: none;
+  }
+
+  .dashed-underline--interactive {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+    cursor: url("/assets/cursors/figma.svg") 4 3, default;
+    transition: none;
+  }
+
+  .dashed-underline--interactive::before {
+    content: "";
+    position: absolute;
+    inset: calc(-1 * var(--space-1) / 2) calc(-1 * (var(--selection-frame-padding-inline) + var(--selection-handle-size) / 2));
+    cursor: inherit;
+  }
+
+  .dashed-underline__frame {
+    position: absolute;
+    inset: var(--selection-frame-inset-block) calc(-1 * var(--selection-frame-padding-inline));
+    opacity: 0;
+    pointer-events: none;
+    transition: none;
+  }
+
+  .dashed-underline__frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--color-selection-frame);
+  }
+
+  .dashed-underline__frame i {
+    position: absolute;
+    width: var(--selection-handle-size);
+    height: var(--selection-handle-size);
+    border: 1px solid var(--color-selection-frame);
+    background: var(--color-selection-handle);
+    transform: translate(-50%, -50%);
+  }
+  .dashed-underline__frame i:nth-child(1) { top: 0; left: 0; }
+  .dashed-underline__frame i:nth-child(2) { top: 0; left: 100%; }
+  .dashed-underline__frame i:nth-child(3) { top: 100%; left: 0; }
+  .dashed-underline__frame i:nth-child(4) { top: 100%; left: 100%; }
+
+  .dashed-underline--selection:focus-visible {
+    text-decoration-color: transparent;
+    outline: none;
+  }
+
+  .dashed-underline--selection:focus-visible .dashed-underline__frame {
+    opacity: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .dashed-underline--selection:hover { text-decoration-color: transparent; }
+    .dashed-underline--selection:hover .dashed-underline__frame {
+      opacity: 1;
+    }
+  }
+
+</style>

@@ -1,0 +1,183 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<style>
+@keyframes kf_left-hand_transform_0 {
+  0% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  6.26% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  12.49% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  18.79% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  24.94% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  25.06% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  31.2% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  37.43% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  43.72% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  50% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  56.26% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  62.49% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  68.79% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  74.94% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  75.06% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  81.2% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  87.43% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  93.72% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  100% {
+    transform: translateX(7px) translateY(39px) translateX(0px) translateY(2px);
+  }
+}
+#left-hand {
+  transform-origin: 0 0;
+  animation: kf_left-hand_transform_0 2s linear infinite;
+}
+@keyframes kf_right-hand_transform_0 {
+  0% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  6.26% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  12.49% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  18.79% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  24.94% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  25.06% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  31.2% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  37.43% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  43.72% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  50% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  56.26% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  62.49% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  68.79% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  74.94% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  75.06% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  81.2% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  87.43% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(0px);
+  }
+  93.72% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(2px);
+  }
+  100% {
+    transform: translateX(53px) translateY(39px) translateX(0px) translateY(0px);
+  }
+}
+#right-hand {
+  transform-origin: 0 0;
+  animation: kf_right-hand_transform_0 2s linear infinite;
+}
+@keyframes kf_head_transform_0 {
+  0% {
+    transform: translateX(18px) translateY(8px) translateX(0px) translateY(0px);
+  }
+  20.04% {
+    transform: translateX(18px) translateY(8px) translateX(0px) translateY(0px);
+  }
+  25.05% {
+    transform: translateX(18px) translateY(8px) translateX(0px) translateY(2px);
+  }
+  65.13% {
+    transform: translateX(18px) translateY(8px) translateX(0px) translateY(2px);
+  }
+  70.04% {
+    transform: translateX(18px) translateY(8px) translateX(0px) translateY(0px);
+  }
+  100% {
+    transform: translateX(18px) translateY(8px) translateX(0px) translateY(0px);
+  }
+}
+#head {
+  transform-origin: 0 0;
+  animation: kf_head_transform_0 2s linear infinite;
+}
+</style>
+<g id="_________" clip-path="url(#clip0_12795_6086)">
+<rect id="left-hand" transform="translate(7 39)" width="4" height="4" fill="#DEB79C" style="fill:#DEB79C;fill:color(display-p3 0.8706 0.7176 0.6118);fill-opacity:1;"/>
+<rect id="right-hand" transform="translate(53 39)" width="4" height="4" fill="#DEB79C" style="fill:#DEB79C;fill:color(display-p3 0.8706 0.7176 0.6118);fill-opacity:1;"/>
+<g id="body" transform="translate(11 33)">
+<path d="M3 12H0V0H3V12Z" id="body_bg_0" fill="#258F78" style="fill:#258F78;fill-opacity:1;">
+</path>
+<path d="M42 12H39V0H42V12Z" fill="#258F78" style="fill:#258F78;fill-opacity:1;"/>
+</g>
+<g id="head" transform="translate(18 8)">
+<g id="hair">
+<path d="M26 20H23V17H26V20Z" id="hair_bg_0" fill="#1C1917" style="fill:#1C1917;fill-opacity:1;">
+</path>
+<path d="M23 2H26V15H20V9H6V11H0V3H3V0H23V2Z" fill="#1C1917" style="fill:#1C1917;fill-opacity:1;"/>
+</g>
+<path id="face" transform="translate(3 5.5)" d="M15 2.5H18V8.5H20V5.5H23V11.5H20V14.5H0V2.5H3V0H15V2.5Z" fill="#DEB79C" style="fill:#DEB79C;fill:color(display-p3 0.8706 0.7176 0.6118);fill-opacity:1;"/>
+<g id="eye" transform="translate(6 12)">
+<path d="M2.5 5H0V0H2.5V5Z" id="eye_bg_0" fill="#19140B" style="fill:#19140B;fill:color(display-p3 0.0980 0.0784 0.0431);fill-opacity:1;">
+</path>
+<path d="M11 5H8.5V0H11V5Z" fill="#19140B" style="fill:#19140B;fill:color(display-p3 0.0980 0.0784 0.0431);fill-opacity:1;"/>
+</g>
+</g>
+<path id="mac" transform="translate(13 28)" d="M37 0H1V17H0V21H1H37V0Z" fill="#818181" style="fill:#818181;fill:color(display-p3 0.5064 0.5064 0.5064);fill-opacity:1;"/>
+<path id="logo" transform="translate(29 36)" d="M0 0H5V5H0V0Z" fill="#F5F5F5" style="fill:#F5F5F5;fill:color(display-p3 0.9613 0.9613 0.9613);fill-opacity:1;"/>
+</g>
+<defs>
+<clipPath id="clip0_12795_6086">
+<rect width="64" height="64" fill="white" style="fill:white;fill-opacity:1;"/>
+</clipPath>
+</defs>
+</svg>

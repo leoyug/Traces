@@ -14,6 +14,8 @@ import PlaySpinLoader from "../components/PlaySpinLoader.astro";
 import ProgressiveBlur from "../components/ProgressiveBlur.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import TextLink from "../components/TextLink.astro";
+import AnimatedHighlight from "../components/AnimatedHighlight.astro";
+import DashedUnderline from "../components/DashedUnderline.astro";
 import { getPhotos } from "../lib/photos";
 
 if (import.meta.env.PROD) return Astro.redirect("/");
@@ -109,6 +111,8 @@ const fanPhotos = photos.slice(0, 7).map((photo, index) => ({ photo, label: fanP
       </div>
     </section>
     <section><SectionHeading title="正文与链接颜色" description="正文与链接都使用语义 token，并随亮暗模式同步映射。" /><div class="text-color-demo"><p>普通文字用于连续阅读的段落；<TextLink href="/writing">链接文字</TextLink>用于可点击的内容。</p><code>--color-copy · <output data-color-token="copy">读取中</output></code><code>--color-link · <output data-color-token="link">读取中</output></code></div></section>
+    <section><SectionHeading title="动态文字高亮" description="悬停或键盘聚焦时，鼠标图标依次描绘线条并显示淡色高亮；减少动态效果时保留静态图标。" /><p>你好，我是Leo，一名<AnimatedHighlight>设计工程师</AnimatedHighlight>。</p></section>
+    <section><SectionHeading title="虚线下划线 · DashedUnderline" description="用于正文关键词的静态强调，文字使用链接色、继承字号并支持换行；文字与线色随主题 token 映射；Figma 示例启用 selection 悬停选中框。" /><p>我使用 <DashedUnderline effect="selection">Figma</DashedUnderline> 进行设计，使用 <DashedUnderline effect="pixel-person">Codex</DashedUnderline> 进行构建，喜欢<DashedUnderline>动效</DashedUnderline>与<DashedUnderline>用心创作的事物</DashedUnderline>。</p><code>&lt;DashedUnderline&gt;关键词&lt;/DashedUnderline&gt;</code></section>
     <section><SectionHeading title="字体与层级" /><div class="type-specimens"><p class="type-display">把复杂的事，设计得清楚一点。</p><p class="type-title">页面标题使用 28px、600 字重。</p><p class="type-body">界面正文与文章正文统一使用 14px；普通内容采用 1.55 行高，长文章采用 1.8 行高。English and numbers 2026.</p><p class="type-meta">说明标签 · 12PX · REGULAR</p><p class="type-script">只留一点手写痕迹。</p></div></section>
     <section><SectionHeading title="间距与圆角" /><div class="space-row">{spaces.map((space) => <div><span style={`width:var(--space-${space})`}></span><code>{space}</code></div>)}</div><div class="radius-row"><i></i><i></i><i></i><i></i></div></section>
     <section>
@@ -121,7 +125,7 @@ const fanPhotos = photos.slice(0, 7).map((photo, index) => ({ photo, label: fanP
       </div>
     </section>
     <section><SectionHeading title="按钮" /><div class="component-row"><Button>主要按钮</Button><Button variant="secondary">次要按钮</Button><Button variant="ghost">文字按钮</Button><Button size="small">小按钮</Button></div></section>
-    <section><SectionHeading title="文字链接" description="默认使用低对比下划线；悬停或键盘聚焦时在 300ms 内加深，以保留可点击提示。" /><div class="component-row"><TextLink href="/">查看项目</TextLink><TextLink href="/writing">阅读文章</TextLink></div></section>
+    <section><SectionHeading title="文字链接" description="保留低对比下划线动效；外部网站与邮件链接在悬停或键盘聚焦时展开 Feather 右上箭头，触屏与减少动态效果偏好下静态显示。" /><div class="component-row"><TextLink href="/">查看项目</TextLink><TextLink href="/writing">阅读文章</TextLink><TextLink href="https://github.com">GitHub</TextLink><TextLink href="mailto:hello@example.com">发送邮件</TextLink></div></section>
     <section><SectionHeading title="联系方式" description="可复用的联系方式组件，真实地址从职业履历读取；首页与关于页当前使用正文链接。" /><ContactLinks class="contact-links" /></section>
     <section><SectionHeading title="卡片" /><div class="project-grid"><Card><h3>标准卡片</h3><p>用于需要明确表面层级的内容。</p></Card><Card variant="quiet"><h3>安静卡片</h3><p>保留组件结构，但移除阴影和底色。</p></Card></div></section>
     <section><SectionHeading title="项目卡片" /><div class="project-grid"><ProjectCard title="复杂工作台的结构重构" summary="统一任务、资产与协作流，建立可扩展的页面骨架。" year="2026" status="已上线" accent="clay" /></div></section>
