@@ -3,14 +3,26 @@ import type { HTMLAttributes } from "astro/types";
 import PixelPersonPreview from "./PixelPersonPreview.astro";
 
 interface Props extends HTMLAttributes<"span"> {
-  effect?: "none" | "selection" | "pixel-person";
+  effect?: "none" | "selection" | "pixel-person" | "wave" | "logos" | "photo-stack";
+  logos?: readonly { src: string; alt: string; rotation?: number }[];
+  photos?: readonly { src: string; alt: string }[];
 }
 
-const { class: className, effect = "none", ...attributes } = Astro.props;
+const { class: className, effect = "none", logos = [], photos = [], ...attributes } = Astro.props;
 const hasEffect = effect !== "none";
+const waveId = effect === "wave" ? `wave-${crypto.randomUUID()}` : undefined;
 ---
 
-<span class:list={["dashed-underline", { "dashed-underline--interactive": hasEffect, "dashed-underline--selection": effect === "selection", "dashed-underline--pixel-person": effect === "pixel-person" }, className]} tabindex={hasEffect ? 0 : undefined} {...attributes}><slot />{effect === "selection" && <span class="dashed-underline__frame" aria-hidden="true"><i></i><i></i><i></i><i></i></span>}{effect === "pixel-person" && <PixelPersonPreview />}</span>
+<span class:list={["dashed-underline", { "dashed-underline--interactive": hasEffect, "dashed-underline--selection": effect === "selection", "dashed-underline--pixel-person": effect === "pixel-person", "dashed-underline--wave": effect === "wave", "dashed-underline--logos": effect === "logos", "dashed-underline--photo-stack": effect === "photo-stack" }, className]} tabindex={hasEffect ? 0 : undefined} {...attributes}><slot />{effect === "photo-stack" && <span class="dashed-underline__photos" aria-hidden="true">
+    {photos.slice(0, 3).map((photo) => <span class="dashed-underline__photo"><img src={photo.src} alt={photo.alt} width="74" height="99" decoding="async" draggable="false" /></span>)}
+  </span>}{effect === "selection" && <span class="dashed-underline__frame" aria-hidden="true"><i></i><i></i><i></i><i></i></span>}{effect === "pixel-person" && <PixelPersonPreview />}{effect === "logos" && <span class="dashed-underline__logos" aria-hidden="true">
+    {logos.slice(0, 3).map((logo, index) => <img src={logo.src} alt={logo.alt} width="40" height="40" decoding="async" draggable="false" style={`--logo-index: ${index}; --logo-image-rotation: ${logo.rotation ?? 0}deg`} />)}
+  </span>}{effect === "wave" && <span class="dashed-underline__wave" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" focusable="false">
+      <defs><pattern id={waveId} width="12" height="8" patternUnits="userSpaceOnUse"><path d="M0 4 Q3 0 6 4 T12 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></pattern></defs>
+      <rect width="100%" height="100%" fill={`url(#${waveId})`} />
+    </svg>
+  </span>}</span>
 
 <style>
   .dashed-underline {
@@ -75,11 +87,188 @@ const hasEffect = effect !== "none";
     opacity: 1;
   }
 
+  .dashed-underline__wave {
+    position: absolute;
+    top: calc(50% + .5em);
+    left: 0;
+    width: 100%;
+    height: var(--wave-underline-height);
+    overflow: hidden;
+    color: var(--color-wave-underline);
+    visibility: hidden;
+    clip-path: inset(0 100% 0 0);
+    pointer-events: none;
+  }
+
+  .dashed-underline__wave svg {
+    display: block;
+    width: calc(100% + var(--wave-underline-period));
+    height: 100%;
+  }
+
+  .dashed-underline--wave:focus-visible {
+    text-decoration-color: transparent;
+  }
+
+  .dashed-underline--wave:focus-visible .dashed-underline__wave {
+    visibility: visible;
+    clip-path: inset(0);
+    transition: clip-path var(--duration-fast) var(--ease-smooth-out);
+  }
+
+  .dashed-underline--wave:focus-visible .dashed-underline__wave svg {
+    animation: underline-wave var(--duration-wave-underline) linear infinite;
+  }
+
+  @keyframes underline-wave {
+    to { transform: translateX(calc(-1 * var(--wave-underline-period))); }
+  }
+
+  .dashed-underline--photo-stack { cursor: default; }
+
+  .dashed-underline--photo-stack::before {
+    top: 50%;
+    bottom: auto;
+    height: var(--dock-control-size);
+    transform: translateY(-50%);
+  }
+
+  .dashed-underline__photos {
+    position: absolute;
+    z-index: 2;
+    bottom: 100%;
+    left: 50%;
+    width: var(--inline-photo-stack-width);
+    height: var(--inline-photo-stack-height);
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) scale(.96);
+    transform-origin: center bottom;
+    transition: opacity var(--duration-quick) var(--ease-smooth-out), transform var(--duration-quick) var(--ease-smooth-out), visibility 0s var(--duration-quick);
+  }
+
+  .dashed-underline__photo {
+    position: absolute;
+    bottom: var(--space-2);
+    left: 50%;
+    width: var(--inline-photo-card-width);
+    aspect-ratio: 3 / 4;
+    overflow: clip;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-2);
+    box-shadow: var(--shadow-float);
+    transform: translateX(-50%) rotate(var(--inline-photo-rotation));
+    transition: transform var(--duration-quick) var(--ease-smooth-out);
+  }
+
+  .dashed-underline__photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: var(--inline-photo-border) solid var(--color-photo-paper);
+    border-radius: inherit;
+  }
+
+  .dashed-underline__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .dashed-underline__photo:nth-child(1) { --inline-photo-shift: calc(-1 * var(--inline-photo-card-spread)); --inline-photo-lift: calc(-1 * var(--space-2)); --inline-photo-rotation: -9deg; z-index: 1; }
+  .dashed-underline__photo:nth-child(2) { --inline-photo-shift: 0px; --inline-photo-lift: 0px; --inline-photo-rotation: 1deg; z-index: 3; }
+  .dashed-underline__photo:nth-child(3) { --inline-photo-shift: var(--inline-photo-card-spread); --inline-photo-lift: calc(-1 * var(--space-2)); --inline-photo-rotation: 9deg; z-index: 2; }
+
+  .dashed-underline--photo-stack:focus .dashed-underline__photos {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%);
+    transition-duration: var(--duration-very-slow);
+    transition-delay: 0s;
+  }
+
+  .dashed-underline--photo-stack:focus .dashed-underline__photo {
+    transform: translate(calc(-50% + var(--inline-photo-shift)), var(--inline-photo-lift)) rotate(var(--inline-photo-rotation));
+    transition-duration: var(--duration-very-slow);
+  }
+
+  .dashed-underline__logos {
+    position: absolute;
+    z-index: 1;
+    bottom: calc(100% - var(--space-1));
+    left: 50%;
+    width: var(--logo-preview-size);
+    height: var(--logo-preview-size);
+    transform: translateX(-50%);
+    visibility: hidden;
+    pointer-events: none;
+    transition: visibility 0s var(--duration-quick);
+  }
+
+  .dashed-underline__logos img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(var(--shadow-logo-preview));
+    opacity: 0;
+    transform: translateY(var(--logo-preview-travel)) scale(.45) rotate(var(--logo-image-rotation));
+    transition: transform var(--duration-quick) var(--ease-smooth-out), opacity var(--duration-quick) var(--ease-smooth-out);
+  }
+
+  .dashed-underline__logos img:nth-child(2) { --logo-lift: calc(-1 * var(--space-1)); z-index: 1; }
+
+  .dashed-underline--logos:focus-visible .dashed-underline__logos {
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .dashed-underline--logos:focus-visible .dashed-underline__logos img {
+    opacity: 1;
+    transform: translate(calc((var(--logo-index) - 1) * var(--logo-preview-spread)), var(--logo-lift, 0px)) rotate(calc((var(--logo-index) - 1) * var(--logo-preview-rotation) + var(--logo-image-rotation)));
+    transition-duration: var(--duration-project-attribute);
+    transition-delay: calc(var(--logo-index) * var(--delay-logo-preview));
+  }
+
   @media (hover: hover) and (pointer: fine) {
+    .dashed-underline--photo-stack:hover .dashed-underline__photos {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%);
+      transition-duration: var(--duration-very-slow);
+      transition-delay: 0s;
+    }
+    .dashed-underline--photo-stack:hover .dashed-underline__photo {
+      transform: translate(calc(-50% + var(--inline-photo-shift)), var(--inline-photo-lift)) rotate(var(--inline-photo-rotation));
+      transition-duration: var(--duration-very-slow);
+    }
     .dashed-underline--selection:hover { text-decoration-color: transparent; }
     .dashed-underline--selection:hover .dashed-underline__frame {
       opacity: 1;
     }
+    .dashed-underline--wave:hover { text-decoration-color: transparent; }
+    .dashed-underline--wave:hover .dashed-underline__wave {
+      visibility: visible;
+      clip-path: inset(0);
+      transition: clip-path var(--duration-fast) var(--ease-smooth-out);
+    }
+    .dashed-underline--wave:hover .dashed-underline__wave svg {
+      animation: underline-wave var(--duration-wave-underline) linear infinite;
+    }
+    .dashed-underline--logos:hover .dashed-underline__logos {
+      visibility: visible;
+      transition-delay: 0s;
+    }
+    .dashed-underline--logos:hover .dashed-underline__logos img {
+      opacity: 1;
+      transform: translate(calc((var(--logo-index) - 1) * var(--logo-preview-spread)), var(--logo-lift, 0px)) rotate(calc((var(--logo-index) - 1) * var(--logo-preview-rotation) + var(--logo-image-rotation)));
+      transition-duration: var(--duration-project-attribute);
+      transition-delay: calc(var(--logo-index) * var(--delay-logo-preview));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dashed-underline--wave .dashed-underline__wave { transition: none !important; }
+    .dashed-underline--wave .dashed-underline__wave svg { animation: none !important; }
+    .dashed-underline__logos, .dashed-underline__logos img { transition: none !important; }
+    .dashed-underline__photos, .dashed-underline__photo { transition: none !important; }
   }
 
 </style>

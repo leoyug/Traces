@@ -2,15 +2,27 @@
 interface Props {
   src: string;
   alt: string;
+  darkSrc?: string;
+  darkAlt?: string;
   class?: string;
 }
 
-const { src, alt, class: className } = Astro.props;
+const { src, alt, darkSrc, darkAlt = alt, class: className } = Astro.props;
 ---
 
 <figure class:list={["particle-portrait", className]} data-particle-portrait>
-  <img src={src} alt={alt} width="700" height="700" decoding="async" />
+  <img src={src} alt={alt} data-portrait-theme={darkSrc ? "light" : undefined} width="700" height="700" decoding="async" />
+  {darkSrc && <img src={darkSrc} alt={darkAlt} data-portrait-theme="dark" width="700" height="700" decoding="async" />}
   <canvas aria-hidden="true"></canvas>
+  <span class="particle-portrait__cursor" data-portrait-cursor aria-hidden="true">
+    <svg viewBox="0 0 40 40">
+      <g transform="translate(20 20)">
+        <g data-portrait-wing="left" transform="scale(-1 1)"><path d="M0 0 C-4-13 -17-16 -18-6 C-19 2 -8 5 0 0 Z M0 1 C-4 11 -14 14 -15 6 C-16 0 -7-2 0 1 Z" /></g>
+        <g data-portrait-wing="right"><path d="M0 0 C-4-13 -17-16 -18-6 C-19 2 -8 5 0 0 Z M0 1 C-4 11 -14 14 -15 6 C-16 0 -7-2 0 1 Z" /></g>
+        <rect x="-.9" y="-8" width="1.8" height="17" rx=".9" />
+      </g>
+    </svg>
+  </span>
 </figure>
 
 <script>
@@ -37,6 +49,10 @@ const { src, alt, class: className } = Astro.props;
     filter: var(--portrait-theme-filter);
   }
 
+  .particle-portrait [data-portrait-theme="dark"] { display: none; }
+  :global(:root[data-theme="dark"]) .particle-portrait [data-portrait-theme="light"] { display: none; }
+  :global(:root[data-theme="dark"]) .particle-portrait [data-portrait-theme="dark"] { display: block; }
+
   .particle-portrait img {
     object-fit: cover;
     object-position: 76% center;
@@ -53,8 +69,34 @@ const { src, alt, class: className } = Astro.props;
   .particle-portrait.is-particle-ready img { opacity: 0; }
   .particle-portrait.is-particle-ready canvas { opacity: 1; }
 
+  .particle-portrait__cursor {
+    display: none;
+    position: fixed;
+    z-index: 50;
+    inset: 0 auto auto 0;
+    width: var(--portrait-cursor-size);
+    height: var(--portrait-cursor-size);
+    margin: calc(var(--portrait-cursor-size) / -2);
+    pointer-events: none;
+  }
+
+  .particle-portrait__cursor svg {
+    width: 100%;
+    height: 100%;
+    fill: var(--color-portrait-cursor);
+    stroke: var(--color-portrait-cursor-outline);
+    stroke-width: .6;
+    stroke-linejoin: round;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .particle-portrait.is-portrait-pointer-active { cursor: none; }
+    .particle-portrait__cursor.is-active { display: block; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .particle-portrait img { opacity: 1; }
+    .particle-portrait img,
+    .particle-portrait.is-particle-ready img { opacity: 1; }
     .particle-portrait canvas { display: none; }
   }
 </style>

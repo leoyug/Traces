@@ -123,7 +123,12 @@
     --content-reading: 37rem; --content-wide: 75rem; --content-showcase: 75rem; --gutter: 1.5rem;
     --about-portrait-width: 13.625rem;
     --about-portrait-ratio: 218 / 252;
-    --portrait-theme-filter: invert(1) hue-rotate(180deg);
+    --portrait-theme-filter: none;
+    --portrait-pointer-radius: 144px;
+    --portrait-cursor-size: calc(var(--space-5) * 2);
+    --portrait-cursor-wander: 14px;
+    --color-portrait-cursor: #ed78ac;
+    --color-portrait-cursor-outline: none;
     --color-highlight-wash: color-mix(in srgb, var(--color-ink) 10%, transparent);
     --color-selection-frame: #0d99ff;
     --color-selection-handle: #fff;
@@ -133,6 +138,21 @@
     --pixel-person-preview-size: var(--space-12);
     --pixel-person-preview-offset: var(--space-2);
     --pixel-person-preview-travel: var(--space-8);
+    --logo-preview-size: var(--space-8);
+    --shadow-logo-preview: 0 2px 3px rgb(0 0 0 / 18%);
+    --logo-preview-spread: var(--space-6);
+    --logo-preview-travel: var(--space-8);
+    --logo-preview-rotation: 12deg;
+    --delay-logo-preview: 40ms;
+    --inline-photo-stack-width: calc(var(--space-16) * 2 + var(--space-6));
+    --inline-photo-stack-height: calc(var(--space-16) * 2 + var(--space-4));
+    --inline-photo-card-width: calc(var(--space-16) + var(--space-2) + var(--space-1) / 2);
+    --inline-photo-card-spread: var(--space-5);
+    --inline-photo-border: calc(var(--space-1) / 2);
+    --color-wave-underline: #8585f5;
+    --wave-underline-period: 12px;
+    --wave-underline-height: var(--space-2);
+    --duration-wave-underline: 550ms;
     --duration-micro: 80ms; --duration-quick: 150ms; --duration-fast: 250ms; --duration-project-attribute: 300ms; --duration-photo-fan: 420ms; --duration-label-character: 300ms; --duration-text-link: 600ms; --duration-very-slow: 500ms; --duration-highlight-draw: 600ms; --duration-highlight-glint: 200ms; --delay-highlight-glint-first: 420ms; --delay-highlight-glint-second: 480ms; --delay-highlight-glint-third: 540ms; --delay-highlight-glint-fourth: 600ms; --ease-smooth-out: cubic-bezier(.22, 1, .36, 1); --ease-highlight-draw: ease-in-out;
     --dropdown-open-dur: 250ms; --dropdown-close-dur: 150ms; --dropdown-pre-scale: .97; --dropdown-closing-scale: .99; --dropdown-ease: cubic-bezier(.22, 1, .36, 1);
     --dock-border-width: 1px; --dock-control-size: 44px; --dock-icon-size: 24px; --dock-control-icon-gutter: 10px; --dock-icon-edge-gap: 20px; --dock-item-gap: 20px; --dock-middle-icon-gap: 24px;
@@ -174,6 +194,8 @@
   :root[data-theme="dark"] {
     color-scheme: dark;
     --portrait-theme-filter: none;
+    --color-portrait-cursor: var(--color-photo-paper);
+    --color-portrait-cursor-outline: rgb(36 36 36 / 55%);
     /* Keep the original neutral-gray dark assistant palette. */
     --color-canvas: #191918;
     --color-surface: #13120f;

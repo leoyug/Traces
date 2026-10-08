@@ -5,3 +5,9 @@ export const navigation = [
   { label: "摄影", href: "/photos", icon: "/assets/figma/nav-photos.svg" },
   { label: "关于我", href: "/about", icon: "/assets/figma/nav-about.svg" },
 ];
+
+export const aiLogos = [
+  { src: "/assets/ai-logos/claude.webp", alt: "Claude" },
+  { src: "/assets/ai-logos/chatgpt.webp", alt: "ChatGPT", rotation: 180 },
+  { src: "/assets/ai-logos/cursor-dark.webp", alt: "Cursor" },
+] as const;

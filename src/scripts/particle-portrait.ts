@@ -25,10 +25,10 @@ const initializeParticlePortraits = () =>
       const controller = new AbortController();
       const signal = controller.signal;
 
-      const image = portrait.querySelector<HTMLImageElement>("img");
+      const defaultImage = portrait.querySelector<HTMLImageElement>("img");
       const canvas = portrait.querySelector<HTMLCanvasElement>("canvas");
       const context = canvas?.getContext("2d", { alpha: true });
-      if (!image || !canvas || !context) return;
+      if (!defaultImage || !canvas || !context) return;
 
       let particles: Particle[] = [];
       let frame = 0;
@@ -40,7 +40,74 @@ const initializeParticlePortraits = () =>
       let preparedWidth = 0;
       let preparedHeight = 0;
       let disposed = false;
+      let preparation = 0;
+      let theme = document.documentElement.dataset.theme;
       const pointer = { x: 0, y: 0, active: false };
+      let influenceRadius = 144;
+      let cursorWander = 14;
+      const cursor = portrait.querySelector<HTMLElement>("[data-portrait-cursor]");
+      const wingLeft = cursor?.querySelector<SVGGElement>('[data-portrait-wing="left"]');
+      const wingRight = cursor?.querySelector<SVGGElement>('[data-portrait-wing="right"]');
+      const butterfly = { x: 0, y: 0, targetX: 0, targetY: 0, rotation: 0, frame: 0, lastTime: 0 };
+      // Keep the cursor outside the portrait's clipping and stacking context.
+      if (cursor) document.body.append(cursor);
+
+      const hideCursor = () => {
+        if (butterfly.frame) cancelAnimationFrame(butterfly.frame);
+        butterfly.frame = 0;
+        cursor?.classList.remove("is-active");
+        portrait.classList.remove("is-portrait-pointer-active");
+      };
+
+      const paintCursor = () => {
+        if (!cursor) return;
+        cursor.style.transform = `translate3d(${butterfly.x}px, ${butterfly.y}px, 0) rotate(${butterfly.rotation}deg)`;
+      };
+
+      const animateCursor = (time: number) => {
+        butterfly.frame = 0;
+        if (!pointer.active || !finePointer.matches || reduceMotion.matches || document.hidden || disposed) return;
+        const delta = Math.min((time - butterfly.lastTime) / 16.67 || 1, 2);
+        butterfly.lastTime = time;
+        const dx = butterfly.targetX + Math.sin(time / 900) * cursorWander - butterfly.x;
+        const dy = butterfly.targetY + Math.cos(time / 1150) * cursorWander * .7 - butterfly.y;
+        const ease = 1 - Math.pow(1 - .07, delta);
+        butterfly.x += dx * ease;
+        butterfly.y += dy * ease;
+        butterfly.rotation += (Math.max(-34, Math.min(dx * 1.4, 34)) - butterfly.rotation) * (1 - Math.pow(.9, delta));
+        const open = Math.abs(Math.sin(time / 1000 * 9));
+        wingLeft?.setAttribute("transform", `scale(${- .25 - open * .75} 1)`);
+        wingRight?.setAttribute("transform", `scale(${.25 + open * .75} 1)`);
+        paintCursor();
+        butterfly.frame = requestAnimationFrame(animateCursor);
+      };
+
+      const showCursor = (event: PointerEvent) => {
+        if (!cursor || !wingLeft || !wingRight) return;
+        const entering = !cursor.classList.contains("is-active");
+        butterfly.targetX = event.clientX;
+        butterfly.targetY = event.clientY;
+        if (entering || reduceMotion.matches) {
+          butterfly.x = event.clientX;
+          butterfly.y = event.clientY;
+          butterfly.rotation = 0;
+          paintCursor();
+        }
+        cursor.classList.add("is-active");
+        portrait.classList.add("is-portrait-pointer-active");
+        if (reduceMotion.matches) {
+          wingLeft.setAttribute("transform", "scale(-1 1)");
+          wingRight.setAttribute("transform", "scale(1 1)");
+        } else if (!butterfly.frame) {
+          butterfly.lastTime = performance.now();
+          butterfly.frame = requestAnimationFrame(animateCursor);
+        }
+      };
+
+      const clearPointer = () => {
+        pointer.active = false;
+        hideCursor();
+      };
 
       const seededRandom = (seed: number) => {
         const value = Math.sin(seed * 12.9898) * 43758.5453;
@@ -80,7 +147,6 @@ const initializeParticlePortraits = () =>
             const dx = particle.x - pointer.x;
             const dy = particle.y - pointer.y;
             const distance = Math.hypot(dx, dy);
-            const influenceRadius = 72;
             if (distance > 0 && distance < influenceRadius) {
               const force = Math.pow(1 - distance / influenceRadius, 2) * 8;
               desiredX = (dx / distance) * force;
@@ -129,9 +195,14 @@ const initializeParticlePortraits = () =>
       };
 
       const prepare = async () => {
+        const currentPreparation = ++preparation;
         stop();
         portrait.classList.remove("is-particle-ready");
         if (reduceMotion.matches) return;
+
+        const image = theme === "dark"
+          ? portrait.querySelector<HTMLImageElement>('[data-portrait-theme="dark"]') ?? defaultImage
+          : defaultImage;
 
         try {
           if (!image.complete)
@@ -147,11 +218,14 @@ const initializeParticlePortraits = () =>
         } catch {
           return;
         }
-        if (disposed) return;
+        if (disposed || currentPreparation !== preparation) return;
 
         const width = portrait.clientWidth;
         const height = portrait.clientHeight;
         if (!width || !height) return;
+        const styles = getComputedStyle(portrait);
+        influenceRadius = parseFloat(styles.getPropertyValue("--portrait-pointer-radius")) || 144;
+        cursorWander = parseFloat(styles.getPropertyValue("--portrait-cursor-wander")) || 14;
         preparedWidth = width;
         preparedHeight = height;
 
@@ -244,33 +318,35 @@ const initializeParticlePortraits = () =>
         schedule();
       };
 
-      portrait.addEventListener(
-        "pointermove",
-        (event) => {
-          if (!finePointer.matches || reduceMotion.matches) return;
-          const bounds = portrait.getBoundingClientRect();
-          pointer.x = event.clientX - bounds.left;
-          pointer.y = event.clientY - bounds.top;
-          pointer.active = true;
-          schedule();
-        },
-        { signal },
-      );
+      const movePointer = (event: PointerEvent) => {
+        if (!finePointer.matches || event.pointerType === "touch") return;
+        const bounds = portrait.getBoundingClientRect();
+        pointer.x = event.clientX - bounds.left;
+        pointer.y = event.clientY - bounds.top;
+        pointer.active = true;
+        showCursor(event);
+        schedule();
+      };
+      portrait.addEventListener("pointerenter", movePointer, { signal });
+      portrait.addEventListener("pointermove", movePointer, { signal });
 
       portrait.addEventListener(
         "pointerleave",
         () => {
-          pointer.active = false;
+          clearPointer();
           schedule();
         },
         { signal },
       );
+      portrait.addEventListener("pointercancel", () => { clearPointer(); schedule(); }, { signal });
+      window.addEventListener("blur", () => { clearPointer(); schedule(); }, { signal });
+      finePointer.addEventListener("change", () => { clearPointer(); schedule(); }, { signal });
 
       const observer = new IntersectionObserver(
         ([entry]) => {
           visible = entry?.isIntersecting ?? false;
           if (visible) schedule();
-          else stop();
+          else { clearPointer(); stop(); }
         },
         { rootMargin: "80px" },
       );
@@ -279,12 +355,23 @@ const initializeParticlePortraits = () =>
       document.addEventListener(
         "visibilitychange",
         () => {
-          if (document.hidden) stop();
+          if (document.hidden) { clearPointer(); stop(); }
           else schedule();
         },
         { signal },
       );
-      reduceMotion.addEventListener("change", prepare, { signal });
+      reduceMotion.addEventListener("change", () => { clearPointer(); prepare(); }, { signal });
+
+      const themeObserver = new MutationObserver(() => {
+        const nextTheme = document.documentElement.dataset.theme;
+        if (nextTheme === theme) return;
+        theme = nextTheme;
+        prepare();
+      });
+      themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+      });
 
       const resizeObserver = new ResizeObserver(() => {
         if (
@@ -300,7 +387,11 @@ const initializeParticlePortraits = () =>
       });
       portrait.particleCleanup = () => {
         disposed = true;
+        clearPointer();
+        cursor?.remove();
+        preparation += 1;
         controller.abort();
+        themeObserver.disconnect();
         observer.disconnect();
         resizeObserver.disconnect();
         stop();
