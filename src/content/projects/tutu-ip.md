@@ -7,7 +7,7 @@ year: 2026
 projectType: IP 设计
 status: archive
 role: 待确认
-order: 4
+order: 7
 accent: clay
 cover: /media/projects/tutu-ip/cover.jpg
 archiveImages: [/media/projects/tutu-ip/archiveImages/0.jpg, /media/projects/tutu-ip/archiveImages/1.jpg, /media/projects/tutu-ip/archiveImages/2.jpg]

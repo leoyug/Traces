@@ -9,7 +9,7 @@ website: https://example.com/zhai-chang-xiang
 projectType: App 和网页
 status: archive
 role: 待确认
-order: 6
+order: 9
 accent: clay
 cover: /media/projects/zhai-chang-xiang/cover.jpg
 archiveImages: [/media/projects/zhai-chang-xiang/archiveImages/0.jpg, /media/projects/zhai-chang-xiang/archiveImages/1.jpg, /media/projects/zhai-chang-xiang/archiveImages/2.jpg]

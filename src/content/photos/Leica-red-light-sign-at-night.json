@@ -1,0 +1,20 @@
+{
+  "alt": "夜晚的徕卡红灯牌",
+  "src": "/media/photos/Leica-red-light-sign-at-night/src.webp",
+  "order": 23,
+  "size": "short",
+  "orientation": "landscape",
+  "width": 2400,
+  "height": 1601,
+  "draft": false,
+  "publicMetadata": {
+    "capturedAt": "2017-06-05",
+    "place": "成都",
+    "camera": "SONY ILCE-7RM3",
+    "lens": "Sony FE 24-70mm F2.8 GM II (SEL2470GM2)",
+    "focalLength": "70 mm",
+    "aperture": "f/2.8",
+    "shutterSpeed": "1/200 s",
+    "iso": 800
+  }
+}

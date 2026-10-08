@@ -9,7 +9,7 @@ projectType: App
 status: archive
 role: 待确认
 featured: true
-order: 1
+order: 2
 accent: clay
 label: 已上线
 cover: /media/projects/zhai-chang-xiang-app/cover.png

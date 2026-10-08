@@ -1,0 +1,20 @@
+{
+  "alt": "夕阳剪影",
+  "src": "/media/photos/Sunset-Silhouette/src.webp",
+  "order": 64,
+  "size": "short",
+  "orientation": "landscape",
+  "width": 2400,
+  "height": 1601,
+  "draft": false,
+  "publicMetadata": {
+    "capturedAt": "2024-10-04",
+    "place": "扬州",
+    "camera": "SONY ILCE-7RM3",
+    "lens": "Sony FE 24-105mm F4 G OSS (SEL24105G)",
+    "focalLength": "54 mm",
+    "aperture": "f/18",
+    "shutterSpeed": "1/8000 s",
+    "iso": 4000
+  }
+}

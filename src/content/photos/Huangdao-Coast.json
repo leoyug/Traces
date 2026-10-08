@@ -1,0 +1,20 @@
+{
+  "alt": "黄岛海岸",
+  "src": "/media/photos/Huangdao-Coast/src.webp",
+  "order": 30,
+  "size": "short",
+  "orientation": "landscape",
+  "width": 2400,
+  "height": 1601,
+  "draft": false,
+  "publicMetadata": {
+    "capturedAt": "2024-06-09",
+    "place": "青岛",
+    "camera": "SONY ILCE-7RM3",
+    "lens": "Sony FE 24-105mm F4 G OSS (SEL24105G)",
+    "focalLength": "38 mm",
+    "aperture": "f/4",
+    "shutterSpeed": "1/2500 s",
+    "iso": 80
+  }
+}

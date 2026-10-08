@@ -1,6 +1,6 @@
 {
   "name": "incessant-leo",
-  "version": "0.5.16",
+  "version": "0.5.17",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,8 @@
     "photos:prepare": "node scripts/photos/prepare.mjs",
     "photos:audit": "tsx scripts/photos/audit.ts",
     "test:import": "node --test scripts/import/import.test.mjs",
-    "check": "astro check && npm run photos:audit && npm run test:import",
+    "test:order": "node --test scripts/content-order/store.test.mjs",
+    "check": "astro check && npm run photos:audit && npm run test:import && npm run test:order",
     "build": "npm run photos:prepare && npm run fonts:subset && npm run check && astro build && node scripts/photos/prune-drafts.mjs",
     "preview": "astro preview"
   },

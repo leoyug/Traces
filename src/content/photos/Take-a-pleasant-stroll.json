@@ -1,0 +1,20 @@
+{
+  "alt": "惬意散步",
+  "src": "/media/photos/Take-a-pleasant-stroll/src.webp",
+  "order": 41,
+  "size": "tall",
+  "orientation": "portrait",
+  "width": 1601,
+  "height": 2400,
+  "draft": false,
+  "publicMetadata": {
+    "capturedAt": "2023-10-03",
+    "place": "景德镇",
+    "camera": "SONY ILCE-7RM3",
+    "lens": "Sony FE 24-105mm F4 G OSS (SEL24105G)",
+    "focalLength": "44 mm",
+    "aperture": "f/4",
+    "shutterSpeed": "1/160 s",
+    "iso": 400
+  }
+}

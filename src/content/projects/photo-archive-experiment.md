@@ -7,7 +7,7 @@ year: 2026
 status: experiment
 role: 独立设计与开发
 featured: false
-order: 3
+order: 6
 accent: blue
 relatedArticles: [a-living-archive]
 cover: /media/projects/photo-archive-experiment/cover.jpg

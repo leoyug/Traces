@@ -7,7 +7,7 @@ year: 2020
 projectType: App
 status: archive
 role: 待确认
-order: 7
+order: 10
 accent: blue
 cover: /media/projects/youxiang-app/cover.jpg
 archiveImages: [/media/projects/youxiang-app/archiveImages/0.jpg, /media/projects/youxiang-app/archiveImages/1.jpg, /media/projects/youxiang-app/archiveImages/2.jpg]

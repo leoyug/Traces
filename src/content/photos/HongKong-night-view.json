@@ -1,0 +1,20 @@
+{
+  "alt": "香港夜景",
+  "src": "/media/photos/HongKong-night-view/src.webp",
+  "order": 63,
+  "size": "short",
+  "orientation": "landscape",
+  "width": 2400,
+  "height": 1601,
+  "draft": false,
+  "publicMetadata": {
+    "capturedAt": "2025-01-21",
+    "place": "香港",
+    "camera": "SONY ILCE-7RM3",
+    "lens": "Sony FE 24-105mm F4 G OSS (SEL24105G)",
+    "focalLength": "31 mm",
+    "aperture": "f/4",
+    "shutterSpeed": "1/100 s",
+    "iso": 2000
+  }
+}

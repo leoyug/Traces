@@ -11,11 +11,12 @@ interface Props extends HTMLAttributes<"span"> {
 }
 
 const { class: className, effect = "none", logos = [], photos = [], ...attributes } = Astro.props;
+const hasPhotoStack = effect === "photo-stack" && photos.length === 6 && new Set(photos.map((photo) => photo.id)).size === 6;
 const hasEffect = effect !== "none" && effect !== "photo-stack";
 const waveId = effect === "wave" ? `wave-${crypto.randomUUID()}` : undefined;
 ---
 
-{effect === "photo-stack" ? <PhotoStackGallery photos={photos} class={className} {...attributes}><span class="dashed-underline"><slot /></span></PhotoStackGallery> : (<span class:list={["dashed-underline", { "dashed-underline--interactive": hasEffect, "dashed-underline--selection": effect === "selection", "dashed-underline--pixel-person": effect === "pixel-person", "dashed-underline--wave": effect === "wave", "dashed-underline--logos": effect === "logos" }, className]} tabindex={hasEffect ? 0 : undefined} {...attributes}><slot />{effect === "selection" && <span class="dashed-underline__frame" aria-hidden="true"><i></i><i></i><i></i><i></i></span>}{effect === "pixel-person" && <PixelPersonPreview />}{effect === "logos" && <span class="dashed-underline__logos" aria-hidden="true">
+{hasPhotoStack ? <PhotoStackGallery photos={photos} class={className} {...attributes}><span class="dashed-underline"><slot /></span></PhotoStackGallery> : (<span class:list={["dashed-underline", { "dashed-underline--interactive": hasEffect, "dashed-underline--selection": effect === "selection", "dashed-underline--pixel-person": effect === "pixel-person", "dashed-underline--wave": effect === "wave", "dashed-underline--logos": effect === "logos" }, className]} tabindex={hasEffect ? 0 : undefined} {...attributes}><slot />{effect === "selection" && <span class="dashed-underline__frame" aria-hidden="true"><i></i><i></i><i></i><i></i></span>}{effect === "pixel-person" && <PixelPersonPreview />}{effect === "logos" && <span class="dashed-underline__logos" aria-hidden="true">
     {logos.slice(0, 3).map((logo, index) => <img src={logo.src} alt={logo.alt} width="40" height="40" decoding="async" draggable="false" style={`--logo-index: ${index}; --logo-image-rotation: ${logo.rotation ?? 0}deg`} />)}
   </span>}{effect === "wave" && <span class="dashed-underline__wave" aria-hidden="true">
     <svg xmlns="http://www.w3.org/2000/svg" focusable="false">

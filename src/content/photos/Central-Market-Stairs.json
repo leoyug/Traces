@@ -1,0 +1,20 @@
+{
+  "alt": "中环街市楼梯",
+  "src": "/media/photos/Central-Market-Stairs/src.webp",
+  "order": 59,
+  "size": "short",
+  "orientation": "landscape",
+  "width": 2400,
+  "height": 1601,
+  "draft": false,
+  "publicMetadata": {
+    "capturedAt": "2025-01-21",
+    "place": "香港",
+    "camera": "SONY ILCE-7RM3",
+    "lens": "Sony FE 24-105mm F4 G OSS (SEL24105G)",
+    "focalLength": "41 mm",
+    "aperture": "f/4",
+    "shutterSpeed": "1/25 s",
+    "iso": 200
+  }
+}

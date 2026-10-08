@@ -1,0 +1,20 @@
+{
+  "alt": "湖面蓝得像果冻",
+  "src": "/media/photos/The-lake's-surface-is-as-blue-as-jelly./src.webp",
+  "order": 42,
+  "size": "short",
+  "orientation": "landscape",
+  "width": 2400,
+  "height": 1601,
+  "draft": false,
+  "publicMetadata": {
+    "capturedAt": "2026-02-03",
+    "place": "九寨沟",
+    "camera": "SONY ILCE-7RM3",
+    "lens": "Sony FE 24-70mm F2.8 GM II (SEL2470GM2)",
+    "focalLength": "63 mm",
+    "aperture": "f/4.5",
+    "shutterSpeed": "1/400 s",
+    "iso": 160
+  }
+}

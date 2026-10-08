@@ -1,0 +1,20 @@
+{
+  "alt": "湖边窗景",
+  "src": "/media/photos/Lakeside-Window-View/src.webp",
+  "order": 55,
+  "size": "short",
+  "orientation": "landscape",
+  "width": 2400,
+  "height": 1601,
+  "draft": false,
+  "publicMetadata": {
+    "capturedAt": "2023-05-20",
+    "place": "千岛湖",
+    "camera": "SONY ILCE-7RM3",
+    "lens": "Sony FE 24-70mm F2.8 GM (SEL2470GM)",
+    "focalLength": "32 mm",
+    "aperture": "f/2.8",
+    "shutterSpeed": "1/500 s",
+    "iso": 80
+  }
+}

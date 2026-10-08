@@ -7,7 +7,7 @@ year: 2026
 projectType: 网页
 status: archive
 role: 待确认
-order: 3
+order: 5
 accent: blue
 cover: /media/projects/inspiration-collection/cover.jpg
 archiveImages: [/media/projects/inspiration-collection/archiveImages/0.jpg, /media/projects/inspiration-collection/archiveImages/1.jpg, /media/projects/inspiration-collection/archiveImages/2.jpg]

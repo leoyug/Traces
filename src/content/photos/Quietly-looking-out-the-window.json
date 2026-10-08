@@ -1,0 +1,20 @@
+{
+  "alt": "静静看着窗外",
+  "src": "/media/photos/Quietly-looking-out-the-window/src.webp",
+  "order": 50,
+  "size": "tall",
+  "orientation": "portrait",
+  "width": 1601,
+  "height": 2400,
+  "draft": false,
+  "publicMetadata": {
+    "capturedAt": "2025-05-05",
+    "place": "宁波",
+    "camera": "SONY ILCE-7RM3",
+    "lens": "Sony FE 24-105mm F4 G OSS (SEL24105G)",
+    "focalLength": "36 mm",
+    "aperture": "f/4",
+    "shutterSpeed": "1/125 s",
+    "iso": 100
+  }
+}

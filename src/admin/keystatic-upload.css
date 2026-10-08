@@ -50,3 +50,117 @@
 .local-content-upload--toolbar:hover {
   color: var(--kui-color-foreground-accent, currentColor);
 }
+
+#keystatic-main-panel > header [role="toolbar"] button:disabled {
+  pointer-events: none;
+}
+
+.local-editor-tooltip {
+  position: fixed;
+  z-index: 100000;
+  box-sizing: border-box;
+  max-width: min(var(--kui-size-alias-single-line-width), calc(100vw - 2 * var(--kui-size-space-regular)));
+  min-height: var(--kui-size-element-small);
+  padding: var(--kui-size-space-regular);
+  border-radius: var(--kui-size-radius-small);
+  background: var(--kui-color-background-inverse);
+  color: var(--kui-color-foreground-inverse);
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transform: translateY(calc(var(--kui-size-space-regular) * -0.5));
+  transition: opacity var(--kui-animation-duration-short) var(--kui-animation-easing-ease-in-out),
+    transform var(--kui-animation-duration-short) var(--kui-animation-easing-ease-in-out);
+}
+
+.local-editor-tooltip[data-open="true"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.local-editor-tooltip-content {
+  display: flex;
+  align-items: center;
+  gap: var(--kui-size-space-small);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .local-editor-tooltip { transition: none; transform: none; }
+}
+
+/* Layout only: labels, help text and controls keep Keystar's shared styling. */
+#keystatic-main-panel [data-local-photo-fields] {
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--kui-size-space-xlarge);
+  row-gap: var(--kui-size-space-xlarge);
+}
+
+#keystatic-main-panel [data-local-photo-field="full"] { grid-column: 1 / -1; }
+#keystatic-main-panel [data-local-photo-field="paired"] { grid-column: auto; }
+#keystatic-main-panel [data-local-photo-field] { min-width: 0; }
+
+#keystatic-main-panel [data-local-photo-control] {
+  width: 100%;
+  max-width: none;
+}
+
+#keystatic-main-panel [data-local-photo-control="order"] > [role="group"] {
+  max-width: calc(2 * var(--kui-size-alias-single-line-width));
+}
+
+@media (min-width: 768px) {
+  #keystatic-main-panel [data-local-photo-fields] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+#keystatic-main-panel [data-local-publication-status="draft"] .kui\:Text,
+#keystatic-main-panel [data-local-featured="false"] .kui\:Text {
+  color: var(--kui-color-foreground-neutral-secondary);
+}
+
+#keystatic-main-panel [data-local-publication-status="published"] .kui\:Text,
+#keystatic-main-panel [data-local-featured="true"] .kui\:Text {
+  color: var(--kui-color-foreground-accent);
+}
+
+/* The body reserves space for its vertical scrollbar; the horizontally scrolling
+   header needs the same viewport width to stay aligned at the right edge. */
+.local-content-table > [role="presentation"]:first-child {
+  margin-inline-end: var(--local-table-scrollbar-width, 0px);
+}
+
+.local-order-toolbar {
+  margin-inline: var(--kui-size-space-regular);
+  margin-top: var(--kui-size-space-regular);
+  flex-shrink: 0;
+  min-height: var(--kui-size-element-large);
+}
+
+.local-order-toolbar button { flex-shrink: 0; min-height: 44px; }
+
+/* Keep the native grip visible, with a full row-height pointer target. */
+.local-content-table [role="button"][draggable="true"] {
+  position: relative !important;
+  clip: auto !important;
+  clip-path: none !important;
+  overflow: visible !important;
+  margin: 0 !important;
+  width: var(--kui-size-icon-regular) !important;
+  height: var(--kui-size-icon-regular) !important;
+  align-items: center;
+  cursor: grab;
+}
+
+.local-content-table [role="button"][draggable="true"]::before {
+  content: "";
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  inset-inline-start: calc((var(--kui-size-icon-regular) - 44px) / 2);
+  inset-block-start: calc((var(--kui-size-icon-regular) - 44px) / 2);
+}
+
+.local-content-table [role="button"][draggable="true"]:active { cursor: grabbing; }
+
+@media (min-width: 768px) {
+  .local-order-toolbar { margin-inline: var(--kui-size-space-xlarge); }
+}

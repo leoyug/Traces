@@ -7,7 +7,7 @@ year: 2025
 status: launched
 role: 产品设计师
 featured: true
-order: 2
+order: 4
 accent: sage
 cover: /media/projects/content-publishing-system/cover.jpg
 archiveImages: []

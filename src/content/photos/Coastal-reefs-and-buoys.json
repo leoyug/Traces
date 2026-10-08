@@ -1,0 +1,20 @@
+{
+  "alt": "海岸礁石和浮标",
+  "src": "/media/photos/Coastal-reefs-and-buoys/src.webp",
+  "order": 28,
+  "size": "short",
+  "orientation": "landscape",
+  "width": 2400,
+  "height": 1601,
+  "draft": false,
+  "publicMetadata": {
+    "capturedAt": "2022-07-22",
+    "place": "青岛",
+    "camera": "SONY ILCE-7RM3",
+    "lens": "FE 24-70mm F2.8 GM II",
+    "focalLength": "70 mm",
+    "aperture": "f/2.8",
+    "shutterSpeed": "1/640 s",
+    "iso": 100
+  }
+}

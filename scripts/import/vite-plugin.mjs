@@ -4,10 +4,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildImportPlan } from "./plan.mjs";
 import { commitImport } from "./commit.mjs";
+import { createOrderStore } from "../content-order/store.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const MAX_REQUEST_BYTES = 82_000_000;
 const plans = new Map();
+const orderStore = createOrderStore(root);
 
 function send(res, status, data) {
   res.writeHead(status, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" });
@@ -101,11 +103,23 @@ export function localContentImport() {
       "astro:server:setup"({ server }) {
         server.middlewares.use(async (req, res, next) => {
           const pathname = new URL(req.url ?? "/", "http://localhost").pathname;
-          const isDashboard = pathname === "/keystatic" || pathname === "/keystatic/";
-          const isCollectionList = /^\/keystatic\/collection\/(projects|articles|photos)\/?$/.test(pathname);
-          const isKeystaticPage = isDashboard || isCollectionList;
-          if (!isKeystaticPage && pathname !== "/content-import" && !pathname.startsWith("/api/content-import/")) return next();
+          const isKeystaticPage = /^\/keystatic(?:\/|$)/.test(pathname);
+          const orderRoute = pathname.match(/^\/api\/content-order\/(projects|photos)(?:\/(undo))?$/);
+          if (!isKeystaticPage && !orderRoute && pathname !== "/content-import" && !pathname.startsWith("/api/content-import/")) return next();
           if (!isLocalRequest(req)) return send(res, 403, { error: "导入功能仅允许本机访问。" });
+          if (orderRoute) {
+            try {
+              const collection = orderRoute[1];
+              if (req.method === "GET" && !orderRoute[2]) return send(res, 200, await orderStore.snapshot(collection));
+              if (req.method !== "POST") return send(res, 405, { error: "请求方法不支持。" });
+              if (!/^application\/json(?:;|$)/i.test(req.headers["content-type"] ?? "")) return send(res, 415, { error: "请使用 JSON 提交排序。" });
+              const request = JSON.parse((await bodyOf(req)).toString("utf8"));
+              const result = orderRoute[2] ? await orderStore.undo(collection, request) : await orderStore.reorder(collection, request);
+              return send(res, 200, result);
+            } catch (error) {
+              return send(res, error.status ?? 400, { error: error.message ?? "顺序保存失败，请重试。" });
+            }
+          }
           if (isKeystaticPage && req.method === "GET") {
             injectKeystaticUploadShortcut(res);
             return next();

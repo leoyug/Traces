@@ -1,0 +1,20 @@
+{
+  "alt": "河边树荫小道",
+  "src": "/media/photos/A-tree-shaded-path-by-the-river/src.webp",
+  "order": 26,
+  "size": "tall",
+  "orientation": "portrait",
+  "width": 1601,
+  "height": 2400,
+  "draft": false,
+  "publicMetadata": {
+    "capturedAt": "2024-01-20",
+    "place": "广州",
+    "camera": "SONY ILCE-7RM3",
+    "lens": "Sony FE 24-105mm F4 G OSS (SEL24105G)",
+    "focalLength": "65 mm",
+    "aperture": "f/4",
+    "shutterSpeed": "1/200 s",
+    "iso": 200
+  }
+}
