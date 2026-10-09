@@ -1,4 +1,5 @@
 ---
+order: 7
 draft: false
 title: 如果没有人阅读，为什么要写博客？
 description: 写博客无需等待掌声；它先帮助自己把想法放到一个可靠的地方。

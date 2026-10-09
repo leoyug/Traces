@@ -1,18 +1,22 @@
 ---
-draft: false
 title: 途途 IP
 description: 围绕 TUTU 形象设计的一系列周边。
 publishedAt: 2026-09-30
-year: 2026
+updatedAt: 2026-10-10
+draft: false
+period: '2026'
 projectType: IP 设计
 status: archive
 role: 待确认
-order: 7
-accent: clay
-cover: /media/projects/tutu-ip/cover.jpg
-archiveImages: [/media/projects/tutu-ip/archiveImages/0.jpg, /media/projects/tutu-ip/archiveImages/1.jpg, /media/projects/tutu-ip/archiveImages/2.jpg]
+featured: false
+order: 3
+cover: /media/projects/tutu-ip/cover.png
+archiveImages:
+  - /media/projects/tutu-ip/archiveImages/0.png
+  - /media/projects/tutu-ip/archiveImages/1.png
+  - /media/projects/tutu-ip/archiveImages/2.png
+relatedArticles: []
 ---
-
 以下内容依据现有项目名称与简介整理，是待核对的展示文案；具体职责、上线时间与项目结果应以实际资料为准。
 
 ## 项目概览

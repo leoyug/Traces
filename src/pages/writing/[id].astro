@@ -16,10 +16,10 @@ const publishedDate = new Intl.DateTimeFormat("zh-CN", { year: "numeric", month:
 const category = entry.data.category ?? entry.data.tags[0];
 ---
 
-<BaseLayout title={`${entry.data.title}｜Leo`} description={entry.data.description} socialImage="/assets/figma-v03/article-detail/figma-cover.png">
+<BaseLayout title={`${entry.data.title}｜Leo`} description={entry.data.description} socialImage={entry.data.cover}>
   <DetailToc headings={headings} ariaLabel="文章目录" className="detail-toc--reading" backHref="/" backLabel="返回主页" returnViaHistory />
   <article class="content-detail reading-column" data-detail-page="article">
-    <img class="content-detail__cover" src="/assets/figma-v03/article-detail/figma-cover.png" alt="一台手绘的老式电脑，屏幕上有放射状线条" width="2250" height="1500" data-route-enter />
+    {entry.data.cover && <img class="content-detail__cover" src={entry.data.cover} alt={entry.data.coverAlt ?? ""} data-route-enter />}
     <header id="overview" data-route-enter>
       <h1>{entry.data.title}</h1>
       {entry.data.subtitle && <p class="article-subtitle">{entry.data.subtitle}</p>}

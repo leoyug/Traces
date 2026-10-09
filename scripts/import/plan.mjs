@@ -5,6 +5,7 @@ import matter from "gray-matter";
 import mammoth from "mammoth";
 import TurndownService from "turndown";
 import { explicitPublicPhotoMetadata, readPublicPhotoMetadataFromBuffer } from "./photo-metadata.mjs";
+import { normalizeProjectStatus } from "../../src/lib/project-status.js";
 
 const imagePattern = /\.(jpe?g|png|webp|avif)$/i;
 const markdownPattern = /\.(md|mdx)$/i;
@@ -136,14 +137,8 @@ export async function buildImportPlan(files, root, category) {
   const usedImages = new Set();
   const items = [];
   const documents = [];
-  let nextProjectOrder = 1;
-  for (const name of await readdir(path.join(root, "src/content/projects"))) {
-    if (!name.endsWith(".md")) continue;
-    try {
-      const project = matter(await readFile(path.join(root, "src/content/projects", name), "utf8"));
-      nextProjectOrder = Math.max(nextProjectOrder, Number(project.data.order || 0) + 1);
-    } catch { /* Existing content validation reports invalid records. */ }
-  }
+  let nextProjectOrder = existing.project.size + 1;
+  let nextArticleOrder = existing.article.size + 1;
   for (const file of normalized.filter((candidate) => category !== "photo" && markdownPattern.test(candidate.path))) {
     const parsed = matter(file.buffer.toString("utf8"));
     const kind = category;
@@ -160,13 +155,15 @@ export async function buildImportPlan(files, root, category) {
     };
     if (kind === "project") {
       const year = Number(payload.year);
-      payload.year = Number.isInteger(year) && year >= 2000 && year <= 2100 ? year : Number(payload.publishedAt.slice(0, 4));
-      payload.status = ["launched", "experiment", "archive"].includes(payload.status) ? payload.status : "archive";
-      payload.role = tidy(payload.role) || "待补充";
+      payload.period = tidy(payload.period) || String(Number.isInteger(year) && year >= 2000 && year <= 2100 ? year : Number(payload.publishedAt.slice(0, 4)));
+      delete payload.year;
+      payload.status = normalizeProjectStatus(payload);
+      delete payload.label;
+      delete payload.accent;
       payload.featured = false;
-      payload.order = Number.isInteger(Number(payload.order)) && Number(payload.order) >= 0 ? Number(payload.order) : nextProjectOrder++;
-      payload.accent = ["clay", "sage", "blue"].includes(payload.accent) ? payload.accent : "clay";
+      payload.order = nextProjectOrder++;
     } else {
+      payload.order = nextArticleOrder++;
       payload.tags = Array.isArray(payload.tags) ? payload.tags.map(String) : [];
       const readingMinutes = Number(payload.readingMinutes);
       payload.readingMinutes = Number.isInteger(readingMinutes) && readingMinutes >= 1 ? readingMinutes : words(parsed.content);
@@ -184,7 +181,7 @@ export async function buildImportPlan(files, root, category) {
     if (!parsed.data.title) item.warnings.push("标题来自文件名，请核对。");
     if (slug.startsWith("entry-")) item.warnings.push("短名由中文文件名自动生成，请在首次发布前核对网址短名。");
     if (!parsed.data.description) item.warnings.push("摘要从正文提取，请核对。");
-    if (kind === "project" && !parsed.data.role) item.warnings.push("项目职责待补充。");
+    if (kind === "project" && !tidy(parsed.data.period) && !parsed.data.year) item.warnings.push("未提供项目时间，暂用发布年份，请核对实际项目时间。");
     items.push(item);
     documents.push({ ...file, body: parsed.content, item });
   }

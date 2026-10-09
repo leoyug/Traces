@@ -1,4 +1,5 @@
 ---
+order: 4
 draft: false
 title: NOW
 description: 近期在读、在看、在玩与持续更新的生活记录。

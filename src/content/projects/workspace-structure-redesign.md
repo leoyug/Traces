@@ -1,20 +1,20 @@
 ---
 title: 复杂工作台的结构重构
 description: 在六周内统一任务、资产与协作流，建立可扩展的页面骨架。
-draft: true
 publishedAt: 2026-06-20
-year: 2026
+updatedAt: 2026-10-10
+draft: true
+period: '2026'
 status: launched
 role: 设计工程师
-featured: true
-order: 1
-accent: clay
-privacyNote: 案例中的公司标识、业务名称与部分数据经过抽象处理。
-relatedArticles: [clarity-before-components]
+featured: false
+order: 4
 cover: /media/projects/workspace-structure-redesign/cover.jpg
 archiveImages: []
+privacyNote: 案例中的公司标识、业务名称与部分数据经过抽象处理。
+relatedArticles:
+  - clarity-before-components
 ---
-
 ## 背景与约束
 
 团队的任务、资产和协作信息分散在三套结构中。新增能力时，页面不断复制相似模块，却没有共同的状态和操作语言。

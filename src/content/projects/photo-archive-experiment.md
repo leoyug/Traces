@@ -3,12 +3,11 @@ title: 照片档案实验
 description: 围绕稳定链接、照片顺序与隐私元数据的个人摄影工具。
 draft: true
 publishedAt: 2026-07-10
-year: 2026
+period: "2026"
 status: experiment
 role: 独立设计与开发
 featured: false
-order: 6
-accent: blue
+order: 8
 relatedArticles: [a-living-archive]
 cover: /media/projects/photo-archive-experiment/cover.jpg
 archiveImages: []

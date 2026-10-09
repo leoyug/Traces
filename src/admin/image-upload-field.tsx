@@ -8,7 +8,7 @@ import { DropZone } from "@keystar/ui/drag-and-drop";
 import { FieldMessage } from "@keystar/ui/field";
 import { Content } from "@keystar/ui/slots";
 import { Heading, Text } from "@keystar/ui/typography";
-import { useEffect, useLayoutEffect, useRef, useState, type ComponentProps } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ComponentProps } from "react";
 
 type ImageField = ReturnType<typeof fields.image>;
 type ImageInputProps = ComponentProps<ImageField["Input"]>;
@@ -18,6 +18,17 @@ const clipboardExtensions: Record<string, string> = {
   "image/bmp": "bmp", "image/tiff": "tiff",
 };
 
+function transferFiles(transfer: DataTransfer): File[] {
+  // Read synchronously: browsers clear the transfer after the event returns.
+  // FileList also works when Safari omits items or no filesystem entry exists.
+  const files = Array.from(transfer.files);
+  if (files.length) return files;
+  return Array.from(transfer.items)
+    .filter(item => item.kind === "file")
+    .map(item => item.getAsFile())
+    .filter((file): file is File => file !== null);
+}
+
 // Keep Keystatic's chooser, preview and asset serialization intact.
 function ImageUploadInput({ field, transformFilename, derivePhotoLayout, ...props }: ImageInputProps & {
   field: ImageField;
@@ -26,7 +37,7 @@ function ImageUploadInput({ field, transformFilename, derivePhotoLayout, ...prop
 }) {
   const host = useRef<HTMLDivElement>(null);
   const dropZone = useRef<HTMLDivElement>(null);
-  const chooser = useRef<HTMLButtonElement | null>(null);
+  const chooser = useRef<HTMLInputElement>(null);
   const revision = useRef(0);
   const reading = useRef(false);
   const metadataUpload = useRef<Uint8Array | null>(null);
@@ -80,10 +91,10 @@ function ImageUploadInput({ field, transformFilename, derivePhotoLayout, ...prop
     return () => controller.abort();
   }, [imageData, derivePhotoLayout, props.value?.filename]);
   useLayoutEffect(() => {
-    chooser.current = host.current?.querySelector(".local-image-upload-preview button") ?? null;
-    if (chooser.current) {
-      chooser.current.dataset.localImageChooser = "";
-      chooser.current.parentElement!.dataset.localImageNativeActions = "";
+    const nativeChooser = host.current?.querySelector<HTMLButtonElement>(".local-image-upload-preview button");
+    if (nativeChooser) {
+      nativeChooser.dataset.localImageChooser = "";
+      nativeChooser.parentElement!.dataset.localImageNativeActions = "";
     }
     const nativePreview = host.current?.querySelector(".local-image-upload-preview");
     const decorateThumbnail = () => {
@@ -112,7 +123,7 @@ function ImageUploadInput({ field, transformFilename, derivePhotoLayout, ...prop
     if (props.forceValidation) setShowValidation(true);
   }, [props.forceValidation]);
 
-  async function receive(getFiles: () => Promise<File[]>) {
+  const receive = useCallback(async (getFiles: () => Promise<File[]>) => {
     if (reading.current) return;
     const request = ++revision.current;
     reading.current = true;
@@ -121,11 +132,13 @@ function ImageUploadInput({ field, transformFilename, derivePhotoLayout, ...prop
     setMessage("正在读取图片…");
     try {
       const files = await getFiles();
-      if (files.length !== 1) throw new Error(files.length ? "一次请选择一张图片。" : "没有找到图片，请复制图片后重试。");
+      if (files.length !== 1) throw new Error(files.length ? "一次只能添加一张图片，请逐张上传。" : "没有读取到图片文件，请从本机拖入图片或使用「选择文件」。");
       const file = files[0];
-      if (!file.type.startsWith("image/") && !/\.(jpe?g|png|webp|avif|gif|svg|bmp|tiff?)$/i.test(file.name)) {
-        throw new Error("请选择图片文件。");
+      const supportedExtension = /\.(jpe?g|png|webp|avif|gif|svg|bmp)$/i.test(file.name);
+      if (!clipboardExtensions[file.type] && !supportedExtension) {
+        throw new Error(`「${file.name}」的格式不受支持，请转换为 JPG、PNG 或 WebP 后重试。`);
       }
+      if (file.size === 0) throw new Error(`「${file.name}」是空文件，请重新导出图片后重试。`);
       if (file.size > 80_000_000) throw new Error("图片超过 80 MB，请选择较小的图片。");
       const url = URL.createObjectURL(file);
       try {
@@ -133,13 +146,18 @@ function ImageUploadInput({ field, transformFilename, derivePhotoLayout, ...prop
         image.src = url;
         await image.decode();
       } catch {
-        throw new Error("无法读取这张图片，请检查文件或换一张图片。");
+        throw new Error(`无法解码「${file.name}」：文件可能已损坏，或当前浏览器不支持该图片格式。请重新导出为 JPG、PNG 或 WebP 后重试。`);
       } finally {
         URL.revokeObjectURL(url);
       }
       const extension = file.name.match(/\.([^.]+)$/)?.[1] || clipboardExtensions[file.type];
       if (!extension) throw new Error("无法识别图片格式，请另存为 JPG 或 PNG 后重试。");
-      const data = new Uint8Array(await file.arrayBuffer());
+      let data: Uint8Array;
+      try {
+        data = new Uint8Array(await file.arrayBuffer());
+      } catch {
+        throw new Error(`无法读取「${file.name}」，请确认文件仍在本机且有读取权限，再重新选择。`);
+      }
       if (revision.current !== request) return;
       const filename = file.name.match(/\.[^.]+$/) ? file.name : `粘贴图片.${extension}`;
       metadataUpload.current = data;
@@ -153,7 +171,32 @@ function ImageUploadInput({ field, transformFilename, derivePhotoLayout, ...prop
       reading.current = false;
       if (revision.current === request) setBusy(false);
     }
-  }
+  }, [props.onChange, transformFilename]);
+
+  useEffect(() => {
+    if (props.value !== null) return;
+    const document = host.current?.ownerDocument;
+    if (!document) return;
+    const isFocused = () => dropZone.current?.contains(document.activeElement);
+    const beforePaste = (event: Event) => {
+      // Safari dispatches clipboard events on the body and needs this to enable
+      // Paste for a focused, non-editable drop-zone button.
+      if (isFocused()) event.preventDefault();
+    };
+    const paste = (event: ClipboardEvent) => {
+      if (!isFocused() || !event.clipboardData) return;
+      const files = transferFiles(event.clipboardData);
+      event.preventDefault();
+      event.stopPropagation();
+      void receive(async () => files);
+    };
+    document.addEventListener("beforepaste", beforePaste, true);
+    document.addEventListener("paste", paste, true);
+    return () => {
+      document.removeEventListener("beforepaste", beforePaste, true);
+      document.removeEventListener("paste", paste, true);
+    };
+  }, [props.value, receive]);
 
   const NativeInput = field.Input;
   function changeImage(value: ImageInputProps["value"]) {
@@ -181,13 +224,6 @@ function ImageUploadInput({ field, transformFilename, derivePhotoLayout, ...prop
   return <div ref={host} className="local-image-upload" data-has-image={props.value !== null} onClick={event => {
     // React portal events bubble to this field, including the native dialog's padding.
     if ((event.target as HTMLElement).closest(".local-image-preview-dialog")) setPreviewSrc(null);
-  }} onPasteCapture={event => {
-    if (props.value !== null) return;
-    const files = [...event.clipboardData.files];
-    if (!files.length) return;
-    event.preventDefault();
-    event.stopPropagation();
-    void receive(async () => files);
   }}>
     <div className="local-image-upload-preview" onClick={event => openPreview(event.target)} onKeyDown={event => {
       if ((event.key === "Enter" || event.key === " ") && (event.target as HTMLElement).matches("[data-local-image-thumbnail]")) {
@@ -196,6 +232,14 @@ function ImageUploadInput({ field, transformFilename, derivePhotoLayout, ...prop
       }
     }}><NativeInput key={inputKey} {...props} forceValidation={showValidation} onChange={changeImage} /></div>
     <div className="local-image-upload-zone" aria-disabled={busy}
+      onDropCapture={event => {
+        if (props.value !== null) return;
+        const files = transferFiles(event.dataTransfer);
+        event.preventDefault();
+        void receive(async () => files);
+        // Let DropZone clear its drag highlight. receive ignores the duplicate
+        // callback while this native file transfer is being read.
+      }}
       onClick={event => {
         if (!(event.target as HTMLElement).closest("button")) dropZone.current?.querySelector("button")?.focus();
       }}
@@ -207,18 +251,31 @@ function ImageUploadInput({ field, transformFilename, derivePhotoLayout, ...prop
         if (!busy) chooser.current?.click();
       }}>
       <DropZone ref={dropZone} aria-label={`${field.label}拖放或粘贴上传`}
-        // React Aria exposes file MIME types, not DataTransfer's "Files" marker.
-        // Unknown MIME types are checked by filename and decoding after the drop.
-        getDropOperation={types => !busy && (types.has("image/*") || types.has("application/octet-stream")) ? "copy" : "cancel"}
-        onDrop={event => { void receive(async () => Promise.all(event.items.filter(item => item.kind === "file").map(item => item.getFile()))); }}
+        isDisabled={busy || props.value !== null}
+        // Accept the gesture first so unsupported inputs also reach validation
+        // and produce feedback instead of being silently rejected by React Aria.
+        getDropOperation={() => !busy ? "copy" : "cancel"}
+        onDrop={event => {
+          if (busy || props.value !== null) return;
+          const files = event.items.filter(item => item.kind === "file");
+          void receive(() => Promise.all(files.map(item => item.getFile())));
+        }}
         UNSAFE_className="local-image-drop-zone">
         <ActionButton isDisabled={busy} onPress={() => chooser.current?.click()}>选择文件</ActionButton>
         <Text slot="label">拖放图片到这里</Text>
-        <Text size="small" color="neutralSecondary">聚焦此区域后按 Ctrl+V 或 Command+V 粘贴图片</Text>
+        <Text size="small" color="neutralSecondary">聚焦后按 ⌘V / Ctrl+V 粘贴图片</Text>
       </DropZone>
     </div>
+    <input ref={chooser} type="file" accept="image/*" hidden disabled={busy} onChange={event => {
+      const files = Array.from(event.currentTarget.files ?? []);
+      event.currentTarget.value = "";
+      if (files.length) void receive(async () => files);
+    }} />
+    <div role="alert" aria-atomic="true" className="local-image-upload-error">
+      {error ? <FieldMessage>图片未添加：{error}</FieldMessage> : null}
+    </div>
     <div role="status" aria-live="polite" className="local-image-upload-status">
-      {error ? <FieldMessage>{error}</FieldMessage> : (message || metadataMessage) ? <Text size="small" color="neutralSecondary">{[message, metadataMessage].filter(Boolean).join(" ")}</Text> : null}
+      {(message || metadataMessage) ? <Text size="small" color="neutralSecondary">{[message, metadataMessage].filter(Boolean).join(" ")}</Text> : null}
     </div>
     {props.value !== null && <Button tone="critical" prominence="low" UNSAFE_className="local-image-remove" onPress={() => changeImage(null)}>移除</Button>}
     <DialogContainer isDismissable onDismiss={() => setPreviewSrc(null)}>

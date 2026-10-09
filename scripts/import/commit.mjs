@@ -3,12 +3,14 @@ import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
 import sharp from "sharp";
+import { createOrderStore } from "../content-order/store.mjs";
+import { withContentLock } from "../content-order/lock.mjs";
 
 const contentFolder = { project: "projects", article: "articles", photo: "photos" };
 const assetFolder = { project: "projects", article: "articles", photo: "photos", "project-image": "projects" };
 const allowed = {
-  project: ["title", "description", "publishedAt", "updatedAt", "draft", "year", "status", "role", "featured", "order", "accent", "cover", "archiveImages", "privacyNote", "relatedArticles"],
-  article: ["title", "description", "publishedAt", "updatedAt", "draft", "tags", "readingMinutes", "featured", "relatedProjects"],
+  project: ["title", "description", "publishedAt", "updatedAt", "draft", "period", "status", "role", "featured", "order", "cover", "archiveImages", "privacyNote", "relatedArticles"],
+  article: ["title", "description", "publishedAt", "updatedAt", "draft", "order", "tags", "readingMinutes", "featured", "relatedProjects"],
 };
 
 function selectFields(kind, data) {
@@ -45,8 +47,21 @@ function replaceImageLinks(body, documentPath, assets) {
 }
 
 export async function commitImport(plan, selectedIds, root) {
+  const collections = [...new Set(plan.items.filter(item => selectedIds.includes(item.id) && item.action !== "skip")
+    .map(item => contentFolder[item.kind] ?? (item.kind === "project-image" ? "projects" : null)).filter(Boolean))].sort();
+  for (const collection of collections) await createOrderStore(root).normalize(collection);
+  const locked = index => index === collections.length ? commitSelected(plan, selectedIds, root)
+    : withContentLock(root, collections[index], () => locked(index + 1));
+  return locked(0);
+}
+
+async function commitSelected(plan, selectedIds, root) {
   const selected = plan.items.filter((item) => selectedIds.includes(item.id) && item.action !== "skip");
   if (!selected.length) throw new Error("没有可导入的内容。");
+  const nextOrders = {};
+  for (const collection of new Set(selected.map(item => contentFolder[item.kind]).filter(Boolean))) {
+    nextOrders[collection] = (await createOrderStore(root).snapshot(collection)).entries.length + 1;
+  }
   const created = [];
   const backups = [];
   const results = [];
@@ -78,7 +93,10 @@ export async function commitImport(plan, selectedIds, root) {
       }
       if (item.kind === "project" || item.kind === "article") {
         const data = selectFields(item.kind, { ...item.payload });
+        // Resolve against current files at commit time, not the import preview.
+        data.order = nextOrders[contentFolder[item.kind]]++;
         if (item.kind === "project") {
+          data.updatedAt = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
           if (data.cover && !(await existingPublicAsset(root, data.cover))) delete data.cover;
           if (Array.isArray(data.archiveImages)) {
             const valid = await Promise.all(data.archiveImages.map((value) => existingPublicAsset(root, value)));
@@ -99,7 +117,7 @@ export async function commitImport(plan, selectedIds, root) {
         if (!photo) throw new Error(`照片 ${item.slug} 缺少图片。`);
         if (photo.metadata.width === photo.metadata.height) throw new Error(`照片 ${item.slug} 是正方形，当前摄影布局暂不支持。`);
         const portrait = photo.metadata.height > photo.metadata.width;
-        const data = { src: photo.url, alt: item.payload.alt, order: item.payload.order, size: portrait ? "tall" : "short", orientation: portrait ? "portrait" : "landscape", width: photo.metadata.width, height: photo.metadata.height, draft: true,
+        const data = { src: photo.url, alt: item.payload.alt, order: nextOrders.photos++, size: portrait ? "tall" : "short", orientation: portrait ? "portrait" : "landscape", width: photo.metadata.width, height: photo.metadata.height, draft: true,
           ...(item.payload.publicMetadata ? { publicMetadata: item.payload.publicMetadata } : {}) };
         const target = path.join(root, "src/content/photos", `${item.slug}.json`);
         await writeFile(target, `${JSON.stringify(data, null, 2)}\n`, { flag: "wx" });

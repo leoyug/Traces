@@ -11,7 +11,7 @@ const groups = [...articles.reduce((years, article) => {
   const year = String(article.data.publishedAt.getFullYear());
   years.set(year, [...(years.get(year) ?? []), article]);
   return years;
-}, new Map<string, typeof articles>()).entries()];
+}, new Map<string, typeof articles>()).entries()].map(([year, entries]) => [year, entries.sort((a, b) => a.data.order - b.data.order)] as const);
 ---
 
 <BaseLayout title="写作｜Leo" description="生活、设计与学习记录。">

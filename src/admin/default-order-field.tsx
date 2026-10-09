@@ -1,9 +1,10 @@
 import { fields } from "@keystatic/core";
 import { Text } from "@keystar/ui/typography";
+import { NumberField } from "@keystar/ui/number-field";
 import { useEffect, useLayoutEffect, useRef, useState, type ComponentProps } from "react";
 
 type OrderField = ReturnType<typeof fields.integer>;
-type Collection = "photos" | "projects";
+type Collection = "photos" | "projects" | "articles";
 type InputProps = ComponentProps<OrderField["Input"]>;
 
 function DefaultOrderInput({ field, collection, ...props }: InputProps & {
@@ -13,7 +14,11 @@ function DefaultOrderInput({ field, collection, ...props }: InputProps & {
   const host = useRef<HTMLDivElement>(null);
   const latest = useRef(props);
   const [failed, setFailed] = useState(false);
-  useLayoutEffect(() => { latest.current = props; });
+  const [creating, setCreating] = useState(false);
+  useLayoutEffect(() => {
+    latest.current = props;
+    setCreating(host.current?.closest("form")?.id === "item-create-form");
+  });
 
   useEffect(() => {
     setFailed(false);
@@ -52,7 +57,9 @@ function DefaultOrderInput({ field, collection, ...props }: InputProps & {
 
   const NativeInput = field.Input;
   return <div ref={host}>
-    <NativeInput {...props} />
+    {creating && !failed
+      ? <NumberField label="展示顺序" description="新增内容自动排在末尾；保存后可修改位置，或在列表中拖动排序。" value={props.value ?? undefined} isReadOnly />
+      : <NativeInput {...props} />}
     {failed && <Text size="small" color="neutralSecondary" role="status">暂时无法获取末尾序号，请刷新页面或手动填写。</Text>}
   </div>;
 }

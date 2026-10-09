@@ -5,6 +5,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import { withContentLock } from "../content-order/lock.mjs";
 import { uploadPositions } from "./upload-order.mjs";
+import { createOrderStore } from "../content-order/store.mjs";
 
 const formats = { photos: ".json", projects: ".md", articles: ".md" };
 const conflict = () => Object.assign(new Error("内容已在其他页面修改，请刷新列表后重新选择。"), { status: 409 });
@@ -119,7 +120,7 @@ export function createBatchStore(root) {
   return {
     async snapshot(collection) { return publicSnapshot(await read(collection), collection); },
     async apply(collection, request) {
-      return withContentLock(root, collection, async () => {
+      const result = await withContentLock(root, collection, async () => {
         const snapshot = await read(collection);
         if (request.version !== snapshot.version) throw conflict();
         if (!["publish", "draft", "delete"].includes(request.action)) throw new Error("批量操作无效。");
@@ -130,6 +131,11 @@ export function createBatchStore(root) {
         else await saveStatus(collection, snapshot, selected, request.action === "draft");
         return { ...await publicSnapshot(await read(collection), collection), affected: selected.length };
       });
+      if (request.action === "delete") {
+        await createOrderStore(root).normalize(collection);
+        return { ...await publicSnapshot(await read(collection), collection), affected: result.affected };
+      }
+      return result;
     },
   };
 }

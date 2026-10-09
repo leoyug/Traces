@@ -97,9 +97,9 @@ test("invalid requests and stale versions leave every record intact", async t =>
 
 test("photo deletion moves records and unshared assets out of public and retains shared assets", async t => {
   const { store, root, read } = await fixture(t, {
-    "src/content/photos/a.json": '{"draft": false,"src":"/media/photos/a/src.jpg"}',
-    "src/content/photos/b.json": '{"draft": false,"src":"/media/photos/shared/src.jpg"}',
-    "src/content/photos/c.json": '{"draft": false,"src":"/media/photos/shared/src.jpg"}',
+    "src/content/photos/a.json": '{"order":1,"draft": false,"src":"/media/photos/a/src.jpg"}',
+    "src/content/photos/b.json": '{"order":2,"draft": false,"src":"/media/photos/shared/src.jpg"}',
+    "src/content/photos/c.json": '{"order":3,"draft": false,"src":"/media/photos/shared/src.jpg"}',
     "public/media/photos/a/src.jpg": "A image",
     "public/media/photos/shared/src.jpg": "shared image",
   });
@@ -109,6 +109,7 @@ test("photo deletion moves records and unshared assets out of public and retains
   await assert.rejects(read("public/media/photos/a/src.jpg"), { code: "ENOENT" });
   assert.equal(await read("public/media/photos/shared/src.jpg"), "shared image");
   assert.deepEqual((await store.snapshot("photos")).entries.map(entry => entry.slug), ["c"]);
+  assert.equal(JSON.parse(await read("src/content/photos/c.json")).order, 1);
   const [backup] = await readdir(path.join(root, "private/content-trash"));
   assert.equal(await read(`private/content-trash/${backup}/public/media/photos/a/src.jpg`), "A image");
 });

@@ -5,6 +5,70 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { createOrderStore } from "./store.mjs";
 
+const addition = (collection, slug, raw) => ({ path: `src/content/${collection}/${slug}.${collection === "photos" ? "json" : "md"}`, contents: Buffer.from(raw).toString("base64url") });
+const document = (collection, order, title) => collection === "photos"
+  ? JSON.stringify({ order, alt: title, draft: true })
+  : `---\norder: ${order}\ntitle: ${title}\npublishedAt: 2026-10-10\ndraft: true\n---\n正文不变。\n`;
+
+function writer(folder) {
+  const root = path.resolve(folder, "../../..");
+  return async updates => {
+    for (const file of updates.additions) await writeFile(path.join(root, file.path), Buffer.from(file.contents, "base64url"));
+    for (const file of updates.deletions) await rm(path.join(root, file.path), { force: true });
+  };
+}
+
+for (const collection of ["projects", "photos", "articles"]) {
+  test(`${collection}: edits insert at a position; stale new-item defaults append; deletion closes gaps`, async t => {
+    const extension = collection === "photos" ? "json" : "md";
+    const { store, folder } = await fixture(t, collection, {
+      [`a.${extension}`]: document(collection, 1, "A"),
+      [`b.${extension}`]: document(collection, 2, "B"),
+      [`c.${extension}`]: document(collection, 3, "C"),
+    });
+    const save = writer(folder);
+    await store.update({ additions: [addition(collection, "c", document(collection, 1, "C 改名"))], deletions: [] }, save);
+    assert.deepEqual((await store.snapshot(collection)).entries.map(entry => [entry.slug, entry.order]), [["c", 1], ["a", 2], ["b", 3]]);
+    assert.match(await readFile(path.join(folder, `c.${extension}`), "utf8"), /C 改名/);
+    // Both create forms opened when position 4 was the end; the second must append at 5.
+    for (const slug of ["d", "e"]) await store.update({ additions: [addition(collection, slug, document(collection, 4, slug))], deletions: [] }, save);
+    assert.deepEqual((await store.snapshot(collection)).entries.map(entry => [entry.slug, entry.order]), [["c", 1], ["a", 2], ["b", 3], ["d", 4], ["e", 5]]);
+    await store.update({ additions: [], deletions: [{ path: `src/content/${collection}/a.${extension}` }] }, save);
+    assert.deepEqual((await store.snapshot(collection)).entries.map(entry => [entry.slug, entry.order]), [["c", 1], ["b", 2], ["d", 3], ["e", 4]]);
+  });
+}
+
+test("legacy article numbering preserves date order and original text; normalization is idempotent", async t => {
+  const old = "---\r\ntitle: 较早\r\npublishedAt: 2025-01-01\r\n---\r\n\r\n正文 order: 88\r\n";
+  const recent = "---\ntitle: 较新\npublishedAt: 2026-01-01\n---\n\n# 原文\n";
+  const { store, folder } = await fixture(t, "articles", { "old.md": old, "recent.md": recent });
+  const snapshot = await store.normalize("articles");
+  assert.deepEqual(snapshot.entries.map(entry => [entry.slug, entry.order]), [["recent", 1], ["old", 2]]);
+  assert.equal(await readFile(path.join(folder, "old.md"), "utf8"), old.replace("---\r\n", "---\r\norder: 2\r\n"));
+  assert.deepEqual(await store.normalize("articles"), snapshot);
+});
+
+test("native CMS save returns hashes for the final shifted files", async t => {
+  const { makeGenericAPIRouteHandler } = await import("@keystatic/core/api/generic");
+  const { fields } = await import("@keystatic/core");
+  const { store, folder } = await fixture(t, "projects", {
+    "a.md": document("projects", 1, "A"), "b.md": document("projects", 2, "B"),
+  });
+  const root = path.resolve(folder, "../../..");
+  const handler = makeGenericAPIRouteHandler({ localBaseDirectory: root, config: {
+    storage: { kind: "local" }, collections: { projects: {
+      path: "src/content/projects/*", schema: { order: fields.integer({ label: "顺序" }) },
+    } },
+  } });
+  const response = await store.update({ additions: [addition("projects", "b", document("projects", 1, "B"))], deletions: [] }, updates => handler(new Request("http://localhost/api/keystatic/update", {
+    method: "POST", headers: { "content-type": "application/json", "no-cors": "1" }, body: JSON.stringify(updates),
+  })));
+  assert.equal(response.status, 200);
+  assert.deepEqual((await store.snapshot("projects")).entries.map(entry => [entry.slug, entry.order]), [["b", 1], ["a", 2]]);
+  const tree = await handler(new Request("http://localhost/api/keystatic/tree", { headers: { "no-cors": "1" } }));
+  assert.equal(response.body, tree.body);
+});
+
 async function fixture(t, collection, documents) {
   const root = await mkdtemp(path.join(tmpdir(), "content-order-"));
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -67,7 +131,7 @@ test("invalid IDs and unsupported collections never write content", async (t) =>
   for (const keys of [["../a"], ["a", "a"], ["missing"]]) {
     await assert.rejects(store.reorder("photos", { version: before.version, keys, target: { key: "b", dropPosition: "after" } }));
   }
-  await assert.rejects(store.snapshot("articles"));
+  await assert.rejects(store.snapshot("resume"));
   assert.equal((await store.snapshot("photos")).version, before.version);
   assert.equal(await readFile(path.join(folder, "a.json"), "utf8"), '{\n "order": 1\n}');
 });

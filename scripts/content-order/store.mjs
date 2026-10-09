@@ -6,7 +6,7 @@ import matter from "gray-matter";
 import { moveEntries } from "../../src/admin/collection-order.js";
 import { withContentLock } from "./lock.mjs";
 
-const formats = { projects: ".md", photos: ".json" };
+const formats = { projects: ".md", photos: ".json", articles: ".md" };
 const conflict = () => Object.assign(new Error("内容已在其他页面修改，请刷新列表后重试。"), { status: 409 });
 
 export function createOrderStore(root) {
@@ -21,6 +21,7 @@ export function createOrderStore(root) {
       const filepath = path.join(folder, name);
       const raw = await readFile(filepath, "utf8");
       const data = extension === ".json" ? JSON.parse(raw) : matter(raw).data;
+      if (collection === "articles" && data.order === undefined) data.order = 0;
       if (!Number.isSafeInteger(data.order) || data.order < (collection === "photos" ? 1 : 0)) {
         throw new Error(`展示顺序无效：${name}。请先在编辑页填写有效数字。`);
       }
@@ -36,12 +37,16 @@ export function createOrderStore(root) {
 
   function patchOrder(file, order) {
     if (file.filepath.endsWith(".json")) {
-      const matches = [...file.raw.matchAll(/^(\s*"order"\s*:\s*)(\d+)(?=\s*[,}])/gm)];
+      const matches = [...file.raw.matchAll(/("order"\s*:\s*)(\d+)(?=\s*[,}])/g)];
       if (matches.length !== 1 || Number(matches[0][2]) !== file.order) throw new Error(`无法更新展示顺序：${file.slug}`);
-      return file.raw.replace(/^(\s*"order"\s*:\s*)(\d+)(?=\s*[,}])/m, (_, prefix) => `${prefix}${order}`);
+      return file.raw.replace(/("order"\s*:\s*)(\d+)(?=\s*[,}])/, (_, prefix) => `${prefix}${order}`);
     }
     const frontmatter = file.raw.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
     const matches = [...(frontmatter?.[1] ?? "").matchAll(/^(order:[ \t]*)(\d+)([ \t]*(?:#.*)?\r?)$/gm)];
+    if (frontmatter && matches.length === 0 && file.order === 0 && !/^order:/m.test(frontmatter[1])) {
+      const eol = file.raw.includes("\r\n") ? "\r\n" : "\n";
+      return frontmatter[0].replace(/^---\r?\n/, `---${eol}order: ${order}${eol}`) + file.raw.slice(frontmatter[0].length);
+    }
     if (matches.length !== 1 || Number(matches[0][2]) !== file.order) throw new Error(`无法更新展示顺序：${file.slug}`);
     const updated = frontmatter[0].replace(/^(order:[ \t]*)(\d+)([ \t]*(?:#.*)?\r?)$/m,
       (_, prefix, _value, suffix) => `${prefix}${order}${suffix}`);
@@ -80,6 +85,56 @@ export function createOrderStore(root) {
   }
 
   return {
+    async normalize(collection) {
+      return mutate(collection, async () => {
+        const snapshot = await read(collection);
+        const orders = new Map(snapshot.entries.map((entry, index) => [entry.slug, index + 1]));
+        const changes = snapshot.files.filter(file => file.order !== orders.get(file.slug))
+          .map(file => ({ filepath: file.filepath, before: file.raw, after: patchOrder(file, orders.get(file.slug)) }));
+        if (changes.length) await persist(collection, snapshot, changes);
+        return publicSnapshot(await read(collection));
+      });
+    },
+    // Include every affected position in the native CMS save, so its returned
+    // tree contains the final file hashes rather than a stale pre-reorder tree.
+    async update(updates, save) {
+      const collectionOf = value => typeof value === "string" ? value.match(/^src\/content\/(projects|photos|articles)\/[^/]+\.(md|json)$/)?.[1] : undefined;
+      if (!Array.isArray(updates?.additions) || !Array.isArray(updates?.deletions)) return save(updates);
+      const touched = [...new Set([...updates.additions, ...updates.deletions].map(file => collectionOf(file?.path)).filter(Boolean))].sort();
+      const run = async () => {
+        const additions = new Map(updates.additions.map(file => [file.path, file]));
+        const deleted = new Set(updates.deletions.map(file => file.path));
+        for (const collection of touched) {
+          const snapshot = await read(collection);
+          const originals = new Map(snapshot.files.map(file => [path.relative(root, file.filepath), file]));
+          const files = new Map([...originals].filter(([name]) => !deleted.has(name)));
+          let ordered = snapshot.entries.map(entry => `src/content/${collection}/${entry.slug}${formats[collection]}`).filter(name => files.has(name));
+          for (const addition of updates.additions.filter(file => collectionOf(file.path) === collection)) {
+            if (typeof addition.contents !== "string") throw new Error("内容无效。");
+            const raw = Buffer.from(addition.contents, "base64url").toString("utf8");
+            const order = (formats[collection] === ".json" ? JSON.parse(raw) : matter(raw).data).order;
+            if (!Number.isSafeInteger(order) || order < 1) throw new Error("展示位置必须是从 1 开始的整数。");
+            const original = originals.get(addition.path);
+            files.set(addition.path, { filepath: path.join(root, addition.path), raw, order, slug: addition.path });
+            if (!ordered.includes(addition.path)) ordered.push(addition.path);
+            else if (original && order !== original.order) {
+              ordered = ordered.filter(name => name !== addition.path);
+              ordered.splice(Math.min(order - 1, ordered.length), 0, addition.path);
+            }
+          }
+          ordered.forEach((name, index) => {
+            const file = files.get(name);
+            if (file.order !== index + 1) additions.set(name, {
+              path: name, contents: Buffer.from(patchOrder(file, index + 1)).toString("base64url"),
+            });
+          });
+        }
+        return save({ ...updates, additions: [...additions.values()] });
+      };
+      // Match lock order for saves that touch more than one collection.
+      const locked = index => index === touched.length ? run() : mutate(touched[index], () => locked(index + 1));
+      return locked(0);
+    },
     async snapshot(collection) {
       return publicSnapshot(await read(collection));
     },

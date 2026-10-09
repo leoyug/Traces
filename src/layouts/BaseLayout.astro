@@ -40,8 +40,8 @@ const isDetailRoute = /^\/(?:projects|writing)\/[^/]+\/?$/.test(Astro.url.pathna
       document.documentElement.dataset.themePreference = themePreference;
       document.documentElement.dataset.theme = themePreference === "system" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : themePreference;
     </script>
-    <link rel="icon" href="/favicon-leo.png" type="image/png" sizes="240x240" />
-    <link rel="apple-touch-icon" href="/favicon-leo.png" />
+    <link rel="icon" href="/favicon-leo.png?v=20261010" type="image/png" sizes="240x240" />
+    <link rel="apple-touch-icon" href="/favicon-leo.png?v=20261010" />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="zh_CN" />

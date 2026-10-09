@@ -10,7 +10,7 @@ const archiveProjectPreviews = projects.map((project) => ({
   source: project.id,
   title: project.data.title,
   summary: project.data.description,
-  year: String(project.data.year),
+  period: project.data.period,
   images: Array.from({ length: 3 }, (_, index) => project.data.archiveImages[index] ?? project.data.cover ?? "/assets/figma-v03/project-detail/cover.png"),
   href: `/projects/${project.id}`,
 }));
@@ -33,10 +33,11 @@ const archiveProjectPreviews = projects.map((project) => ({
       {archiveProjectPreviews.map((project) =>
         <a class="project-archive-row" href={project.href} data-list-sound data-project-transition data-project-source={project.source}>
           <span class="project-archive-row__thumb" aria-hidden="true">
-            {project.images.map((image, index) => <img src={image} alt="" loading="lazy" style={projectStackStyle(project.source, index)} />)}
+            {/* The editor lists front to back; paint the stack back to front. */}
+            {[...project.images].reverse().map((image, index) => <img src={image} alt="" loading="lazy" style={projectStackStyle(project.source, index)} />)}
           </span>
           <span class="project-archive-row__copy"><strong>{project.title}</strong><small>{project.summary}</small></span>
-          <time>{project.year}</time>
+          <span class="project-archive-row__time">{project.period}</span>
         </a>)}
     </div>
   </section>

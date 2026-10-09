@@ -1,18 +1,18 @@
 ---
 title: 内容发布系统
 description: 让编辑、设计与研发共享同一套发布语言和状态模型。
-draft: true
 publishedAt: 2025-11-12
-year: 2025
+updatedAt: 2026-10-10
+draft: true
+period: '2025'
 status: launched
 role: 产品设计师
-featured: true
-order: 4
-accent: sage
+featured: false
+order: 7
 cover: /media/projects/content-publishing-system/cover.jpg
 archiveImages: []
+relatedArticles: []
 ---
-
 ## 核心问题
 
 不同团队对“草稿”“预览”和“发布”有不同理解，导致交接成本和上线风险持续增加。

@@ -21,13 +21,13 @@ const columnSizes = {
   projects: {
     "@@slug": { width: "27%", minWidth: 224, maxWidth: 304 },
     title: { width: "1fr", minWidth: 256 },
-    year: { width: 96 }, featured: { width: 96 },
+    period: { width: 144 }, featured: { width: 96 },
     order: { width: 112 }, draft: { width: 112 },
   },
   articles: {
     "@@slug": { width: "30%", minWidth: 240, maxWidth: 336 },
     title: { width: "1fr", minWidth: 280 },
-    publishedAt: { width: 144 }, draft: { width: 112 },
+    publishedAt: { width: 144 }, order: { width: 112 }, draft: { width: 112 },
   },
 };
 
@@ -60,7 +60,7 @@ async function batchRequest(collection, data, signal) {
 }
 
 function CollectionTable({ collection, ...props }) {
-  const supportsOrder = collection !== "articles";
+  const supportsOrder = true;
   const body = Children.toArray(props.children).find((child) => isValidElement(child) && child.type === TableBody);
   const items = Array.from(body?.props.items ?? []);
   const signature = items.map((item) => `${item.name}:${item.sha}`).sort().join("|");
@@ -185,7 +185,7 @@ function CollectionTable({ collection, ...props }) {
     if (!isValidElement(child)) return child;
     if (child.type === TableHeader) return cloneElement(child, {
       columns: child.props.columns.map((column) => ({ ...column, ...columnSizes[collection][column.key],
-        ...(collection === "projects" && column.key === "year" ? { name: "年份" } : {}), })),
+        ...(collection === "projects" && column.key === "period" ? { name: "项目时间" } : {}), })),
     });
     if (child.type === TableBody) return cloneElement(child, {
       items: sortedItems,
@@ -197,8 +197,8 @@ function CollectionTable({ collection, ...props }) {
   });
   const hint = saving || failed ? message : multiSelect ? message || `已选择 ${selectedItems.length} 项`
     : !supportsOrder ? message || (sort.column === "@@upload" ? "最新上传在前；可多选更改发布状态或删除。" : "选择多项内容后，可批量更改发布状态或删除。") : !snapshot || !batchSnapshot ? "正在读取列表顺序…"
-    : !complete ? "清空搜索后可拖动排序。" : !ordered ? (sort.column === "@@upload" ? "最新上传在前；切换展示顺序后可拖动排序。" : "切换到展示顺序排列后可拖动排序。")
-      : message || "拖动左侧手柄调整顺序，松开后自动保存。";
+    : !complete ? "清空搜索后可拖动排序。" : !ordered ? (sort.column === "@@upload" ? "最新添加在前；切换展示顺序后可拖动排序。" : "切换到展示顺序排列后可拖动排序。")
+      : message || "按展示位置排列（含草稿）；拖动后自动保存，编号连续且不重复。";
   const toolbar = createElement(Flex, {
     key: "order-toolbar", alignItems: "center", justifyContent: "space-between", gap: "regular",
     UNSAFE_className: "local-order-toolbar local-batch-toolbar",
@@ -212,7 +212,9 @@ function CollectionTable({ collection, ...props }) {
       createElement(ActionButton, { isDisabled: !canBatch, onPress: () => void applyBatch("publish") }, "设为已发布"),
       createElement(ActionButton, { isDisabled: !canBatch, onPress: () => void applyBatch("draft") }, "设为草稿"),
       createElement(ActionButton, { isDisabled: !canBatch, onPress: () => setConfirmDelete(true) }, "删除所选"),
-    ) : supportsOrder && !ordered ? createElement(ActionButton, { onPress: () => { setSort({ column: "order", direction: "ascending" }); setMessage(""); } }, "按展示顺序排列") : null,
+    ) : createElement(ActionButton, { onPress: () => {
+      setSort(ordered ? { column: "@@upload", direction: "descending" } : { column: "order", direction: "ascending" }); setMessage("");
+    } }, ordered ? "按添加顺序排列" : "按展示顺序排列"),
     createElement(ActionButton, { isDisabled: saving, isSelected: multiSelect, onPress: () => {
       setMultiSelect(value => !value); setSelectedKeys(new Set()); setMessage("");
     } }, multiSelect ? "退出多选" : "多选"),

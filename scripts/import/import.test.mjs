@@ -15,6 +15,23 @@ async function fixture(t) {
   return root;
 }
 
+for (const [kind, collection] of [["project", "projects"], ["article", "articles"]]) {
+  test(`${kind} import appends to current content despite an outdated preview and repeated source orders`, async t => {
+    const root = await fixture(t);
+    const folder = path.join(root, "src/content", collection);
+    await writeFile(path.join(folder, "existing.md"), "---\ntitle: Existing\norder: 1\n---\n正文\n");
+    const plan = await buildImportPlan([
+      { path: "new-one.md", buffer: Buffer.from("---\ntitle: New One\norder: 1\n---\n正文\n") },
+      { path: "new-two.md", buffer: Buffer.from("---\ntitle: New Two\norder: 1\n---\n正文\n") },
+    ], root, kind);
+    await writeFile(path.join(folder, "intervening.md"), "---\ntitle: Added After Preview\norder: 2\n---\n正文\n");
+    await commitImport(plan, plan.items.map(item => item.id), root);
+    for (const [slug, order] of [["existing", 1], ["intervening", 2], ["new-one", 3], ["new-two", 4]]) {
+      assert.match(await readFile(path.join(folder, `${slug}.md`), "utf8"), new RegExp(`^order: ${order}$`, "m"));
+    }
+  });
+}
+
 test("project images match by slug without stealing another project's cover", async (t) => {
   const root = await fixture(t);
   await writeFile(path.join(root, "src/content/projects/existing.md"), "---\ntitle: Existing\norder: 5\narchiveImages: []\n---\n");
@@ -25,12 +42,34 @@ test("project images match by slug without stealing another project's cover", as
     { path: "existing-cover.jpg", buffer: image },
   ], root, "project");
   const project = plan.items.find((item) => item.kind === "project");
-  assert.equal(project.payload.order, 6);
+  assert.equal(project.payload.order, 2);
+  assert.equal(project.payload.period, "2024");
+  assert.equal(project.payload.year, undefined);
+  assert.equal(project.payload.role, undefined);
+  assert.ok(project.warnings.every((warning) => !warning.includes("职责")));
   assert.deepEqual(project.assets.map((asset) => asset.fileIndex), [1]);
   assert.equal(plan.items.find((item) => item.kind === "project-image").slug, "existing");
   await commitImport(plan, plan.items.filter((item) => item.action !== "skip").map((item) => item.id), root);
   assert.match(await readFile(path.join(root, "src/content/projects/new-work.md"), "utf8"), /cover: \/media\/projects\/new-work\//);
+  assert.match(await readFile(path.join(root, "src/content/projects/new-work.md"), "utf8"), /period: ['"]?2024['"]?/);
+  assert.doesNotMatch(await readFile(path.join(root, "src/content/projects/new-work.md"), "utf8"), /^year:/m);
   assert.match(await readFile(path.join(root, "src/content/projects/existing.md"), "utf8"), /cover: \/media\/projects\/existing\//);
+});
+
+test("project import preserves an explicit period instead of a legacy year", async (t) => {
+  const root = await fixture(t);
+  const plan = await buildImportPlan([
+    { path: "range.md", buffer: Buffer.from("---\ntitle: 时间范围\nyear: 2024\nperiod: 2022-2025\nstatus: archive\nlabel: 进行中\naccent: sage\n---\n正文。") },
+  ], root, "project");
+  assert.equal(plan.items[0].payload.period, "2022-2025");
+  assert.equal(plan.items[0].payload.status, "ongoing");
+  await commitImport(plan, [plan.items[0].id], root);
+  const content = await readFile(path.join(root, "src/content/projects/range.md"), "utf8");
+  assert.match(content, /period: 2022-2025/);
+  assert.doesNotMatch(content, /^year:/m);
+  assert.doesNotMatch(content, /^(label|accent):/m);
+  assert.match(content, /^status: ongoing/m);
+  assert.match(content, /^updatedAt: ['"]?\d{4}-\d{2}-\d{2}/m);
 });
 
 test("photo batch is drafted, ordered, and stripped of EXIF", async (t) => {

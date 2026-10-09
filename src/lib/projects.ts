@@ -11,8 +11,7 @@ export function projectPreview(entry: Awaited<ReturnType<typeof getProjects>>[nu
   return {
     title: entry.data.title,
     summary: entry.data.description,
-    accent: entry.data.accent,
-    label: entry.data.label,
+    status: entry.data.status,
     image: entry.data.cover,
     href: `/projects/${entry.id}`,
   };

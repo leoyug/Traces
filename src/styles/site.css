@@ -911,7 +911,7 @@
     line-height: 18px;
   }
 
-  .project-archive-row time {
+  .project-archive-row__time {
     flex: 0 0 auto;
     color: var(--color-faint);
     font-family: var(--font-mono);

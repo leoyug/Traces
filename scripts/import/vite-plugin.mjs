@@ -103,15 +103,38 @@ export function localContentImport() {
   return {
     name: "local-content-import",
     hooks: {
-      "astro:server:setup"({ server }) {
+      async "astro:server:setup"({ server }) {
+        for (const collection of ["projects", "photos", "articles"]) {
+          // Register creation order before atomic normalization replaces files.
+          await batchStore.snapshot(collection);
+          await orderStore.normalize(collection);
+        }
         server.middlewares.use(async (req, res, next) => {
           const pathname = new URL(req.url ?? "/", "http://localhost").pathname;
           const isKeystaticPage = /^\/keystatic(?:\/|$)/.test(pathname);
-          const orderRoute = pathname.match(/^\/api\/content-order\/(projects|photos)$/);
+          const isKeystaticUpdate = pathname === "/api/keystatic/update";
+          const orderRoute = pathname.match(/^\/api\/content-order\/(projects|photos|articles)$/);
           const batchRoute = pathname.match(/^\/api\/content-batch\/(projects|photos|articles)$/);
           const metadataRoute = pathname === "/api/photo-metadata";
-          if (!isKeystaticPage && !orderRoute && !batchRoute && !metadataRoute && pathname !== "/content-import" && !pathname.startsWith("/api/content-import/")) return next();
+          if (!isKeystaticPage && !isKeystaticUpdate && !orderRoute && !batchRoute && !metadataRoute && pathname !== "/content-import" && !pathname.startsWith("/api/content-import/")) return next();
           if (!isLocalRequest(req)) return send(res, 403, { error: "导入功能仅允许本机访问。" });
+          if (isKeystaticUpdate) {
+            if (req.method !== "POST" || req.headers["no-cors"] !== "1" || req.headers["content-type"] !== "application/json") {
+              return send(res, 400, { error: "保存请求无效。" });
+            }
+            try {
+              const updates = JSON.parse((await bodyOf(req)).toString("utf8"));
+              const [{ default: config }, { makeGenericAPIRouteHandler }] = await Promise.all([
+                server.ssrLoadModule("/keystatic.config.ts"), server.ssrLoadModule("@keystatic/core/api/generic"),
+              ]);
+              const handler = makeGenericAPIRouteHandler({ config, localBaseDirectory: root });
+              const result = await orderStore.update(updates, additions => handler(new Request(`http://${req.headers.host}${pathname}`, {
+                method: "POST", headers: { "no-cors": "1", "content-type": "application/json" }, body: JSON.stringify(additions),
+              })));
+              res.writeHead(result.status, result.headers);
+              return res.end(result.body);
+            } catch (error) { return send(res, error.status ?? 400, { error: error.message ?? "展示位置保存失败。" }); }
+          }
           if (metadataRoute) {
             if (req.method !== "POST") return send(res, 405, { error: "请求方法不支持。" });
             if (!/^application\/octet-stream(?:;|$)/i.test(req.headers["content-type"] ?? "")) return send(res, 415, { error: "请提交图片文件。" });
