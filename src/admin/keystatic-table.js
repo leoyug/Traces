@@ -1,11 +1,12 @@
 import { Children, Fragment, cloneElement, createElement, isValidElement, useEffect, useId, useRef, useState } from "react";
-import { TableView as KeystarTableView, TableHeader, TableBody } from "@local/keystar-table";
+import { TableView as KeystarTableView, TableHeader, TableBody, Column, Cell } from "@local/keystar-table";
 import { useDragAndDrop } from "@keystar/ui/drag-and-drop";
 import { ActionButton } from "@keystar/ui/button";
 import { Flex } from "@keystar/ui/layout";
 import { Text } from "@keystar/ui/typography";
 import { AlertDialog, DialogContainer } from "@keystar/ui/dialog";
 import { moveEntries } from "./collection-order.js";
+import { PhotoThumbnail } from "./PhotoThumbnail";
 import "./keystatic-upload.css";
 
 export * from "@local/keystar-table";
@@ -16,7 +17,6 @@ const columnSizes = {
   photos: {
     "@@slug": { width: "28%", minWidth: 224, maxWidth: 320 },
     alt: { width: "1fr", minWidth: 280 },
-    homeFeatured: { width: 160 },
     order: { width: 112 }, draft: { width: 112 },
   },
   projects: {
@@ -185,13 +185,25 @@ function CollectionTable({ collection, ...props }) {
   const children = Children.map(props.children, (child) => {
     if (!isValidElement(child)) return child;
     if (child.type === TableHeader) return cloneElement(child, {
-      columns: child.props.columns.map((column) => ({ ...column, ...columnSizes[collection][column.key],
-        ...(collection === "projects" && column.key === "period" ? { name: "项目时间" } : {}), })),
+      columns: [
+        ...(collection === "photos" ? [{ key: "@@thumbnail", name: "缩略图", width: 88 }] : []),
+        ...child.props.columns.map((column) => ({ ...column, ...columnSizes[collection][column.key],
+          ...(collection === "projects" && column.key === "period" ? { name: "项目时间" } : {}), })),
+      ],
+      children: (column) => column.key === "@@thumbnail"
+        ? createElement(Column, { key: column.key, width: column.width, allowsSorting: false }, column.name)
+        : child.props.children(column),
     });
     if (child.type === TableBody) return cloneElement(child, {
       items: sortedItems,
       ...(collection === "photos" ? {
-        children: (item) => cloneElement(child.props.children(item), { textValue: item.data?.alt ?? "" }),
+        children: (item) => {
+          const row = child.props.children(item);
+          return cloneElement(row, { textValue: item.data?.alt ?? "" }, [
+            createElement(Cell, { key: `thumbnail:${item.name}`, textValue: "" }, createElement(PhotoThumbnail, { id: item.name })),
+            ...Children.toArray(row.props.children),
+          ]);
+        },
       } : {}),
     });
     return child;

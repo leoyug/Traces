@@ -1,10 +1,10 @@
 import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
-import { getPhotos } from "./photos";
+import { getComponentPhotos } from "./photo-components";
 import type { PhotoStackPhoto } from "./photo-stack-types";
 
 export async function getPhotoStackPhotos(): Promise<PhotoStackPhoto[]> {
-  const photos = (await getPhotos()).slice(0, 6);
+  const photos = await getComponentPhotos("textHover");
   if (photos.length < 6) return [];
 
   return Promise.all(photos.map(async (photo, index) => {

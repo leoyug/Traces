@@ -60,7 +60,6 @@ const photos = defineCollection({
   schema: z.object({
     src: z.string().startsWith("/"),
     alt: z.string().min(1),
-    homeFeatured: z.boolean().default(false),
     order: z.number().int().positive(),
     size: z.enum(["tall", "short"]),
     orientation: z.enum(["portrait", "landscape"]),

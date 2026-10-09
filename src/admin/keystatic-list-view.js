@@ -1,6 +1,7 @@
 import { Children, cloneElement, createElement, isValidElement, useEffect, useState } from "react";
 import { ListView as NativeListView } from "@local/keystar-list-view";
 import { Text } from "@keystar/ui/typography";
+import { PhotoThumbnail } from "./PhotoThumbnail";
 import "./keystatic-upload.css";
 
 export * from "@local/keystar-list-view";
@@ -26,8 +27,22 @@ function ArchiveImageThumbnail({ value, position }) {
 }
 
 // Keep the native array's editor, asset serialization, deletion and drag sorting.
-// Only this image array uses thumbnails; tags and relationships stay unchanged.
+// Photo selections and archive uploads share the native list's interactions.
 export function ListView(props) {
+  if (props["aria-label"] === "展示照片") return createElement(NativeListView, {
+    ...props,
+    children: (item) => {
+      const row = props.children(item);
+      return cloneElement(row, {}, Children.map(row.props.children, (child) =>
+        isValidElement(child) && child.type === Text
+          ? cloneElement(child, {}, createElement("span", { className: "local-photo-list-item" },
+            createElement(PhotoThumbnail, { id: item.value }),
+            createElement("span", { className: "local-photo-list-label" }, child.props.children),
+          ))
+          : child,
+      ));
+    },
+  });
   if (props["aria-label"] !== "档案叠放图片（最多选三张）") return createElement(NativeListView, props);
   // The native collection caches rendered rows by item identity. Reordering
   // keeps those identities, so give it fresh items with their current positions.

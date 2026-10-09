@@ -1,4 +1,4 @@
-import { collection, config, fields } from "@keystatic/core";
+import { collection, config, fields, singleton } from "@keystatic/core";
 import { createElement } from "react";
 import { imageUpload } from "./src/admin/image-upload-field";
 import { photoLayoutSelect } from "./src/admin/photo-layout-field";
@@ -6,6 +6,7 @@ import { photoMetadataDate, photoMetadataISO, photoMetadataText } from "./src/ad
 import { photoDescription } from "./src/admin/photo-description-field";
 import { defaultNextOrder } from "./src/admin/default-order-field";
 import { projectStatuses } from "./src/lib/project-status";
+import { componentPhotoLabel, componentPhotoRelationship } from "./src/admin/component-photo-field";
 
 const requiredText = (label: string, description?: string) =>
   fields.text({ label, description, validation: { isRequired: true } });
@@ -47,12 +48,45 @@ const automaticDate = (label: string, refresh: boolean) => {
   };
 };
 
+const componentPhotos = (max: number, description: string) => fields.array(
+  componentPhotoRelationship(),
+  {
+    label: "展示照片",
+    description: `${description} 从已有摄影记录中选择，拖动列表调整展示顺序。草稿或已删除的照片不会展示；清空列表可隐藏组件。`,
+    itemLabel: ({ value }) => componentPhotoLabel(value),
+    validation: { length: { max } },
+  },
+);
+
 export default config({
   storage: { kind: "local" },
   locale: "zh-CN",
   ui: {
     brand: { name: "不息 · 内容管理" },
-    navigation: { "内容": ["projects", "articles", "photos"] },
+    navigation: { "内容": ["projects", "articles", "photos"], "照片组件": ["homeFan", "homeDrag", "textHover"] },
+  },
+  singletons: {
+    homeFan: singleton({
+      label: "首页扇形照片",
+      path: "src/data/photo-components/home-fan",
+      format: "json",
+      previewUrl: "/",
+      schema: { photos: componentPhotos(7, "用于亮色首页的扇形堆叠，最多选择 7 张。悬停文字使用照片的画面描述。") },
+    }),
+    homeDrag: singleton({
+      label: "首页拖拽照片",
+      path: "src/data/photo-components/home-drag",
+      format: "json",
+      previewUrl: "/",
+      schema: { photos: componentPhotos(6, "用于暗色首页的可拖拽照片，最多选择 6 张，支持横图和竖图。") },
+    }),
+    textHover: singleton({
+      label: "文字悬停照片",
+      path: "src/data/photo-components/text-hover",
+      format: "json",
+      previewUrl: "/about",
+      schema: { photos: componentPhotos(6, "用于关于页「走走拍拍」的悬停照片与展开图库。请选择 6 张已发布照片；不足 6 张时只显示文字。") },
+    }),
   },
   collections: {
     projects: collection({
@@ -108,7 +142,7 @@ export default config({
     }),
     photos: collection({
       label: "摄影",
-      columns: ["alt", "homeFeatured", "order", "draft"],
+      columns: ["alt", "order", "draft"],
       slugField: "alt",
       path: "src/content/photos/*",
       format: "json",
@@ -118,7 +152,6 @@ export default config({
         size: photoLayoutSelect({ label: "卡片比例", description: "控制摄影页缩略图比例，随照片方向更新。", options: [{ label: "竖图", value: "tall" }, { label: "横图", value: "short" }], defaultValue: "tall" }, "size"),
         orientation: photoLayoutSelect({ label: "照片方向", description: "由照片宽高自动识别，用于横竖布局。", options: [{ label: "竖图", value: "portrait" }, { label: "横图", value: "landscape" }], defaultValue: "portrait" }, "orientation"),
         alt: photoDescription({ name: { label: "画面描述", description: "供无障碍阅读；默认取文件名，请改为准确的画面描述。", validation: { isRequired: true } }, slug: { label: "稳定短名", description: "用于照片网址，发布后保持不变。" } }),
-        homeFeatured: fields.checkbox({ label: "首页照片堆叠展示", description: "在首页扇形照片组件中展示，悬停文字使用画面描述。仅展示已发布照片，按展示顺序取前 7 张；未勾选的照片仍可在摄影页展示。", defaultValue: false }),
         order: defaultNextOrder({ label: "展示顺序", description: "从 1 开始的唯一位置（含草稿）。新增照片自动排在末尾；修改位置后，其他照片在保存时自动顺移。", validation: { isRequired: true, min: 1 } }, "photos"),
         draft: fields.checkbox({ label: "草稿", description: "不在网站上公开。", defaultValue: true }),
         width: photoDimension("宽度", 1200),

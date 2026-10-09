@@ -84,6 +84,26 @@
 }
 .local-archive-image-list [role="row"] { min-height: 44px; }
 
+.local-photo-preview {
+  width: var(--kui-size-element-regular);
+  justify-content: center;
+  background: var(--kui-color-background-neutral);
+  border-radius: var(--kui-size-radius-small);
+  color: var(--kui-color-foreground-neutral-secondary);
+  font-size: inherit;
+}
+.local-photo-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--kui-size-space-regular);
+  min-width: 0;
+}
+.local-photo-list-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .local-image-upload {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

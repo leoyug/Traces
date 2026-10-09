@@ -1,10 +1,10 @@
 import { getCollection } from "astro:content";
 
 export interface Photo {
+  recordId: string;
   slug: string;
   src: string;
   alt: string;
-  homeFeatured: boolean;
   size: "tall" | "short";
   orientation: "portrait" | "landscape";
   width: number;
@@ -36,10 +36,10 @@ export async function getPhotos(): Promise<Photo[]> {
     if (metadata.iso) facts.push(["感光度", String(metadata.iso)]);
 
     return {
+      recordId: entry.filePath?.split(/[\\/]/).at(-1)?.replace(/\.json$/, "") ?? entry.id,
       slug: entry.id,
       src: data.src,
       alt: data.alt,
-      homeFeatured: data.homeFeatured,
       size: data.size,
       orientation: data.orientation,
       width: data.width,

@@ -7,10 +7,11 @@ import ProjectCard from "../components/ProjectCard.astro";
 import TextLink from "../components/TextLink.astro";
 import { getCollection, getEntry } from "astro:content";
 import { getProjects, projectPreview } from "../lib/projects";
-import { getPhotos } from "../lib/photos";
+import { getComponentPhotos } from "../lib/photo-components";
 import { formatDate } from "../lib/content";
 
-const photos = await getPhotos();
+const fanPhotos = await getComponentPhotos("homeFan");
+const recentPhotos = await getComponentPhotos("homeDrag");
 const resume = await getEntry("resume", "main");
 if (!resume) throw new Error("缺少 main 职业履历内容");
 const github = resume.data.links.find((link) => link.label === "GitHub")?.href;
@@ -20,12 +21,10 @@ const recentArticles = (await getCollection("articles", ({ data }) => !data.draf
   .sort((left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime())
   .slice(0, 3);
 const featuredProjectPreviews = (await getProjects()).filter((project) => project.data.featured).map(projectPreview);
-const homeFanPhotos = photos.filter((photo) => photo.homeFeatured).slice(0, 7).map((photo) => ({
+const homeFanPhotos = fanPhotos.map((photo) => ({
   photo,
   label: photo.alt,
 }));
-const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
-const recentPhotos = shuffle(photos.filter((photo) => photo.orientation === "portrait")).slice(0, 6);
 ---
 
 <BaseLayout>
@@ -53,13 +52,13 @@ const recentPhotos = shuffle(photos.filter((photo) => photo.orientation === "por
     </div>
   </section>
 
-  <section class:list={["home-section reading-column photo-home", { "photo-home--no-fan": homeFanPhotos.length === 0 }]} data-route-enter>
+  <section class:list={["home-section reading-column photo-home", { "photo-home--no-fan": homeFanPhotos.length === 0, "photo-home--no-drag": recentPhotos.length === 0 }]} data-route-enter>
     <div class="section-topline"><h2>屏幕之外</h2></div>
     <div class="photo-home__variant photo-home__variant--fan">
       <PhotoFanStack photos={homeFanPhotos} label="屏幕之外：悬停展开照片" />
     </div>
     <div class="photo-home__variant photo-home__variant--drag">
-      <DraggablePhotoStack photos={recentPhotos} label="屏幕之外：桌面端可拖拽照片" />
+      {recentPhotos.length > 0 && <DraggablePhotoStack photos={recentPhotos} label="屏幕之外：桌面端可拖拽照片" />}
     </div>
   </section>
 
