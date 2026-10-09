@@ -4,13 +4,12 @@ import { renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { moveEntries } from "../../src/admin/collection-order.js";
+import { withContentLock } from "./lock.mjs";
 
 const formats = { projects: ".md", photos: ".json" };
 const conflict = () => Object.assign(new Error("内容已在其他页面修改，请刷新列表后重试。"), { status: 409 });
 
 export function createOrderStore(root) {
-  const undoRecords = new Map();
-  const locks = new Set();
 
   async function read(collection) {
     const extension = formats[collection];
@@ -77,17 +76,12 @@ export function createOrderStore(root) {
 
   const publicSnapshot = ({ entries, version }) => ({ entries, version });
   async function mutate(collection, run) {
-    if (locks.has(collection)) throw Object.assign(new Error("顺序正在保存，请稍后重试。"), { status: 409 });
-    locks.add(collection);
-    try { return await run(); } finally { locks.delete(collection); }
+    return withContentLock(root, collection, run);
   }
 
   return {
     async snapshot(collection) {
-      const snapshot = await read(collection);
-      const lastUndo = [...undoRecords].reverse().find(([, record]) => record.collection === collection
-        && record.version === snapshot.version && Date.now() - record.createdAt <= 10 * 60_000);
-      return { ...publicSnapshot(snapshot), ...(lastUndo ? { undoToken: lastUndo[0] } : {}) };
+      return publicSnapshot(await read(collection));
     },
     async reorder(collection, request) {
       return mutate(collection, async () => {
@@ -100,27 +94,6 @@ export function createOrderStore(root) {
         const changes = snapshot.files.filter((file) => file.order !== orders.get(file.slug))
           .map((file) => ({ filepath: file.filepath, before: file.raw, after: patchOrder(file, orders.get(file.slug)) }));
         await persist(collection, snapshot, changes);
-        const saved = await read(collection);
-        const undoToken = randomUUID();
-        const now = Date.now();
-        for (const [key, record] of undoRecords) if (now - record.createdAt > 10 * 60_000) undoRecords.delete(key);
-        while (undoRecords.size >= 20) undoRecords.delete(undoRecords.keys().next().value);
-        undoRecords.set(undoToken, { collection, changes, version: saved.version, createdAt: now });
-        return { ...publicSnapshot(saved), undoToken };
-      });
-    },
-    async undo(collection, request) {
-      return mutate(collection, async () => {
-        const record = undoRecords.get(request.undoToken);
-        if (!record || record.collection !== collection || Date.now() - record.createdAt > 10 * 60_000) {
-          throw new Error("撤销已过期，请直接拖动调整顺序。");
-        }
-        const snapshot = await read(collection);
-        if (snapshot.version !== request.version || snapshot.version !== record.version) throw conflict();
-        await persist(collection, snapshot, record.changes.map((change) => ({
-          ...change, before: change.after, after: change.before,
-        })));
-        undoRecords.delete(request.undoToken);
         return publicSnapshot(await read(collection));
       });
     },

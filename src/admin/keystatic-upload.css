@@ -51,6 +51,75 @@
   color: var(--kui-color-foreground-accent, currentColor);
 }
 
+.local-image-upload {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--kui-size-space-medium) var(--kui-size-space-large);
+}
+.local-image-upload[data-has-image="true"] {
+  grid-template-columns: minmax(0, max-content) max-content minmax(0, 1fr);
+  justify-content: start;
+}
+.local-image-upload > *,
+.local-image-upload-preview > [role="group"] > * { grid-column: 1 / -1; }
+.local-image-upload-preview,
+.local-image-upload-preview > [role="group"] { display: contents; }
+.local-image-upload-preview > [role="group"] > * { order: 4; }
+.local-image-upload-preview > [role="group"] > span[id] { order: 2; }
+.local-image-upload-preview > [role="group"] > span[id]:first-child { order: 1; grid-column: 1; grid-row: 1; }
+.local-image-upload > .local-image-remove { order: 1; grid-column: 2; grid-row: 1; justify-self: start; }
+.local-image-upload:has(> .local-image-upload-preview > [role="group"] > span[id]:nth-child(2)) > .local-image-remove {
+  grid-row: 1 / span 2;
+}
+.local-image-upload-preview > [role="group"] > span[id]:nth-child(2) {
+  grid-column: 1;
+  grid-row: 2;
+}
+.local-image-upload > .local-image-remove[data-tone="critical"][data-prominence="low"] {
+  color: var(--kui-color-foreground-critical);
+  background-color: color-mix(in srgb, var(--kui-color-foreground-critical) 12%, transparent);
+}
+.local-image-upload > .local-image-remove[data-tone="critical"][data-prominence="low"]:is([data-hovered], [data-focus="visible"]) {
+  background-color: color-mix(in srgb, var(--kui-color-foreground-critical) 18%, transparent);
+}
+.local-image-upload > .local-image-remove[data-tone="critical"][data-prominence="low"][data-pressed] {
+  background-color: color-mix(in srgb, var(--kui-color-foreground-critical) 24%, transparent);
+}
+.local-image-upload-preview [data-local-image-chooser] { display: none; }
+.local-image-upload [data-local-image-native-actions] { display: none; }
+.local-image-upload-zone { min-width: 0; order: 3; }
+.local-image-upload[data-has-image="true"] .local-image-upload-zone { display: none; }
+.local-image-upload [data-local-image-thumbnail] { cursor: zoom-in; justify-self: start; max-width: 100%; }
+.local-image-upload [data-local-image-thumbnail]:focus-visible {
+  outline: var(--kui-size-border-medium) solid var(--kui-color-alias-focus-ring);
+  outline-offset: var(--kui-size-space-small);
+}
+.local-image-enlarged {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: calc(100dvh - var(--kui-size-element-large) * 4);
+  object-fit: contain;
+}
+.local-image-drop-zone {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: calc(var(--kui-size-element-large) * 3);
+  padding: var(--kui-size-space-xlarge);
+  box-sizing: border-box;
+}
+.local-image-upload-status { order: 5; }
+.local-image-upload-status:empty { display: none; }
+.local-editor-image-upload-hint {
+  margin: 0;
+  padding: var(--kui-size-space-regular) var(--kui-size-space-large);
+  color: var(--kui-color-foreground-neutral-secondary);
+  font-size: var(--kui-typography-text-small-size);
+  line-height: var(--kui-typography-text-small-lineheight);
+}
+
 #keystatic-main-panel > header [role="toolbar"] button:disabled {
   pointer-events: none;
 }
@@ -88,7 +157,22 @@
   .local-editor-tooltip { transition: none; transform: none; }
 }
 
-/* Layout only: labels, help text and controls keep Keystar's shared styling. */
+/* Match checkbox help text to Keystar's other field descriptions. */
+#keystatic-main-panel :is(#item-edit-form, #item-create-form) label:has(> input[type="checkbox"]) .kui\:Text + .kui\:Text {
+  color: var(--kui-color-foreground-neutral-secondary);
+  font-size: var(--kui-typography-text-small-size);
+  line-height: var(--kui-typography-text-small-lineheight);
+}
+
+#keystatic-main-panel :is(#item-edit-form, #item-create-form) label:has(> input[type="checkbox"]) .kui\:Text + .kui\:Text::before {
+  margin-bottom: var(--kui-typography-text-small-capheight-trim);
+}
+
+#keystatic-main-panel :is(#item-edit-form, #item-create-form) label:has(> input[type="checkbox"]) .kui\:Text + .kui\:Text::after {
+  margin-top: var(--kui-typography-text-small-baseline-trim);
+}
+
+/* Layout only: labels and controls keep Keystar's shared styling. */
 #keystatic-main-panel [data-local-photo-fields] {
   grid-template-columns: minmax(0, 1fr);
   column-gap: var(--kui-size-space-xlarge);
@@ -98,6 +182,7 @@
 #keystatic-main-panel [data-local-photo-field="full"] { grid-column: 1 / -1; }
 #keystatic-main-panel [data-local-photo-field="paired"] { grid-column: auto; }
 #keystatic-main-panel [data-local-photo-field] { min-width: 0; }
+#keystatic-main-panel [data-local-photo-field]:empty { display: none; }
 
 #keystatic-main-panel [data-local-photo-control] {
   width: 100%;
@@ -132,10 +217,25 @@
   margin-inline: var(--kui-size-space-regular);
   margin-top: var(--kui-size-space-regular);
   flex-shrink: 0;
-  min-height: var(--kui-size-element-large);
+  min-height: var(--kui-size-element-regular);
 }
 
-.local-order-toolbar button { flex-shrink: 0; min-height: 44px; }
+.local-order-toolbar button {
+  flex-shrink: 0;
+  height: var(--kui-size-element-regular);
+  min-height: var(--kui-size-element-regular);
+}
+
+.local-batch-toolbar,
+.local-batch-actions { flex-wrap: wrap; }
+.local-batch-toolbar > [role="status"] { min-width: 0; }
+.local-batch-delete-list {
+  max-height: calc(var(--kui-size-element-large) * 5);
+  margin-block-start: var(--kui-size-space-regular);
+  padding-inline-start: var(--kui-size-space-large);
+  overflow: auto;
+  overflow-wrap: anywhere;
+}
 
 /* Keep the native grip visible, with a full row-height pointer target. */
 .local-content-table [role="button"][draggable="true"] {

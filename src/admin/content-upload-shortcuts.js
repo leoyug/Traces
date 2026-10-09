@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
 import { Text } from "@keystar/ui/typography";
 import { DirectionIndicator } from "@keystar/ui/overlays";
+import { localizeCMS } from "./cms-localization.js";
 
 const categoryLabels = { project: "项目", article: "写作", photo: "摄影" };
 const acceptedFiles = {
@@ -17,19 +18,6 @@ const dashboardCollections = {
   articles: "article",
   photos: "photo",
 };
-const editorLabels = new Map([
-  ["节省", "保存"],
-  ["Save", "保存"],
-  ["Unsaved", "未保存"],
-  ["Saving changes", "正在保存"],
-  ["Reset changes", "撤销未保存的修改"],
-  ["Delete entry…", "删除内容"],
-  ["Copy entry", "复制内容"],
-  ["Paste entry", "粘贴内容"],
-  ["Duplicate entry…", "创建副本"],
-  ["Preview", "预览"],
-  ["View on GitHub", "在 GitHub 中查看"],
-]);
 const tooltipHeaders = new WeakSet();
 let disabledTooltip;
 let disabledTooltipButton;
@@ -202,28 +190,11 @@ function addCollectionToolbarUpload() {
   addLink.before(makeUploadButton(category));
 }
 
-// Keep the upstream controls and their event handlers; only correct toolbar copy.
+// Keep the upstream controls and their event handlers; only translate UI copy.
 function localizeEditorToolbar() {
+  localizeCMS();
   const toolbar = document.querySelector("#keystatic-main-panel > header");
   if (!toolbar) return;
-
-  // Keystar renders hover/focus tooltips in a portal outside the toolbar.
-  for (const root of [toolbar, ...document.querySelectorAll('[role="tooltip"]')]) {
-    const textNodes = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    while (textNodes.nextNode()) {
-      const node = textNodes.currentNode;
-      if (node.parentElement?.closest("nav, h1")) continue;
-      const label = node.nodeValue.trim();
-      if (editorLabels.has(label)) node.nodeValue = node.nodeValue.replace(label, editorLabels.get(label));
-    }
-  }
-
-  for (const control of toolbar.querySelectorAll("[aria-label], [title]")) {
-    for (const attribute of ["aria-label", "title"]) {
-      const label = control.getAttribute(attribute);
-      if (editorLabels.has(label)) control.setAttribute(attribute, editorLabels.get(label));
-    }
-  }
   addDisabledTooltips(toolbar);
 }
 
@@ -236,7 +207,7 @@ function arrangePhotoFields() {
   if (!grid || !form.contains(grid)) return;
   grid.dataset.localPhotoFields = "";
 
-  const pairedLabels = new Set(["卡片比例", "照片方向", "宽度", "高度"]);
+  const pairedLabels = new Set(["卡片比例", "照片方向"]);
   for (const field of grid.children) {
     const label = field.querySelector("label");
     const name = label?.childNodes[0]?.textContent.trim();
@@ -388,6 +359,7 @@ document.addEventListener("compositionend", (event) => {
 
 function addUploadShortcuts() {
   localizeEditorToolbar();
+  addEditorImageUploadHint();
   arrangePhotoFields();
   localizeCollectionList();
   alignCollectionTableScrollbar();
@@ -395,10 +367,21 @@ function addUploadShortcuts() {
   addCollectionToolbarUpload();
 }
 
+function addEditorImageUploadHint() {
+  if (!/^\/keystatic\/collection\/(projects|articles)\/(?:create|item\/[^/]+)\/?$/.test(location.pathname)) return;
+  for (const editor of document.querySelectorAll('[data-keystatic-editor="content"][contenteditable="true"]')) {
+    if (editor.previousElementSibling?.classList.contains("local-editor-image-upload-hint")) continue;
+    const hint = document.createElement("p");
+    hint.className = "local-editor-image-upload-hint";
+    hint.textContent = "图片可直接拖入正文，或在正文中按 ⌘V / Ctrl+V 粘贴。";
+    editor.before(hint);
+  }
+}
+
 const observer = new MutationObserver(addUploadShortcuts);
 observer.observe(document.documentElement, {
   childList: true, characterData: true, subtree: true,
-  attributes: true, attributeFilter: ["aria-label", "title", "disabled"],
+  attributes: true, attributeFilter: ["aria-label", "title", "placeholder", "disabled"],
 });
 window.addEventListener("popstate", addUploadShortcuts);
 window.addEventListener("resize", hideDisabledTooltip);

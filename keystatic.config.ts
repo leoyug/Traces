@@ -1,7 +1,15 @@
 import { collection, config, fields } from "@keystatic/core";
+import { imageUpload } from "./src/admin/image-upload-field";
 
 const requiredText = (label: string, description?: string) =>
   fields.text({ label, description, validation: { isRequired: true } });
+
+// Dimensions belong to the prepared asset. Keep serialization and validation,
+// but let the photo preparation pipeline maintain them instead of the editor.
+const photoDimension = (label: string, defaultValue: number) => {
+  const field = fields.integer({ label, defaultValue, validation: { isRequired: true, min: 1 } });
+  return { ...field, Input: () => null };
+};
 
 const title = fields.slug({
   name: { label: "标题", validation: { isRequired: true } },
@@ -55,8 +63,8 @@ export default config({
           { label: "浅蓝", value: "blue" },
         ], defaultValue: "clay" }),
         label: fields.text({ label: "卡片状态", description: "悬停精选卡片时显示在图片上方，例如「已完成」或「进行中」。" }),
-        cover: fields.image({ label: "项目封面", directory: "public/media/projects", publicPath: "/media/projects/" }),
-        archiveImages: fields.array(fields.image({ label: "档案叠放图片", directory: "public/media/projects", publicPath: "/media/projects/" }), { label: "档案叠放图片（最多选三张）" }),
+        cover: imageUpload({ label: "项目封面", directory: "public/media/projects", publicPath: "/media/projects/" }),
+        archiveImages: fields.array(imageUpload({ label: "档案叠放图片", directory: "public/media/projects", publicPath: "/media/projects/" }), { label: "档案叠放图片（最多选三张）" }),
         privacyNote: fields.text({ label: "匿名化说明", multiline: true }),
         relatedArticles: fields.array(fields.relationship({ label: "相关文章", collection: "articles" }), { label: "相关文章" }),
         content: fields.mdx({ label: "项目正文", extension: "md", options: { image: { directory: "public/media/projects", publicPath: "/media/projects/" } } }),
@@ -91,13 +99,13 @@ export default config({
       previewUrl: "/photos/{slug}",
       schema: {
         alt: fields.slug({ name: { label: "画面描述", description: "用作照片的替代文本，请描述画面中真实可见的内容。", validation: { isRequired: true } }, slug: { label: "稳定短名", description: "用于照片网址，首次发布后请保持不变。" } }),
-        src: fields.image({ label: "照片", description: "保存后自动压缩照片，并清理敏感元数据。", directory: "public/media/photos", publicPath: "/media/photos/", validation: { isRequired: true } }),
+        draft: fields.checkbox({ label: "草稿", description: "勾选后不会在网站上公开。", defaultValue: true }),
+        src: imageUpload({ label: "照片", description: "保存后自动压缩照片，并清理敏感元数据。", directory: "public/media/photos", publicPath: "/media/photos/", validation: { isRequired: true } }),
         order: fields.integer({ label: "展示顺序", description: "从 1 开始，数字越小越靠前；已发布照片的顺序不能重复。", defaultValue: 1, validation: { isRequired: true, min: 1 } }),
         size: fields.select({ label: "卡片比例", description: "根据照片方向自动更新。", options: [{ label: "竖图", value: "tall" }, { label: "横图", value: "short" }], defaultValue: "tall" }),
         orientation: fields.select({ label: "照片方向", description: "根据照片宽高自动判断。", options: [{ label: "竖图", value: "portrait" }, { label: "横图", value: "landscape" }], defaultValue: "portrait" }),
-        width: fields.integer({ label: "宽度", description: "单位为像素，保存后自动更新。", defaultValue: 1200, validation: { isRequired: true, min: 1 } }),
-        height: fields.integer({ label: "高度", description: "单位为像素，保存后自动更新。", defaultValue: 1800, validation: { isRequired: true, min: 1 } }),
-        draft: fields.checkbox({ label: "草稿", description: "勾选后不会在网站上公开。", defaultValue: true }),
+        width: photoDimension("宽度", 1200),
+        height: photoDimension("高度", 1800),
         publicMetadata: fields.object({
           capturedAt: fields.date({ label: "拍摄日期", description: "有照片元数据时自动预填；发布前请核对。" }),
           place: fields.text({ label: "地点", description: "仅填写可公开的地点范围，避免精确位置。" }),

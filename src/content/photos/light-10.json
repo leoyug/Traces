@@ -1,10 +1,11 @@
 {
-  "src": "/media/photos/light-10/src.jpg",
   "alt": "夕阳穿过树梢与云层",
-  "order": 10,
+  "src": "/media/photos/light-10/src.jpg",
+  "order": 7,
   "size": "tall",
   "orientation": "portrait",
   "width": 1200,
   "height": 1800,
-  "draft": false
+  "draft": true,
+  "publicMetadata": {}
 }

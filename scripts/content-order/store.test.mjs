@@ -14,7 +14,7 @@ async function fixture(t, collection, documents) {
   return { store: createOrderStore(root), folder };
 }
 
-test("photo reorder assigns unique positions and undo restores exact files", async (t) => {
+test("photo reorder persists unique positions across store restarts", async (t) => {
   const docs = {
     "a.json": '{\n  "order": 1,\n  "draft": false,\n  "alt": "真实描述"\n}\n',
     "b.json": '{\n  "order": 1,\n  "draft": true,\n  "alt": "草稿"\n}\n',
@@ -24,14 +24,13 @@ test("photo reorder assigns unique positions and undo restores exact files", asy
   const before = await store.snapshot("photos");
   const saved = await store.reorder("photos", { version: before.version, keys: ["c"], target: { key: "a", dropPosition: "before" } });
   assert.deepEqual(saved.entries.map((entry) => [entry.slug, entry.order]), [["c", 1], ["a", 2], ["b", 3]]);
-  assert.equal((await store.snapshot("photos")).undoToken, saved.undoToken);
+  assert.deepEqual(await store.snapshot("photos"), saved);
+  const restarted = createOrderStore(path.resolve(folder, "../../.."));
+  assert.deepEqual(await restarted.snapshot("photos"), saved);
   for (const [name, raw] of Object.entries(docs)) {
     const current = await readFile(path.join(folder, name), "utf8");
     assert.equal(current.replace(/("order": )\d+/, "$1N"), raw.replace(/("order": )\d+/, "$1N"));
   }
-  const undone = await store.undo("photos", { version: saved.version, undoToken: saved.undoToken });
-  assert.equal(undone.version, before.version);
-  for (const [name, raw] of Object.entries(docs)) assert.equal(await readFile(path.join(folder, name), "utf8"), raw);
 });
 
 test("project reorder preserves frontmatter comments, dates, CRLF and body order text", async (t) => {
@@ -44,21 +43,19 @@ test("project reorder preserves frontmatter comments, dates, CRLF and body order
   const saved = await store.reorder("projects", { version: before.version, keys: ["a"], target: { key: "b", dropPosition: "after" } });
   assert.equal(await readFile(path.join(folder, "a.md"), "utf8"), docs["a.md"].replace("order: 0 #", "order: 2 #"));
   assert.equal(await readFile(path.join(folder, "b.md"), "utf8"), docs["b.md"].replace("order: 4", "order: 1"));
-  await store.undo("projects", { version: saved.version, undoToken: saved.undoToken });
-  for (const [name, raw] of Object.entries(docs)) assert.equal(await readFile(path.join(folder, name), "utf8"), raw);
+  assert.deepEqual(await store.snapshot("projects"), saved);
 });
 
-test("stale saves and undo refuse to overwrite newer content", async (t) => {
+test("stale saves refuse to overwrite newer content", async (t) => {
   const { store, folder } = await fixture(t, "photos", {
     "a.json": '{\n "order": 1, "alt": "A"\n}', "b.json": '{\n "order": 2, "alt": "B"\n}',
   });
   const before = await store.snapshot("photos");
   const request = { version: before.version, keys: ["b"], target: { key: "a", dropPosition: "before" } };
-  const saved = await store.reorder("photos", request);
+  await store.reorder("photos", request);
   const latest = (await readFile(path.join(folder, "a.json"), "utf8")).replace('"A"', '"新描述"');
   await writeFile(path.join(folder, "a.json"), latest);
   await assert.rejects(store.reorder("photos", request), { status: 409 });
-  await assert.rejects(store.undo("photos", { version: saved.version, undoToken: saved.undoToken }), { status: 409 });
   assert.equal(await readFile(path.join(folder, "a.json"), "utf8"), latest);
 });
 

@@ -1,10 +1,11 @@
 {
-  "src": "/media/photos/light-07/src.jpg",
   "alt": "海边礁石上面向远方的人",
-  "order": 7,
+  "src": "/media/photos/light-07/src.jpg",
+  "order": 2,
   "size": "tall",
   "orientation": "portrait",
   "width": 1200,
   "height": 1800,
-  "draft": false
+  "draft": true,
+  "publicMetadata": {}
 }

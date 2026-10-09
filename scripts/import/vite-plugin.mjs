@@ -5,11 +5,13 @@ import { fileURLToPath } from "node:url";
 import { buildImportPlan } from "./plan.mjs";
 import { commitImport } from "./commit.mjs";
 import { createOrderStore } from "../content-order/store.mjs";
+import { createBatchStore } from "../content-batch/store.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const MAX_REQUEST_BYTES = 82_000_000;
 const plans = new Map();
 const orderStore = createOrderStore(root);
+const batchStore = createBatchStore(root);
 
 function send(res, status, data) {
   res.writeHead(status, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" });
@@ -104,17 +106,27 @@ export function localContentImport() {
         server.middlewares.use(async (req, res, next) => {
           const pathname = new URL(req.url ?? "/", "http://localhost").pathname;
           const isKeystaticPage = /^\/keystatic(?:\/|$)/.test(pathname);
-          const orderRoute = pathname.match(/^\/api\/content-order\/(projects|photos)(?:\/(undo))?$/);
-          if (!isKeystaticPage && !orderRoute && pathname !== "/content-import" && !pathname.startsWith("/api/content-import/")) return next();
+          const orderRoute = pathname.match(/^\/api\/content-order\/(projects|photos)$/);
+          const batchRoute = pathname.match(/^\/api\/content-batch\/(projects|photos|articles)$/);
+          if (!isKeystaticPage && !orderRoute && !batchRoute && pathname !== "/content-import" && !pathname.startsWith("/api/content-import/")) return next();
           if (!isLocalRequest(req)) return send(res, 403, { error: "导入功能仅允许本机访问。" });
+          if (batchRoute) {
+            try {
+              const collection = batchRoute[1];
+              if (req.method === "GET") return send(res, 200, await batchStore.snapshot(collection));
+              if (req.method !== "POST") return send(res, 405, { error: "请求方法不支持。" });
+              if (!/^application\/json(?:;|$)/i.test(req.headers["content-type"] ?? "")) return send(res, 415, { error: "请使用 JSON 提交批量操作。" });
+              return send(res, 200, await batchStore.apply(collection, JSON.parse((await bodyOf(req)).toString("utf8"))));
+            } catch (error) { return send(res, error.status ?? 400, { error: error.message ?? "批量操作失败，请重试。" }); }
+          }
           if (orderRoute) {
             try {
               const collection = orderRoute[1];
-              if (req.method === "GET" && !orderRoute[2]) return send(res, 200, await orderStore.snapshot(collection));
+              if (req.method === "GET") return send(res, 200, await orderStore.snapshot(collection));
               if (req.method !== "POST") return send(res, 405, { error: "请求方法不支持。" });
               if (!/^application\/json(?:;|$)/i.test(req.headers["content-type"] ?? "")) return send(res, 415, { error: "请使用 JSON 提交排序。" });
               const request = JSON.parse((await bodyOf(req)).toString("utf8"));
-              const result = orderRoute[2] ? await orderStore.undo(collection, request) : await orderStore.reorder(collection, request);
+              const result = await orderStore.reorder(collection, request);
               return send(res, 200, result);
             } catch (error) {
               return send(res, error.status ?? 400, { error: error.message ?? "顺序保存失败，请重试。" });

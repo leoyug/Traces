@@ -1,10 +1,11 @@
 {
-  "src": "/media/photos/light-05/src.jpg",
   "alt": "粉色暮光中沿海边步道行走的人",
-  "order": 5,
+  "src": "/media/photos/light-05/src.jpg",
+  "order": 3,
   "size": "tall",
   "orientation": "portrait",
   "width": 1200,
   "height": 1800,
-  "draft": false
+  "draft": true,
+  "publicMetadata": {}
 }

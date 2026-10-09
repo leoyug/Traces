@@ -6,6 +6,7 @@ dist/
 # 照片原件永不进入版本管理或公开构建。
 private/photos/**
 !private/photos/.gitkeep
+private/content-trash/
 
 # 本地设计验收截图，不属于发布版本。
 .impeccable/review/

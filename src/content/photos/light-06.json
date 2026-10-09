@@ -1,10 +1,11 @@
 {
-  "src": "/media/photos/light-06/src.jpg",
   "alt": "树荫覆盖的城市人行道",
-  "order": 6,
+  "src": "/media/photos/light-06/src.jpg",
+  "order": 1,
   "size": "short",
   "orientation": "landscape",
   "width": 1800,
   "height": 1200,
-  "draft": false
+  "draft": true,
+  "publicMetadata": {}
 }

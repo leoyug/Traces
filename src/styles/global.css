@@ -121,6 +121,7 @@
     --tooltip-line-height: 1.25rem;
     --shadow-hairline: 0 0 0 1px rgb(0 0 0 / 7%); --shadow-card: 0 1px 2px rgb(0 0 0 / 6%), 0 4px 14px rgb(0 0 0 / 8%); --shadow-float: 0 8px 28px rgb(0 0 0 / 14%); --shadow-photo-stack: 0 2px 3px rgb(0 0 0 / 5%), 0 5px 11px rgb(0 0 0 / 8%); --shadow-photo-stack-active: 0 2px 3px rgb(0 0 0 / 9%), 0 6px 10px rgb(0 0 0 / 14%);
     --content-reading: 37rem; --content-wide: 75rem; --content-showcase: 75rem; --gutter: 1.5rem;
+    --photo-lightbox-facts-width: 60rem;
     --about-portrait-width: 13.625rem;
     --about-portrait-ratio: 218 / 252;
     --portrait-theme-filter: none;

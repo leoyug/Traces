@@ -1,10 +1,11 @@
 {
-  "src": "/media/photos/cranes-at-dusk/src.jpg",
   "alt": "临海公路、山体与远处的岛屿",
-  "order": 15,
+  "src": "/media/photos/cranes-at-dusk/src.jpg",
+  "order": 12,
   "size": "short",
   "orientation": "landscape",
   "width": 1800,
   "height": 1200,
-  "draft": false
+  "draft": true,
+  "publicMetadata": {}
 }

@@ -1,10 +1,11 @@
 {
-  "src": "/media/photos/light-14/src.jpg",
   "alt": "绿树环绕的校园道路",
-  "order": 14,
+  "src": "/media/photos/light-14/src.jpg",
+  "order": 11,
   "size": "tall",
   "orientation": "portrait",
   "width": 1200,
   "height": 1800,
-  "draft": false
+  "draft": true,
+  "publicMetadata": {}
 }

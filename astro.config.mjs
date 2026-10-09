@@ -27,6 +27,8 @@ export default defineConfig({
   site: "https://incessantleo.com",
   integrations: process.env.NODE_ENV === "production" ? [] : [react(), keystatic(), localContentImport()],
   vite: {
+    // Keep check/build from replacing the running dev server's optimized dependencies.
+    cacheDir: fileURLToPath(new URL(`./node_modules/.vite/${process.argv[2] ?? "astro"}/`, import.meta.url)),
     plugins: [prepareUploadedPhotos()],
     // Keep the local table adapter live during development while prebundling
     // the underlying CMS table library.

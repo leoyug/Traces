@@ -1,10 +1,11 @@
 {
-  "src": "/media/photos/light-12/src.jpg",
   "alt": "绿树旁站立的年轻女性",
-  "order": 12,
+  "src": "/media/photos/light-12/src.jpg",
+  "order": 9,
   "size": "short",
   "orientation": "landscape",
   "width": 1800,
   "height": 1200,
-  "draft": false
+  "draft": true,
+  "publicMetadata": {}
 }

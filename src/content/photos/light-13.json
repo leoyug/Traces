@@ -1,10 +1,11 @@
 {
-  "src": "/media/photos/light-13/src.jpg",
   "alt": "蓝天下屋檐与云层",
-  "order": 13,
+  "src": "/media/photos/light-13/src.jpg",
+  "order": 10,
   "size": "short",
   "orientation": "landscape",
   "width": 1800,
   "height": 1200,
-  "draft": false
+  "draft": true,
+  "publicMetadata": {}
 }
