@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { mkdtemp, mkdir, writeFile, readFile, readdir, rm } from "node:fs/promises";
+import { mkdtemp, mkdir, writeFile, readFile, readdir, rm, rename } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { createBatchStore } from "./store.mjs";
@@ -18,6 +18,44 @@ async function fixture(t, documents) {
   }
   return { root, store: createBatchStore(root), read: relative => readFile(path.join(root, relative), "utf8") };
 }
+
+test("upload order survives edits, saved display reorders and restarts; new uploads append", async t => {
+  const { root, store } = await fixture(t, {});
+  const folder = path.join(root, "src/content/photos");
+  await writeFile(path.join(folder, "z-first.json"), JSON.stringify({ order: 1, draft: true, alt: "First" }, null, 2));
+  await new Promise(resolve => setTimeout(resolve, 15));
+  await writeFile(path.join(folder, "a-second.json"), JSON.stringify({ order: 2, draft: true, alt: "Second" }, null, 2));
+  const before = await store.snapshot("photos");
+  const positions = entries => new Map(entries.map(entry => [entry.slug, entry.uploadOrder]));
+  assert(positions(before.entries).get("z-first") < positions(before.entries).get("a-second"));
+  const order = createOrderStore(root);
+  const initial = await order.snapshot("photos");
+  await order.reorder("photos", { version: initial.version, keys: ["a-second"], target: { key: "z-first", dropPosition: "before" } });
+  const edited = await store.snapshot("photos");
+  await store.apply("photos", { version: edited.version, action: "publish", keys: ["z-first"] });
+  assert.deepEqual(positions((await createBatchStore(root).snapshot("photos")).entries), positions(before.entries));
+  await writeFile(path.join(folder, "b-new.json"), '{"order":3,"draft":true,"alt":"New"}');
+  const uploaded = await store.snapshot("photos");
+  assert(positions(uploaded.entries).get("b-new") > Math.max(...positions(before.entries).values()));
+  const deleted = await store.apply("photos", { version: uploaded.version, action: "delete", keys: ["a-second"] });
+  assert(!positions(deleted.entries).has("a-second"));
+  await writeFile(path.join(folder, "a-second.json"), '{"order":4,"draft":true,"alt":"Uploaded again"}');
+  assert(positions((await store.snapshot("photos")).entries).get("a-second") > positions(uploaded.entries).get("b-new"));
+});
+
+test("concurrent list reads share upload positions and atomic record replacements keep them", async t => {
+  const { root, store } = await fixture(t, {
+    "src/content/articles/a.md": "---\ntitle: A\ndraft: true\n---\nA",
+    "src/content/articles/b.md": "---\ntitle: B\ndraft: true\n---\nB",
+  });
+  const snapshots = await Promise.all([store.snapshot("articles"), store.snapshot("articles")]);
+  assert.deepEqual(snapshots[0], snapshots[1]);
+  const file = path.join(root, "src/content/articles/a.md");
+  await writeFile(`${file}.tmp`, "---\ntitle: Changed\ndraft: true\n---\nChanged");
+  await rename(`${file}.tmp`, file);
+  const after = await createBatchStore(root).snapshot("articles");
+  assert.deepEqual(after.entries, snapshots[0].entries);
+});
 
 test("batch status changes only selected records and persists after restart", async t => {
   const a = '{\n  "draft": true,\n  "alt": "A",\n  "order": 1\n}\n';

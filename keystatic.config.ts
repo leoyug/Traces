@@ -1,5 +1,9 @@
 import { collection, config, fields } from "@keystatic/core";
 import { imageUpload } from "./src/admin/image-upload-field";
+import { photoLayoutSelect } from "./src/admin/photo-layout-field";
+import { photoMetadataDate, photoMetadataISO, photoMetadataText } from "./src/admin/photo-metadata-field";
+import { photoDescription } from "./src/admin/photo-description-field";
+import { defaultNextOrder } from "./src/admin/default-order-field";
 
 const requiredText = (label: string, description?: string) =>
   fields.text({ label, description, validation: { isRequired: true } });
@@ -56,7 +60,7 @@ export default config({
         ], defaultValue: "archive" }),
         role: requiredText("我的职责"),
         featured: fields.checkbox({ label: "精选", description: "在首页和项目页的精选区域展示。", defaultValue: false }),
-        order: fields.integer({ label: "展示顺序", description: "数字越小越靠前；精选项目也按此顺序排列。", defaultValue: 0, validation: { isRequired: true, min: 0 } }),
+        order: defaultNextOrder({ label: "展示顺序", description: "新添加时自动排在末尾；数字越小越靠前；精选项目也按此顺序排列。", validation: { isRequired: true, min: 0 } }, "projects"),
         accent: fields.select({ label: "卡片色调", options: [
           { label: "暖陶", value: "clay" },
           { label: "鼠尾草绿", value: "sage" },
@@ -98,23 +102,23 @@ export default config({
       format: "json",
       previewUrl: "/photos/{slug}",
       schema: {
-        alt: fields.slug({ name: { label: "画面描述", description: "用作照片的替代文本，请描述画面中真实可见的内容。", validation: { isRequired: true } }, slug: { label: "稳定短名", description: "用于照片网址，首次发布后请保持不变。" } }),
+        src: imageUpload({ label: "照片", description: "保存后自动压缩照片，并清理敏感元数据。", directory: "public/media/photos", publicPath: "/media/photos/", validation: { isRequired: true } }, true),
+        size: photoLayoutSelect({ label: "卡片比例", description: "根据照片方向自动更新。", options: [{ label: "竖图", value: "tall" }, { label: "横图", value: "short" }], defaultValue: "tall" }, "size"),
+        orientation: photoLayoutSelect({ label: "照片方向", description: "根据照片宽高自动判断。", options: [{ label: "竖图", value: "portrait" }, { label: "横图", value: "landscape" }], defaultValue: "portrait" }, "orientation"),
+        alt: photoDescription({ name: { label: "画面描述", description: "默认使用图片文件名（不含扩展名），可修改为准确的画面描述，用作照片的替代文本。", validation: { isRequired: true } }, slug: { label: "稳定短名", description: "用于照片网址，首次发布后请保持不变。" } }),
+        order: defaultNextOrder({ label: "展示顺序", description: "新添加时自动排在末尾；数字越小越靠前；已发布照片的顺序不能重复。", validation: { isRequired: true, min: 1 } }, "photos"),
         draft: fields.checkbox({ label: "草稿", description: "勾选后不会在网站上公开。", defaultValue: true }),
-        src: imageUpload({ label: "照片", description: "保存后自动压缩照片，并清理敏感元数据。", directory: "public/media/photos", publicPath: "/media/photos/", validation: { isRequired: true } }),
-        order: fields.integer({ label: "展示顺序", description: "从 1 开始，数字越小越靠前；已发布照片的顺序不能重复。", defaultValue: 1, validation: { isRequired: true, min: 1 } }),
-        size: fields.select({ label: "卡片比例", description: "根据照片方向自动更新。", options: [{ label: "竖图", value: "tall" }, { label: "横图", value: "short" }], defaultValue: "tall" }),
-        orientation: fields.select({ label: "照片方向", description: "根据照片宽高自动判断。", options: [{ label: "竖图", value: "portrait" }, { label: "横图", value: "landscape" }], defaultValue: "portrait" }),
         width: photoDimension("宽度", 1200),
         height: photoDimension("高度", 1800),
         publicMetadata: fields.object({
-          capturedAt: fields.date({ label: "拍摄日期", description: "有照片元数据时自动预填；发布前请核对。" }),
+          capturedAt: photoMetadataDate({ label: "拍摄日期", description: "上传后从照片元数据自动预填；没有元数据时可手动填写，发布前请核对。" }),
           place: fields.text({ label: "地点", description: "仅填写可公开的地点范围，避免精确位置。" }),
-          camera: fields.text({ label: "相机" }),
-          lens: fields.text({ label: "镜头" }),
-          focalLength: fields.text({ label: "焦距" }),
-          aperture: fields.text({ label: "光圈" }),
-          shutterSpeed: fields.text({ label: "快门" }),
-          iso: fields.integer({ label: "感光度", validation: { min: 1 } }),
+          camera: photoMetadataText({ label: "相机" }, "camera"),
+          lens: photoMetadataText({ label: "镜头" }, "lens"),
+          focalLength: photoMetadataText({ label: "焦距" }, "focalLength"),
+          aperture: photoMetadataText({ label: "光圈" }, "aperture"),
+          shutterSpeed: photoMetadataText({ label: "快门" }, "shutterSpeed"),
+          iso: photoMetadataISO({ label: "感光度", validation: { min: 1 } }),
         }, { label: "可公开的拍摄信息" }),
       },
     }),

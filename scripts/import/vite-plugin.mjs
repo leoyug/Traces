@@ -6,6 +6,7 @@ import { buildImportPlan } from "./plan.mjs";
 import { commitImport } from "./commit.mjs";
 import { createOrderStore } from "../content-order/store.mjs";
 import { createBatchStore } from "../content-batch/store.mjs";
+import { readPublicPhotoMetadataFromBuffer } from "./photo-metadata.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const MAX_REQUEST_BYTES = 82_000_000;
@@ -108,8 +109,21 @@ export function localContentImport() {
           const isKeystaticPage = /^\/keystatic(?:\/|$)/.test(pathname);
           const orderRoute = pathname.match(/^\/api\/content-order\/(projects|photos)$/);
           const batchRoute = pathname.match(/^\/api\/content-batch\/(projects|photos|articles)$/);
-          if (!isKeystaticPage && !orderRoute && !batchRoute && pathname !== "/content-import" && !pathname.startsWith("/api/content-import/")) return next();
+          const metadataRoute = pathname === "/api/photo-metadata";
+          if (!isKeystaticPage && !orderRoute && !batchRoute && !metadataRoute && pathname !== "/content-import" && !pathname.startsWith("/api/content-import/")) return next();
           if (!isLocalRequest(req)) return send(res, 403, { error: "导入功能仅允许本机访问。" });
+          if (metadataRoute) {
+            if (req.method !== "POST") return send(res, 405, { error: "请求方法不支持。" });
+            if (!/^application\/octet-stream(?:;|$)/i.test(req.headers["content-type"] ?? "")) return send(res, 415, { error: "请提交图片文件。" });
+            try {
+              const name = new URL(req.url, "http://localhost").searchParams.get("name") ?? "photo.jpg";
+              const buffer = await bodyOf(req);
+              if (!buffer.length) return send(res, 400, { error: "图片文件为空。" });
+              return send(res, 200, { fields: await readPublicPhotoMetadataFromBuffer(buffer, name) });
+            } catch {
+              return send(res, 400, { error: "无法读取拍摄参数，可手动填写。" });
+            }
+          }
           if (batchRoute) {
             try {
               const collection = batchRoute[1];

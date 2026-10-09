@@ -4,6 +4,7 @@ import { renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { withContentLock } from "../content-order/lock.mjs";
+import { uploadPositions } from "./upload-order.mjs";
 
 const formats = { photos: ".json", projects: ".md", articles: ".md" };
 const conflict = () => Object.assign(new Error("内容已在其他页面修改，请刷新列表后重新选择。"), { status: 409 });
@@ -27,8 +28,11 @@ export function createBatchStore(root) {
     return { files, version: hash.digest("hex") };
   }
 
-  const publicSnapshot = snapshot => ({ version: snapshot.version,
-    entries: snapshot.files.map(file => ({ slug: file.slug, draft: Boolean(file.data.draft) })) });
+  const publicSnapshot = async (snapshot, collection) => {
+    const positions = await uploadPositions(root, collection, snapshot.files);
+    return { version: snapshot.version,
+      entries: snapshot.files.map(file => ({ slug: file.slug, draft: Boolean(file.data.draft), uploadOrder: positions.get(file.slug) })) };
+  };
 
   function patchDraft(file, draft) {
     if (file.filepath.endsWith(".json")) {
@@ -113,7 +117,7 @@ export function createBatchStore(root) {
   }
 
   return {
-    async snapshot(collection) { return publicSnapshot(await read(collection)); },
+    async snapshot(collection) { return publicSnapshot(await read(collection), collection); },
     async apply(collection, request) {
       return withContentLock(root, collection, async () => {
         const snapshot = await read(collection);
@@ -124,7 +128,7 @@ export function createBatchStore(root) {
         const selected = snapshot.files.filter(file => request.keys.includes(file.slug));
         if (request.action === "delete") await deleteFiles(collection, snapshot, selected);
         else await saveStatus(collection, snapshot, selected, request.action === "draft");
-        return { ...publicSnapshot(await read(collection)), affected: selected.length };
+        return { ...await publicSnapshot(await read(collection), collection), affected: selected.length };
       });
     },
   };

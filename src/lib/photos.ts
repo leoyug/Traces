@@ -25,9 +25,10 @@ export async function getPhotos(): Promise<Photo[]> {
 
     const facts: Photo["facts"] = [];
     const metadata = data.publicMetadata;
+    const lens = metadata.lens?.replace(/\([^)]*\)|（[^）]*）/g, "").replace(/\s+/g, " ").trim();
     if (metadata.place) facts.push(["地点", metadata.place]);
     if (metadata.camera) facts.push(["相机", metadata.camera]);
-    if (metadata.lens) facts.push(["镜头", metadata.lens]);
+    if (lens) facts.push(["镜头", lens]);
     if (metadata.focalLength) facts.push(["焦距", metadata.focalLength]);
     if (metadata.aperture) facts.push(["光圈", metadata.aperture]);
     if (metadata.shutterSpeed) facts.push(["快门", metadata.shutterSpeed]);

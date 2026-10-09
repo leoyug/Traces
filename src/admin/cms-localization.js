@@ -94,6 +94,10 @@ function isContent(element) {
 }
 
 export function localizeCMS() {
+  const isPhotoEditor = /^\/keystatic\/collection\/photos\/(?:create|item\/[^/]+)\/?$/.test(location.pathname);
+  const translateLabel = (text) => isPhotoEditor && /^(?:Regenerate|regenerate|重新生成)$/.test(text.trim())
+    ? text.replace(text.trim(), "根据描述生成")
+    : translateCMSLabel(text);
   const roots = document.querySelectorAll('#keystatic-main-panel, [id^="primary-pane-"], [role="tooltip"], [role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [role="alert"], [role="status"]');
   for (const root of roots) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -105,7 +109,7 @@ export function localizeCMS() {
       // Field validation can be split across text nodes by the native UI.
       const validation = /(?: is required| must (?:be|not))/.test(text);
       if (!element.closest(interfaceContext) && !messages.has(text.trim()) && !validation) continue;
-      const translated = translateCMSLabel(text);
+      const translated = translateLabel(text);
       if (translated !== text) node.nodeValue = translated;
     }
     for (const element of root.querySelectorAll("[aria-label], [title], [placeholder]")) {
@@ -113,7 +117,7 @@ export function localizeCMS() {
       for (const attribute of ["aria-label", "title", "placeholder"]) {
         const value = element.getAttribute(attribute);
         if (!value) continue;
-        const translated = translateCMSLabel(value);
+        const translated = translateLabel(value);
         if (translated !== value) element.setAttribute(attribute, translated);
       }
     }

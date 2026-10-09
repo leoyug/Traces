@@ -64,8 +64,7 @@ function CollectionTable({ collection, ...props }) {
   const body = Children.toArray(props.children).find((child) => isValidElement(child) && child.type === TableBody);
   const items = Array.from(body?.props.items ?? []);
   const signature = items.map((item) => `${item.name}:${item.sha}`).sort().join("|");
-  const [sort, setSort] = useState(() => supportsOrder ? { column: "order", direction: "ascending" }
-    : { column: "publishedAt", direction: "descending" });
+  const [sort, setSort] = useState({ column: "@@upload", direction: "descending" });
   const [snapshot, setSnapshot] = useState();
   const [batchSnapshot, setBatchSnapshot] = useState();
   const [multiSelect, setMultiSelect] = useState(false);
@@ -169,11 +168,13 @@ function CollectionTable({ collection, ...props }) {
   const orderBySlug = new Map(snapshot?.entries.map((entry) => [entry.slug, entry.order]));
   const draftBySlug = new Map(batchSnapshot?.entries.map(entry => [entry.slug, entry.draft]));
   const positions = new Map(snapshot?.entries.map((entry, index) => [entry.slug, index]));
+  const uploadOrder = new Map(batchSnapshot?.entries.map(entry => [entry.slug, entry.uploadOrder]));
   const sortedItems = visibleItems.map(item => ({ ...item, data: {
     ...item.data,
     ...(orderBySlug.has(item.name) ? { order: orderBySlug.get(item.name) } : {}),
     ...(draftBySlug.has(item.name) ? { draft: draftBySlug.get(item.name) } : {}),
   } })).sort((a, b) => {
+      if (sort.column === "@@upload") return (uploadOrder.get(b.name) ?? 0) - (uploadOrder.get(a.name) ?? 0) || a.name.localeCompare(b.name);
       if (supportsOrder && ordered && positions.has(a.name) && positions.has(b.name)) return positions.get(a.name) - positions.get(b.name);
       const value = (item) => sort.column === "@@slug" ? item.name : item.data?.[sort.column] ?? item.name;
       const left = value(a), right = value(b);
@@ -195,13 +196,16 @@ function CollectionTable({ collection, ...props }) {
     return child;
   });
   const hint = saving || failed ? message : multiSelect ? message || `已选择 ${selectedItems.length} 项`
-    : !supportsOrder ? message || "选择多项内容后，可批量更改发布状态或删除。" : !snapshot ? "正在读取展示顺序…"
-    : !complete ? "清空搜索后可拖动排序。" : !ordered ? "切换到展示顺序排列后可拖动排序。"
+    : !supportsOrder ? message || (sort.column === "@@upload" ? "最新上传在前；可多选更改发布状态或删除。" : "选择多项内容后，可批量更改发布状态或删除。") : !snapshot || !batchSnapshot ? "正在读取列表顺序…"
+    : !complete ? "清空搜索后可拖动排序。" : !ordered ? (sort.column === "@@upload" ? "最新上传在前；切换展示顺序后可拖动排序。" : "切换到展示顺序排列后可拖动排序。")
       : message || "拖动左侧手柄调整顺序，松开后自动保存。";
   const toolbar = createElement(Flex, {
     key: "order-toolbar", alignItems: "center", justifyContent: "space-between", gap: "regular",
     UNSAFE_className: "local-order-toolbar local-batch-toolbar",
-  }, createElement(Text, { id: descriptionId, role: "status", color: failed ? "critical" : "neutralSecondary", size: "small" }, hint),
+  }, createElement(Flex, { alignItems: "center", gap: "large", UNSAFE_className: "local-list-summary" },
+    createElement(Text, { role: "status", size: "small", UNSAFE_className: "local-list-count" }, `共 ${visibleItems.length} 项`),
+    createElement(Text, { id: descriptionId, role: "status", color: failed ? "critical" : "neutralSecondary", size: "small" }, hint),
+  ),
   createElement(Flex, { gap: "regular", UNSAFE_className: "local-batch-actions" },
     failed ? createElement(ActionButton, { isDisabled: saving, onPress: () => { setMessage(""); setSelectedKeys(new Set()); setRefresh(value => value + 1); } }, "刷新列表") : null,
     multiSelect ? createElement(Fragment, null,
@@ -223,7 +227,7 @@ function CollectionTable({ collection, ...props }) {
     )) : null);
   return createElement(Fragment, null, toolbar, deleteDialog, createElement(KeystarTableView, {
     ...props, children, key: canReorder ? "draggable" : "static",
-    sortDescriptor: sort, onSortChange: (value) => { setSort(value); setMessage(""); },
+    sortDescriptor: sort.column === "@@upload" ? undefined : sort, onSortChange: (value) => { setSort(value); setMessage(""); },
     selectionMode: multiSelect ? "multiple" : "none", selectionBehavior: "toggle",
     selectedKeys, onSelectionChange: keys => {
       if (!saving) { setSelectedKeys(keys === "all" ? new Set(sortedItems.map(item => `key:${item.name}`)) : new Set(keys)); setMessage(""); }

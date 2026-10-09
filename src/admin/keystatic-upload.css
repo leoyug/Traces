@@ -53,13 +53,8 @@
 
 .local-image-upload {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--kui-size-space-medium) var(--kui-size-space-large);
-}
-.local-image-upload[data-has-image="true"] {
-  grid-template-columns: minmax(0, max-content) max-content minmax(0, 1fr);
-  justify-content: start;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--kui-size-space-medium);
 }
 .local-image-upload > *,
 .local-image-upload-preview > [role="group"] > * { grid-column: 1 / -1; }
@@ -67,15 +62,8 @@
 .local-image-upload-preview > [role="group"] { display: contents; }
 .local-image-upload-preview > [role="group"] > * { order: 4; }
 .local-image-upload-preview > [role="group"] > span[id] { order: 2; }
-.local-image-upload-preview > [role="group"] > span[id]:first-child { order: 1; grid-column: 1; grid-row: 1; }
-.local-image-upload > .local-image-remove { order: 1; grid-column: 2; grid-row: 1; justify-self: start; }
-.local-image-upload:has(> .local-image-upload-preview > [role="group"] > span[id]:nth-child(2)) > .local-image-remove {
-  grid-row: 1 / span 2;
-}
-.local-image-upload-preview > [role="group"] > span[id]:nth-child(2) {
-  grid-column: 1;
-  grid-row: 2;
-}
+.local-image-upload-preview > [role="group"] > span[id]:first-child { order: 1; }
+.local-image-upload > .local-image-remove { order: 6; justify-self: start; }
 .local-image-upload > .local-image-remove[data-tone="critical"][data-prominence="low"] {
   color: var(--kui-color-foreground-critical);
   background-color: color-mix(in srgb, var(--kui-color-foreground-critical) 12%, transparent);
@@ -95,6 +83,7 @@
   outline: var(--kui-size-border-medium) solid var(--kui-color-alias-focus-ring);
   outline-offset: var(--kui-size-space-small);
 }
+.local-image-preview-dialog { cursor: zoom-out; }
 .local-image-enlarged {
   display: block;
   width: 100%;
@@ -119,6 +108,15 @@
   font-size: var(--kui-typography-text-small-size);
   line-height: var(--kui-typography-text-small-lineheight);
 }
+
+/* Remove the CMS's one-button width cap below its desktop breakpoint.
+   ActionGroup still measures the available space and folds only what cannot fit. */
+#keystatic-main-panel > header > div > div:has(> [data-overflow="collapse"]) {
+  max-width: none;
+  min-width: var(--kui-size-element-regular);
+}
+
+#keystatic-main-panel > header nav { min-width: calc(var(--kui-size-element-regular) * 4); }
 
 #keystatic-main-panel > header [role="toolbar"] button:disabled {
   pointer-events: none;
@@ -227,8 +225,14 @@
 }
 
 .local-batch-toolbar,
-.local-batch-actions { flex-wrap: wrap; }
-.local-batch-toolbar > [role="status"] { min-width: 0; }
+.local-batch-actions,
+.local-list-summary { flex-wrap: wrap; }
+.local-list-summary,
+.local-list-summary > [role="status"] { min-width: 0; }
+.local-list-count {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
 .local-batch-delete-list {
   max-height: calc(var(--kui-size-element-large) * 5);
   margin-block-start: var(--kui-size-space-regular);

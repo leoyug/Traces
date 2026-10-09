@@ -203,8 +203,16 @@ function arrangePhotoFields() {
   const form = document.querySelector("#item-edit-form, #item-create-form");
   if (!form) return;
   const orderLabel = [...form.querySelectorAll("label")].find((label) => label.childNodes[0]?.textContent.trim() === "展示顺序");
-  const grid = orderLabel?.parentElement?.parentElement?.parentElement;
-  if (!grid || !form.contains(grid)) return;
+  const layoutLabel = [...form.querySelectorAll("label")].find((label) => label.childNodes[0]?.textContent.trim() === "卡片比例");
+  if (!orderLabel || !layoutLabel) return;
+  // Custom fields can add wrappers. Find the shared field grid by its contents
+  // rather than relying on the native number input's fixed nesting depth.
+  let grid = orderLabel.parentElement;
+  while (grid && !grid.contains(layoutLabel)) grid = grid.parentElement;
+  if (!grid || grid === form || !form.contains(grid)) return;
+  for (const previous of form.querySelectorAll("[data-local-photo-fields]")) {
+    if (previous !== grid) delete previous.dataset.localPhotoFields;
+  }
   grid.dataset.localPhotoFields = "";
 
   const pairedLabels = new Set(["卡片比例", "照片方向"]);

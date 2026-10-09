@@ -1,0 +1,20 @@
+{
+  "src": "/media/photos/Shaded-under-palm-trees-on-the-beach/src.webp",
+  "size": "short",
+  "orientation": "landscape",
+  "alt": "沙滩树荫下",
+  "order": 66,
+  "draft": false,
+  "width": 2400,
+  "height": 1600,
+  "publicMetadata": {
+    "capturedAt": "2024-06-10",
+    "place": "青岛",
+    "camera": "SONY ILCE-7RM3",
+    "lens": "Sony FE 24-105mm F4 G OSS (SEL24105G)",
+    "focalLength": "66 mm",
+    "aperture": "f/4",
+    "shutterSpeed": "1/1250 s",
+    "iso": 80
+  }
+}
