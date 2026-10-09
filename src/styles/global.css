@@ -368,6 +368,7 @@
   .hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); padding-top: var(--space-2); }
   .home-section { margin-top: 5rem; }
   .photo-home__variant--drag { display: none; }
+  :root[data-theme="light"] .photo-home--no-fan { display: none; }
   :root[data-theme="dark"] .photo-home__variant--fan { display: none; }
   :root[data-theme="dark"] .photo-home__variant--drag { display: block; }
   .project-home .project-grid { gap: 1.5rem; }

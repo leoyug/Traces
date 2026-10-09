@@ -26,7 +26,7 @@ const getEntranceTargets = (main: HTMLElement) => {
     // Groups and individual items share one document-order sequence. Never
     // animate a parent and its child together (which would compound the blur).
     return [...new Set(targets)]
-      .filter((target) => !target.classList.contains("is-transitioning"))
+      .filter((target) => !target.matches(".is-transitioning, .is-writing-transition"))
       .filter((target) => !targets.some((other) => other !== target && other.contains(target)))
       .sort((left, right) => left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1);
   }
@@ -57,11 +57,9 @@ export function initRouteMotion() {
 
   const prepareEntrance = () => {
     resetEntrance();
-    const { detailTransition, detailTransitionKind } = document.documentElement.dataset;
-    // Keep the restored list still while its shared cover or title returns.
-    if (reducedMotion.matches || detailTransition === "open"
-      || (detailTransition === "close" && (detailTransitionKind === "projects"
-        || document.documentElement.hasAttribute("data-writing-title-transition")))) return;
+    const { detailTransition } = document.documentElement.dataset;
+    // Shared covers and titles stay still; the other list items enter normally.
+    if (reducedMotion.matches || detailTransition === "open") return;
 
     const main = document.querySelector<HTMLElement>("[data-route-main]");
     if (!main) return;
@@ -73,7 +71,7 @@ export function initRouteMotion() {
       duration: durationInSeconds(styles.getPropertyValue("--duration-route-enter")),
       stagger: durationInSeconds(styles.getPropertyValue("--duration-route-stagger")),
       staggerMax: durationInSeconds(styles.getPropertyValue("--duration-route-stagger-max")),
-      distance: parseFloat(styles.getPropertyValue("--distance-route-enter")),
+      distance: detailTransition === "close" ? 0 : parseFloat(styles.getPropertyValue("--distance-route-enter")),
       blur: parseFloat(styles.getPropertyValue("--blur-route-enter")),
     };
     // Keep content present while it settles into focus; no blank loading phase.

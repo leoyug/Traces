@@ -16,6 +16,7 @@ const columnSizes = {
   photos: {
     "@@slug": { width: "28%", minWidth: 224, maxWidth: 320 },
     alt: { width: "1fr", minWidth: 280 },
+    homeFeatured: { width: 160 },
     order: { width: 112 }, draft: { width: 112 },
   },
   projects: {

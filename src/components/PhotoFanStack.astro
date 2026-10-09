@@ -15,22 +15,28 @@ const { photos, label = "可展开的光影记录" } = Astro.props;
 const angles = [-10, -6.5, -3, 0, 3, 6.5, 10];
 const spreadAngles = [-11.5, -7.5, -3.5, 0, 3.5, 7.5, 11.5];
 const positions = [16, 27, 38, 50, 62, 73, 84];
-const centerIndex = 3;
+const visiblePhotos = photos.slice(0, angles.length);
+const centerIndex = (visiblePhotos.length - 1) / 2;
+const offset = (angles.length - visiblePhotos.length) / 2;
+const interpolate = (values: number[], index: number) => {
+  const start = Math.floor(index);
+  return values[start] + (values[Math.ceil(index)] - values[start]) * (index - start);
+};
 ---
 
 <section class="photo-fan-stack" data-photo-fan-stack aria-label={label}>
-  {photos.slice(0, angles.length).map(({ photo, label: photoLabel }, index) => (
+  {visiblePhotos.map(({ photo, label: photoLabel }, index) => (
     <button
       class="photo-fan-stack__anchor"
       type="button"
       data-photo-fan-card
-      aria-label={`${photoLabel}：${photo.alt}`}
-      style={`--fan-left:${positions[index]}%;--fan-angle:${angles[index]}deg;--fan-spread-angle:${spreadAngles[index]}deg;--fan-distance:${index - centerIndex};--fan-z:${index + 1}`}
+      aria-label={photoLabel === photo.alt ? photo.alt : `${photoLabel}：${photo.alt}`}
+      style={`--fan-left:${interpolate(positions, index + offset)}%;--fan-angle:${interpolate(angles, index + offset)}deg;--fan-spread-angle:${interpolate(spreadAngles, index + offset)}deg;--fan-distance:${index - centerIndex};--fan-z:${index + 1}`}
     >
       <span class="photo-fan-stack__paper">
         <span class="photo-fan-stack__label" aria-hidden="true">
           {[...photoLabel].map((character, characterIndex) => (
-            <span style={`--label-delay:${characterIndex * 240}ms`}>{character}</span>
+            <span style={`--label-delay:calc(${characterIndex / Math.max(1, [...photoLabel].length - 1)} * var(--duration-very-slow))`}>{character}</span>
           ))}
         </span>
         <img src={photo.src} alt={photo.alt} draggable="false" loading="lazy" />
@@ -53,7 +59,7 @@ const centerIndex = 3;
     const hoverable = matchMedia("(hover: hover) and (pointer: fine)");
     const controller = new AbortController();
     const options = { signal: controller.signal };
-    const center = Math.floor(cards.length / 2);
+    const center = (cards.length - 1) / 2;
     let activeIndex = -1;
     let expanded = false;
     let pointer: Point | null = null;
@@ -270,10 +276,14 @@ const centerIndex = 3;
     line-height: 1.2;
     opacity: 0;
     pointer-events: none;
-    transform: translate(-50%, var(--space-1)) scale(.98);
+    transform: translate(calc(-50% + var(--fan-label-offset, 0px)), var(--space-1)) scale(.98);
     transition: opacity var(--duration-quick) var(--ease-smooth-out), transform var(--duration-quick) var(--ease-smooth-out), visibility 0s linear var(--duration-quick);
     visibility: hidden;
-    white-space: nowrap;
+    width: max-content;
+    max-width: calc(var(--space-32) * 2);
+    white-space: normal;
+    text-align: center;
+    overflow-wrap: anywhere;
   }
   :global(:root[data-theme="light"]) .photo-fan-stack__label {
     border-radius: var(--radius-sm);
@@ -288,7 +298,7 @@ const centerIndex = 3;
   }
   .photo-fan-stack__anchor[data-active] .photo-fan-stack__label {
     opacity: 1;
-    transform: translate(-50%, 0) scale(1);
+    transform: translate(calc(-50% + var(--fan-label-offset, 0px)), 0) scale(1);
     transition-delay: var(--duration-micro);
     visibility: visible;
   }
@@ -305,6 +315,10 @@ const centerIndex = 3;
   @media (max-width: 47.999rem) {
     .photo-fan-stack { width: 100%; height: calc(9rem + var(--space-6) - var(--space-8)); margin-left: 0; transform: none; }
     .photo-fan-stack__anchor { top: calc(58% - var(--space-3)); width: clamp(3.25rem, 18%, 4.75rem); }
+    .photo-fan-stack__label {
+      max-width: calc(var(--space-16) * 2);
+      --fan-label-offset: calc(var(--fan-distance) * var(--space-3) * -1);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .photo-fan-stack__paper, .photo-fan-stack__label { transition: none; }

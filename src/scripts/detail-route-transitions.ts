@@ -74,7 +74,7 @@ export function initDetailRouteTransitions() {
     if (toDetail && (fromList === toDetail || opensDetailFromHome)) {
       event.newDocument.documentElement.dataset.detailTransition = "open";
       event.newDocument.documentElement.dataset.detailTransitionKind = toDetail.slice(1);
-    } else if (fromDetail && (fromDetail === toList || normalizedPath(event.to.pathname) === "/") && event.navigationType === "traverse" && event.direction === "back") {
+    } else if (fromDetail && (fromDetail === toList || normalizedPath(event.to.pathname) === "/")) {
       event.newDocument.documentElement.dataset.detailTransition = "close";
       event.newDocument.documentElement.dataset.detailTransitionKind = fromDetail.slice(1);
     }

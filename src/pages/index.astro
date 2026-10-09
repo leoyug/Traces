@@ -20,10 +20,9 @@ const recentArticles = (await getCollection("articles", ({ data }) => !data.draf
   .sort((left, right) => right.data.publishedAt.getTime() - left.data.publishedAt.getTime())
   .slice(0, 3);
 const featuredProjectPreviews = (await getProjects()).filter((project) => project.data.featured).map(projectPreview);
-const homeFanPhotoLabels = ["夜行", "栈桥", "帐篷", "散步", "晚风", "树影", "远望"];
-const homeFanPhotos = photos.slice(0, 7).map((photo, index) => ({
+const homeFanPhotos = photos.filter((photo) => photo.homeFeatured).slice(0, 7).map((photo) => ({
   photo,
-  label: homeFanPhotoLabels[index],
+  label: photo.alt,
 }));
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
 const recentPhotos = shuffle(photos.filter((photo) => photo.orientation === "portrait")).slice(0, 6);
@@ -54,7 +53,7 @@ const recentPhotos = shuffle(photos.filter((photo) => photo.orientation === "por
     </div>
   </section>
 
-  <section class="home-section reading-column photo-home" data-route-enter>
+  <section class:list={["home-section reading-column photo-home", { "photo-home--no-fan": homeFanPhotos.length === 0 }]} data-route-enter>
     <div class="section-topline"><h2>屏幕之外</h2></div>
     <div class="photo-home__variant photo-home__variant--fan">
       <PhotoFanStack photos={homeFanPhotos} label="屏幕之外：悬停展开照片" />

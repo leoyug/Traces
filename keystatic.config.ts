@@ -108,7 +108,7 @@ export default config({
     }),
     photos: collection({
       label: "摄影",
-      columns: ["alt", "order", "draft"],
+      columns: ["alt", "homeFeatured", "order", "draft"],
       slugField: "alt",
       path: "src/content/photos/*",
       format: "json",
@@ -118,6 +118,7 @@ export default config({
         size: photoLayoutSelect({ label: "卡片比例", description: "控制摄影页缩略图比例，随照片方向更新。", options: [{ label: "竖图", value: "tall" }, { label: "横图", value: "short" }], defaultValue: "tall" }, "size"),
         orientation: photoLayoutSelect({ label: "照片方向", description: "由照片宽高自动识别，用于横竖布局。", options: [{ label: "竖图", value: "portrait" }, { label: "横图", value: "landscape" }], defaultValue: "portrait" }, "orientation"),
         alt: photoDescription({ name: { label: "画面描述", description: "供无障碍阅读；默认取文件名，请改为准确的画面描述。", validation: { isRequired: true } }, slug: { label: "稳定短名", description: "用于照片网址，发布后保持不变。" } }),
+        homeFeatured: fields.checkbox({ label: "首页照片堆叠展示", description: "在首页扇形照片组件中展示，悬停文字使用画面描述。仅展示已发布照片，按展示顺序取前 7 张；未勾选的照片仍可在摄影页展示。", defaultValue: false }),
         order: defaultNextOrder({ label: "展示顺序", description: "从 1 开始的唯一位置（含草稿）。新增照片自动排在末尾；修改位置后，其他照片在保存时自动顺移。", validation: { isRequired: true, min: 1 } }, "photos"),
         draft: fields.checkbox({ label: "草稿", description: "不在网站上公开。", defaultValue: true }),
         width: photoDimension("宽度", 1200),

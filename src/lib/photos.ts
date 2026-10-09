@@ -4,6 +4,7 @@ export interface Photo {
   slug: string;
   src: string;
   alt: string;
+  homeFeatured: boolean;
   size: "tall" | "short";
   orientation: "portrait" | "landscape";
   width: number;
@@ -38,6 +39,7 @@ export async function getPhotos(): Promise<Photo[]> {
       slug: entry.id,
       src: data.src,
       alt: data.alt,
+      homeFeatured: data.homeFeatured,
       size: data.size,
       orientation: data.orientation,
       width: data.width,

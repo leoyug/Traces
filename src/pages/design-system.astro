@@ -80,8 +80,7 @@ const tocHeadings = [
   { depth: 2, slug: "toc-demo-decisions", text: "设计判断与实现取舍" },
   { depth: 2, slug: "toc-demo-reflection", text: "结果与反思" },
 ];
-const fanPhotoLabels = ["夜行", "栈桥", "帐篷", "散步", "晚风", "树影", "远望"];
-const fanPhotos = photos.slice(0, 7).map((photo, index) => ({ photo, label: fanPhotoLabels[index] }));
+const fanPhotos = photos.slice(0, 7).map((photo) => ({ photo, label: photo.alt }));
 ---
 
 <BaseLayout title="设计系统预览（开发环境）｜Rush Leo">
@@ -138,7 +137,7 @@ const fanPhotos = photos.slice(0, 7).map((photo, index) => ({ photo, label: fanP
     <section><SectionHeading title="图片加载" description="Play Spin 点阵只用于大图产生可感知等待时；快速命中缓存时不会闪现。" /><div class="loader-demo" data-image-loading="true"><PlaySpinLoader /></div></section>
     <section><SectionHeading title="文章图片缩放" description="按下轻微缩小，松开后居中放大并模糊背景；再次点击或按 Esc 收回。" /><div data-image-zoom-demo><img class="corner-media-demo" src="/assets/figma-v03/article-detail/figma-cover.png" alt="一台手绘的老式电脑，屏幕上有放射状线条" width="2250" height="1500" /></div><ArticleImageZoom selector="[data-image-zoom-demo] img" /></section>
     <section><SectionHeading title="可拖拽照片" description="桌面端可在容器内拖拽照片，松手立即停止；移动端保留构图且关闭拖拽。" /><DraggablePhotoStack photos={photos.slice(0, 6)} /></section>
-    <section><SectionHeading title="扇形照片" description="靠近照片时整体展开；指向单张时转正上移并显示标签，按住会轻微缩小。" /><PhotoFanStack photos={fanPhotos} /></section>
+    <section><SectionHeading title="扇形照片" description="悬停或键盘聚焦显示照片的画面描述，长描述自动换行；首页由 CMS 勾选照片，按展示顺序最多显示 7 张。" /><PhotoFanStack photos={fanPhotos} /><PhotoFanStack photos={fanPhotos.slice(0, 1)} label="单张照片与长描述示例" /></section>
     <section><SectionHeading title="表单" /><form class="form-demo"><div class="field"><label for="demo-name">姓名</label><input id="demo-name" class="input" placeholder="怎么称呼你？" /></div><div class="field"><label for="demo-note">留言</label><textarea id="demo-note" class="textarea" rows="4" placeholder="写点什么……"></textarea></div><Button type="submit">发送留言</Button></form></section>
     <section>
       <SectionHeading title="渐进背景模糊" description="四层模糊从上到下逐渐增强，底部淡入当前页面背景色；切换亮暗外观可预览。底部导航使用同一组件。" />
