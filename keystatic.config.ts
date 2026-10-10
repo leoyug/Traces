@@ -78,7 +78,7 @@ export default config({
       path: "src/data/photo-components/home-drag",
       format: "json",
       previewUrl: "/",
-      schema: { photos: componentPhotos(6, "用于暗色首页的可拖拽照片，最多选择 6 张，支持横图和竖图。") },
+      schema: { photos: componentPhotos(7, "用于暗色首页的可拖拽照片，最多选择 7 张，支持横图和竖图。") },
     }),
     textHover: singleton({
       label: "文字悬停照片",

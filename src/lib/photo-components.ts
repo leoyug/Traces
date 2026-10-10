@@ -4,7 +4,7 @@ import textHover from "../data/photo-components/text-hover.json";
 import { getPhotos, type Photo } from "./photos";
 
 const selections = { homeFan, homeDrag, textHover };
-const limits = { homeFan: 7, homeDrag: 6, textHover: 6 };
+const limits = { homeFan: 7, homeDrag: 7, textHover: 6 };
 
 // Component selections reference photography records; assets and descriptions
 // stay with those records. Never replace missing selections with other photos.

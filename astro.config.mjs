@@ -25,6 +25,9 @@ const prepareUploadedPhotos = () => ({
 export default defineConfig({
   output: "static",
   site: "https://incessantleo.com",
+  redirects: {
+    "/photos/the-pier-under-the-blue-night": "/photos/the-pier-under-the-blue-night-sky",
+  },
   integrations: process.env.NODE_ENV === "production" ? [] : [react(), keystatic(), localContentImport()],
   vite: {
     // Keep check/build from replacing the running dev server's optimized dependencies.

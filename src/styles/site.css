@@ -286,6 +286,15 @@
     text-decoration-color: var(--color-contact-underline-active);
   }
 
+  .site-footer__links .text-link {
+    text-decoration: none;
+    transition: color var(--duration-text-link) var(--ease-smooth-out);
+  }
+
+  .site-footer__links .text-link:is(:hover, :focus-visible) {
+    color: var(--color-ink);
+  }
+
   .text-link--reveal {
     position: relative;
     display: inline-block;

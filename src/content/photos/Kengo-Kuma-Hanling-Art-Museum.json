@@ -1,20 +1,20 @@
 {
-  "alt": "黄岛海岸",
-  "src": "/media/photos/Huangdao-Coast/src.webp",
-  "order": 17,
+  "src": "/media/photos/Kengo-Kuma-Hanling-Art-Museum/src.webp",
   "size": "short",
   "orientation": "landscape",
+  "alt": "隈研吾韩岭美术馆",
+  "order": 61,
+  "draft": false,
   "width": 2400,
   "height": 1601,
-  "draft": false,
   "publicMetadata": {
-    "capturedAt": "2024-06-09",
-    "place": "青岛",
+    "capturedAt": "2025-05-03",
+    "place": "宁波",
     "camera": "SONY ILCE-7RM3",
     "lens": "Sony FE 24-105mm F4 G OSS (SEL24105G)",
-    "focalLength": "38 mm",
+    "focalLength": "35 mm",
     "aperture": "f/4",
     "shutterSpeed": "1/2500 s",
-    "iso": 80
+    "iso": 200
   }
 }
